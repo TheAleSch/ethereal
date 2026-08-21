@@ -20,6 +20,7 @@ import * as ts from "typescript"
 import { ETHEREAL_DITHER } from "@theale/ethereal"
 
 import {
+  AUDIO_DEFAULTS,
   DITHER_CONTROLS,
   DITHER_PRESETS,
   EH_CONTROLS,
@@ -27,7 +28,9 @@ import {
   ETHEREAL,
   ETHEREAL_CONTROLS,
   ETHEREAL_PRESETS,
+  diffCfg,
   genCode,
+  parseAudio,
   parseOverrides
   
 } from "./presets"
@@ -349,7 +352,145 @@ describe("every preset value sits inside its control's domain", () => {
   })
 })
 
-describe("genCode emits a snippet that compiles", () => {
+// `?a=` carries the ATTACH-TIME audio options, which are not component config
+// and never reach a prop. It goes through the same parser, plus a clamp to each
+// slider's own range: ±1000 is a reasonable ceiling for a blur radius and an
+// absurd one for a depth multiplier whose top is 2, and a link that sets
+// `sensitivity: 1000` would pin every band to its clamp forever.
+describe("parseAudio hardens the audio share-link key", () => {
+  it("keeps in-range values for all four knobs", () => {
+    expect(
+      parseAudio({ sensitivity: 2.5, glow: 0, hotspot: 1.4, bands: 2 })
+    ).toEqual({
+      sensitivity: 2.5,
+      glow: 0,
+      hotspot: 1.4,
+      bands: 2,
+    })
+  })
+
+  it("clamps each knob to its own slider range rather than to ±1000", () => {
+    expect(
+      parseAudio({ sensitivity: 1e6, glow: 500, hotspot: -3, bands: 9 })
+    ).toEqual({
+      sensitivity: 3,
+      glow: 2,
+      hotspot: 0,
+      bands: 2,
+    })
+  })
+
+  it("drops NaN, infinities, wrong types and unknown keys", () => {
+    expect(parseAudio({ sensitivity: Number.NaN })).toEqual({})
+    expect(parseAudio({ glow: Number.POSITIVE_INFINITY })).toEqual({})
+    expect(parseAudio({ hotspot: "2" })).toEqual({})
+    expect(parseAudio({ bands: [2] })).toEqual({})
+    expect(parseAudio({ ranges: { bands: 2 }, context: "x" })).toEqual({})
+  })
+
+  it("returns nothing for input that is not an options object", () => {
+    expect(parseAudio(undefined)).toEqual({})
+    expect(parseAudio("not json at all")).toEqual({})
+    expect(parseAudio("null")).toEqual({})
+    expect(parseAudio('["sensitivity",2]')).toEqual({})
+  })
+
+  it("parses the JSON string form a hand-written link arrives as", () => {
+    expect(parseAudio('{"sensitivity":1.5,"bands":0}')).toEqual({
+      sensitivity: 1.5,
+      bands: 0,
+    })
+  })
+
+  it("cannot be used to pollute Object.prototype", () => {
+    const parsed = parseAudio('{"__proto__":{"polluted":"yes"},"glow":1.5}')
+    expect(parsed).toEqual({ glow: 1.5 })
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined()
+  })
+})
+
+describe("the audio param round-trips through the same diff every other key uses", () => {
+  it("writes nothing while every knob sits at its default", () => {
+    expect(diffCfg({ ...AUDIO_DEFAULTS }, AUDIO_DEFAULTS)).toEqual({})
+  })
+
+  it("writes only the knobs that were actually moved", () => {
+    const written = diffCfg({ ...AUDIO_DEFAULTS, bands: 1.8 }, AUDIO_DEFAULTS)
+    expect(written).toEqual({ bands: 1.8 })
+    // …and reading it back restores exactly what was tuned
+    expect({
+      ...AUDIO_DEFAULTS,
+      ...parseAudio(written as Record<string, unknown>),
+    }).toEqual({
+      ...AUDIO_DEFAULTS,
+      bands: 1.8,
+    })
+  })
+})
+
+// What the visitor copies has to reproduce what they tuned. The audio options
+// are the one part of that which is NOT a prop, so the snippet has to show them
+// as the attach call they are — printing them inside the tag would paste as
+// code that compiles and silently does nothing.
+describe("genCode carries non-default audio options as an attach call", () => {
+  it("says nothing about audio while every knob is at its default", () => {
+    const code = genCode(
+      "Ethereal",
+      { needles: 9 },
+      diffCfg({ ...AUDIO_DEFAULTS }, AUDIO_DEFAULTS)
+    )
+    expect(code).not.toContain("attachMicAudio")
+    expect(code).not.toContain("sensitivity")
+  })
+
+  it("emits a self-contained React component with a host ref and cleanup", () => {
+    const code = genCode(
+      "Ethereal",
+      { needles: 9 },
+      diffCfg(
+        { ...AUDIO_DEFAULTS, sensitivity: 1.5, bands: 2, glow: 0 },
+        AUDIO_DEFAULTS
+      )
+    )
+    // A pasted audio snippet must be syntactically valid TSX on its own; the
+    // former trailing `await attachMicAudio(hostEl, …)` had neither a declared
+    // host nor a legal async context.
+    const compiled = ts.transpileModule(code, {
+      compilerOptions: {
+        jsx: ts.JsxEmit.ReactJSX,
+        target: ts.ScriptTarget.ES2022,
+      },
+      fileName: "audio-snippet.tsx",
+      reportDiagnostics: true,
+    })
+    expect(
+      compiled.diagnostics?.filter(
+        (diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error
+      )
+    ).toEqual([])
+
+    expect(code).toContain("import { useEffect, useRef } from 'react'")
+    expect(code).toContain(
+      "import { Ethereal, attachMicAudio } from '@theale/ethereal'"
+    )
+    expect(code).toContain("const host = hostRef.current")
+    expect(code).toContain("<button ref={hostRef}")
+    expect(code).toContain(
+      "attachMicAudio(host, { sensitivity: 1.5, ranges: { glow: 0, bands: 2 } })"
+    )
+    expect(code).toContain("if (disposed) stop()")
+    expect(code).toContain("detach?.()")
+    expect(code).not.toContain("hostEl")
+    expect(code).not.toContain("await attachMicAudio")
+    // Audio settings are still attachment settings, never component props.
+    const effectTag = code.slice(
+      code.indexOf("<Ethereal"),
+      code.indexOf("/>", code.indexOf("<Ethereal"))
+    )
+    for (const key of Object.keys(AUDIO_DEFAULTS))
+      expect(effectTag).not.toContain(key)
+  })
+
   it("quotes state names that are not bare identifiers, so the snippet compiles", () => {
     // `error-state` and `2fa` are legal state names (and legal map keys) but
     // ILLEGAL bare object keys — unquoted they broke every pasted snippet
@@ -377,5 +518,13 @@ describe("genCode emits a snippet that compiles", () => {
         (diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error
       )
     ).toEqual([])
+  })
+
+  it("keeps cleanup safe when the host unmounts before microphone permission resolves", () => {
+    const code = genCode("EventHorizon", {}, { hotspot: 0.5 })
+    expect(code).toContain("let disposed = false")
+    expect(code).toContain("let detach: (() => void) | undefined")
+    expect(code).toContain("disposed = true")
+    expect(code).toContain("ranges: { hotspot: 0.5 }")
   })
 })

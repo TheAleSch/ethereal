@@ -3,10 +3,10 @@
 // The per-effect derivation rules, and the precedence they sit in.
 //
 // The bug these exist to prevent: a named state used to be a hard-coded look.
-// `ETHEREAL_STATES.thinking` pinned `path: 'breathe'` plus ten more keys, so
-// `state="thinking"` did not vary the preset you configured — it replaced it
-// with a different effect that happened to share a component. Every "identity
-// survives" assertion below is that bug.
+// `ETHEREAL_STATES.thinking` pinned `path: 'breathe'` and `audio` pinned
+// `path: 'static'` plus ten more keys, so `state="thinking"` did not vary the
+// preset you configured — it replaced it with a different effect that happened
+// to share a component. Every "identity survives" assertion below is that bug.
 import { describe, expect, it } from 'vitest'
 
 import { mergeConfig, type StateConfig } from './core/state'
@@ -41,15 +41,18 @@ const CUSTOM_ETHEREAL: EtherealCfg = {
 
 describe('deriveEtherealState', () => {
   it('leaves the identity of the config alone in every state', () => {
-    const varied = { ...CUSTOM_ETHEREAL, ...deriveEtherealState(CUSTOM_ETHEREAL, 'thinking') }
-    expect(varied.colors).toEqual(CUSTOM_ETHEREAL.colors)
-    // the regression in one line: `around` must not come back as `breathe`
-    expect(varied.path).toBe('around')
-    expect(varied.heads).toBe(2)
-    expect(varied.spin).toBe('counter')
-    expect(varied.place).toBe('external')
-    expect(varied.spotW).toBe(120)
-    expect(varied.spotH).toBe(40)
+    for (const state of ['thinking', 'audio']) {
+      const varied = { ...CUSTOM_ETHEREAL, ...deriveEtherealState(CUSTOM_ETHEREAL, state) }
+      expect(varied.colors, state).toEqual(CUSTOM_ETHEREAL.colors)
+      // the regression in one line: `around` must not come back as `breathe`
+      // (thinking) or `static` (audio)
+      expect(varied.path, state).toBe('around')
+      expect(varied.heads, state).toBe(2)
+      expect(varied.spin, state).toBe('counter')
+      expect(varied.place, state).toBe('external')
+      expect(varied.spotW, state).toBe(120)
+      expect(varied.spotH, state).toBe(40)
+    }
   })
 
   it('derives thinking from the caller’s own numbers, not from constants', () => {
@@ -65,9 +68,31 @@ describe('deriveEtherealState', () => {
     expect(thinking.hover).toBe('none')
   })
 
-  it('turns reveal off while thinking, because a hidden indicator is not one', () => {
+  it('makes audio steadier than the config it came from', () => {
+    const audio = deriveEtherealState(CUSTOM_ETHEREAL, 'audio')
+    expect(audio.duration).toBeGreaterThan(CUSTOM_ETHEREAL.duration)
+    expect(audio.wander).toBeLessThan(CUSTOM_ETHEREAL.wander)
+    expect(audio.flicker).toBeLessThan(CUSTOM_ETHEREAL.flicker)
+    expect(audio.strength).toBeGreaterThan(CUSTOM_ETHEREAL.strength)
+  })
+
+  it('gives audio enough needles for the eight audio bands to move', () => {
+    // needle height follows --fb0..7 on every path; with 3 needles most of the
+    // spectrum drives nothing an attached audio source can show
+    expect(deriveEtherealState(CUSTOM_ETHEREAL, 'audio').needles).toBeGreaterThanOrEqual(8)
+    // but a caller who already asked for more keeps their own count
+    expect(deriveEtherealState({ ...CUSTOM_ETHEREAL, needles: 40 }, 'audio').needles).toBe(40)
+  })
+
+  it('turns reveal off in both busy states, because a hidden indicator is not one', () => {
     const reveal = { ...CUSTOM_ETHEREAL, hover: 'reveal' as const }
     expect(deriveEtherealState(reveal, 'thinking').hover).toBe('none')
+    expect(deriveEtherealState(reveal, 'audio').hover).toBe('none')
+  })
+
+  it('leaves a clickable hover mode live in the audio state', () => {
+    // audio is not busy the way thinking is — the host is still a button
+    expect(deriveEtherealState({ ...CUSTOM_ETHEREAL, hover: 'boost' }, 'audio').hover).toBeUndefined()
   })
 
   it('has no opinion about idle or an unknown state', () => {
@@ -90,20 +115,29 @@ describe('deriveEventHorizonState', () => {
   }
 
   it('leaves the identity of the disk alone in every state', () => {
-    const varied = { ...custom, ...deriveEventHorizonState(custom, 'thinking') }
-    expect(varied.colors).toEqual(custom.colors)
-    expect(varied.ring).toBe(4)
-    expect(varied.nodes).toBe(15)
-    expect(varied.shape).toBe('round')
-    expect(varied.dir).toBe(-1)
+    for (const state of ['thinking', 'audio']) {
+      const varied = { ...custom, ...deriveEventHorizonState(custom, state) }
+      expect(varied.colors, state).toEqual(custom.colors)
+      expect(varied.ring, state).toBe(4)
+      expect(varied.nodes, state).toBe(15)
+      expect(varied.shape, state).toBe('round')
+      expect(varied.dir, state).toBe(-1)
+    }
   })
 
-  it('agitates the stream for thinking', () => {
+  it('agitates the stream for thinking and settles it for audio', () => {
     const thinking = deriveEventHorizonState(custom, 'thinking')
     expect(thinking.duration).toBe(7)
     expect(thinking.shimmer).toBeGreaterThan(custom.shimmer)
     expect(thinking.tail).toBeLessThan(custom.tail)
     expect(thinking.hover).toBe('none')
+
+    const audio = deriveEventHorizonState(custom, 'audio')
+    expect(audio.duration).toBeGreaterThan(custom.duration)
+    expect(audio.shimmer).toBeLessThan(custom.shimmer)
+    // the halo's opacity is multiplied by --aud: more halo is more room for an
+    // attached audio source to swell into
+    expect(audio.halo).toBeGreaterThan(custom.halo)
   })
 
   it('has no opinion about idle or an unknown state', () => {
@@ -127,20 +161,27 @@ describe('deriveEtherealDitherState', () => {
   }
 
   it('leaves the blocks themselves alone in every state', () => {
-    const varied = { ...custom, ...deriveEtherealDitherState(custom, 'thinking') }
-    expect(varied.colors).toEqual(custom.colors)
-    expect(varied.path).toBe('bottom')
-    expect(varied.place).toBe('internal')
-    expect(varied.block).toBe(6)
-    expect(varied.levels).toBe(2)
-    expect(varied.band).toBe(12)
+    for (const state of ['thinking', 'audio']) {
+      const varied = { ...custom, ...deriveEtherealDitherState(custom, state) }
+      expect(varied.colors, state).toEqual(custom.colors)
+      expect(varied.path, state).toBe('bottom')
+      expect(varied.place, state).toBe('internal')
+      expect(varied.block, state).toBe(6)
+      expect(varied.levels, state).toBe(2)
+      expect(varied.band, state).toBe(12)
+    }
   })
 
-  it('derives the temperament from the caller’s numbers', () => {
+  it('derives both temperaments from the caller’s numbers', () => {
     const thinking = deriveEtherealDitherState(custom, 'thinking')
     expect(thinking.duration).toBe(7)
     expect(thinking.wander).toBeGreaterThan(custom.wander)
     expect(thinking.hover).toBe('none')
+
+    const audio = deriveEtherealDitherState(custom, 'audio')
+    expect(audio.duration).toBeGreaterThan(custom.duration)
+    expect(audio.wander).toBeLessThan(custom.wander)
+    expect(audio.strength).toBeGreaterThan(custom.strength)
   })
 
   it('has no opinion about idle or an unknown state', () => {
@@ -159,14 +200,15 @@ describe('the derivers are pure', () => {
   ] as const
 
   for (const [name, derive, cfg] of cases)
-    it(`${name}/thinking is stable and mutates nothing`, () => {
-      const before = structuredClone(cfg)
-      const first = derive(cfg as never, 'thinking')
-      const second = derive(cfg as never, 'thinking')
-      expect(first).toEqual(second)
-      expect(first).not.toBe(second) // a fresh object, never a shared one
-      expect(cfg).toEqual(before)
-    })
+    for (const state of ['thinking', 'audio'])
+      it(`${name}/${state} is stable and mutates nothing`, () => {
+        const before = structuredClone(cfg)
+        const first = derive(cfg as never, state)
+        const second = derive(cfg as never, state)
+        expect(first).toEqual(second)
+        expect(first).not.toBe(second) // a fresh object, never a shared one
+        expect(cfg).toEqual(before)
+      })
 })
 
 // Precedence is expressed once, in mergeConfig. These assert the whole chain
@@ -190,8 +232,8 @@ describe('derived states inside mergeConfig', () => {
     })
 
   it('renders idle and no-state byte-identically to the un-stated config', () => {
-    // the package is unpublished, so the LOOK of thinking was fair game to
-    // change — idle was not
+    // the package is unpublished, so the LOOK of thinking/audio was fair
+    // game to change — idle was not
     const unstated = merge({ path: 'around', duration: 8 }, undefined)
     expect(merge({ path: 'around', duration: 8 }, 'idle')).toEqual(unstated)
     expect(merge({ path: 'around', duration: 8 }, null)).toEqual(unstated)

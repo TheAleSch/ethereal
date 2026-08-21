@@ -305,6 +305,32 @@ describe('EtherealDither canvas', () => {
     expect(identical).toBe(false)
   })
 
+  it('responds to live audio variables without remounting', () => {
+    render({
+      block: 4,
+      band: 10,
+      bleed: 16,
+      duration: 20,
+      strength: 0.25,
+      reach: 70,
+    })
+    run(6)
+    const quiet = last(painted).data
+    let quietAlpha = 0
+    for (let index = 3; index < quiet.length; index += 4) quietAlpha += quiet[index]!
+
+    container.style.setProperty('--aud', '1.5')
+    container.style.setProperty('--ahot', '1.9')
+    for (let band = 0; band < 8; band++) container.style.setProperty(`--fb${band}`, band % 2 ? '0.6' : '2.2')
+    run(1, 212)
+
+    const driven = last(painted).data
+    let drivenAlpha = 0
+    for (let index = 3; index < driven.length; index += 4) drivenAlpha += driven[index]!
+    expect(drivenAlpha).toBeGreaterThan(quietAlpha)
+    expect([...driven]).not.toEqual([...quiet])
+  })
+
   it('HOLDS every clock while the ticker is paused', () => {
     render({ block: 4, band: 10, bleed: 16, duration: 2 })
     run(6)

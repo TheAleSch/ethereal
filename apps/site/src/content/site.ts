@@ -34,7 +34,7 @@ export const ROUTES: RouteMeta[] = [
     path: "/docs",
     title: "Documentation — @theale/ethereal",
     description:
-      "Full API reference for <Ethereal>, <EventHorizon> and <EtherealDither>: every prop, the named-state and per-theme config system, theme resolution, and the host contract.",
+      "Full API reference for <Ethereal>, <EventHorizon> and <EtherealDither>: every prop, the named-state and per-theme config system, theme resolution, audio reactivity, and the host contract.",
     priority: 0.9,
   },
   {

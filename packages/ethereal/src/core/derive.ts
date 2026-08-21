@@ -2,10 +2,10 @@
 // config you gave", not a replacement for it.
 //
 // The old built-in tables hard-set a whole look per state: `thinking` pinned
-// `path: 'breathe'` plus ten other keys. Switching state therefore threw the
-// caller's preset away and rendered a different effect that happened to share
-// a component. These helpers exist so each effect can instead READ the
-// incoming config and bend it: same colors,
+// `path: 'breathe'`, `audio` pinned `path: 'static'` plus ten other keys.
+// Switching state therefore threw the caller's preset away and rendered a
+// different effect that happened to share a component. These helpers exist so
+// each effect can instead READ the incoming config and bend it: same colors,
 // same path, same silhouette, different temperament.
 //
 // Nothing here knows about a specific effect — the per-effect rules live next
@@ -18,11 +18,12 @@
  *  render exactly like no state at all. */
 export type StateDeriver<C> = (cfg: C, state: string) => Partial<C>
 
-/** The busy temperament, as numbers. One place to retune every effect.
+/** The two temperaments, as numbers. One place to retune every effect.
  *
  *  `thinking` is busy: it moves quicker and less predictably, and stops
- *  reacting to the pointer because the component is not asking to be
- *  clicked. */
+ *  reacting to the pointer because the component is not asking to be clicked.
+ *  `audio` is alert: it travels steadier, sits a touch brighter, and is
+ *  shaped so an attached audio source has something to push around. */
 export const THINKING = {
   /** duration multiplier — lower is quicker */
   durationScale: 0.7,
@@ -30,6 +31,15 @@ export const THINKING = {
   restlessness: 0.3,
   /** fraction of the pulse range collapsed toward its midpoint */
   pulseTighten: 0.25,
+} as const
+
+export const AUDIO = {
+  durationScale: 1.15,
+  /** fraction of the restlessness knobs removed — higher is steadier */
+  steadiness: 0.5,
+  /** multiplier on the "how present is it" knob (strength, halo) */
+  presence: 1.1,
+  pulseTighten: 0.15,
 } as const
 
 // Rounding keeps derived values readable in devtools and keeps them stable to

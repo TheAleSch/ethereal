@@ -438,14 +438,16 @@ const ETHEREAL_PRESETS_RAW: Record<string, EtherealOverrides> = {
     pulseMax: 1.2,
     hueRange: 8,
   },
-  // A dense comb whose only motion is the per-band sway of the needles
-  // themselves. `static` is the only path that draws a fixed row of waveform
-  // needles, and here nothing else competes with it.
+  // The one to start an `audio` state from. Every other preset is tuned to
+  // look alive on its own; this one is deliberately NOT — a dense static comb
+  // that barely moves until something drives it, so all the motion on screen
+  // is the sound. `static` is the only path that draws a fixed band of
+  // waveform needles, which is exactly what `--fb0..7` scales.
   "Visualizer (static)": {
     colors: ["#7ab8ff", "#a5d8ff", "#b58cff", "#ff8ad8"],
     path: "static",
-    // slow, and a pulse that hardly breathes: a busier envelope would drown
-    // out the band-by-band rise and fall that IS this preset
+    // slow, and a pulse that hardly breathes: its own animation would
+    // otherwise read as a reaction to sound that isn't there
     duration: 15.8,
     pulseMin: 0.97,
     pulseMax: 1.06,
@@ -711,6 +713,15 @@ const HINTS: Record<string, string> = {
   shadow: "Depth of the vignette darkening the element's center.",
   strength: "Overall intensity multiplier for the whole effect.",
 
+  /* audio — attach-time options, not component config */
+  dip: "How far the quiet moments inside a sound fall BELOW the look you tuned. At 0 sound only ever lifts — rest is the floor. Raise it and the effect breathes both ways: an average moment renders as tuned, peaks still reach full lift, lulls sag. Silence always returns it to rest.",
+  sensitivity:
+    "How hard sound pushes the effect. glow, hotspot and needles below set how far each one travels; this scales all three at once, and also stands in for the mic — a quiet room needs more of it. It multiplies the DEVIATION from the look you tuned, so turning it up changes nothing in silence.",
+  glow: "How far sound lifts the whole glow. 0 holds the glow exactly where you tuned it while the hotspots and needles keep moving.",
+  hotspot:
+    "How far sound swells the white-hot cores. Raise it for a reaction that reads as punch rather than brightness.",
+  bands:
+    "How far sound scales the needles, low frequency to high, so the row rises and falls like a waveform. 0 keeps the comb you designed.",
 
   /* interaction */
   hover:
@@ -1099,6 +1110,78 @@ const ETHEREAL_CONTROLS_RAW: ControlDef<EK>[] = [
 
 export const ETHEREAL_CONTROLS = withHints(ETHEREAL_CONTROLS_RAW)
 
+/* ── audio ────────────────────────────────────────────────────────────────
+   `attachAudio(host, source, { sensitivity, ranges })` is an ATTACH-TIME call
+   on the host element, not component config: none of these keys is a prop, so
+   they live in their own state, their own URL key and their own section rather
+   than anywhere near `diffCfg`/`?c=`. `bands` is labelled "needles" because
+   that is what it moves on screen — `--fb0..7` is the mechanism, not the
+   meaning. Every value rests at 1, where the effect renders exactly as tuned. */
+export type AudioOptions = {
+  sensitivity: number
+  dip: number
+  glow: number
+  hotspot: number
+  bands: number
+}
+
+export const AUDIO_DEFAULTS: AudioOptions = {
+  sensitivity: 1,
+  dip: 0,
+  glow: 1,
+  hotspot: 1,
+  bands: 1,
+}
+
+const AUDIO_CONTROLS_RAW: ControlDef<keyof AudioOptions>[] = [
+  // labelled `intensity` — the key stays `sensitivity` because it is the
+  // package's option name, the `?a=` URL key and what the copied snippet
+  // prints; only the word on screen changes.
+  //
+  // it reaches 3 because it is a per-MIC gain: a quiet laptop mic in a large
+  // room needs headroom the per-design depths below never should
+  {
+    kind: "slider",
+    key: "sensitivity",
+    label: "intensity",
+    min: 0,
+    max: 3,
+    step: 0.05,
+    group: "audio",
+  },
+  // `dip` is not a depth like the three below it — it changes which DIRECTION
+  // the depths spend their travel in — so it sits above the DEPTH subgroup
+  // rather than inside it
+  { kind: "slider", key: "dip", label: "dip", min: 0, max: 1, step: 0.05 },
+  {
+    kind: "slider",
+    key: "glow",
+    label: "glow",
+    min: 0,
+    max: 2,
+    step: 0.05,
+    subgroup: "depth",
+  },
+  {
+    kind: "slider",
+    key: "hotspot",
+    label: "hotspot",
+    min: 0,
+    max: 2,
+    step: 0.05,
+  },
+  {
+    kind: "slider",
+    key: "bands",
+    label: "needles",
+    min: 0,
+    max: 2,
+    step: 0.05,
+  },
+]
+
+export const AUDIO_CONTROLS = withHints(AUDIO_CONTROLS_RAW)
+
 const EH_CONTROLS_RAW: ControlDef<HK>[] = [
   { kind: "colors", key: "colors", label: "colors", group: "color" },
   {
@@ -1256,12 +1339,84 @@ function fmtVal(v: unknown): string {
   return `{${JSON.stringify(v)}}`
 }
 
+/** The attach expression that reproduces the tuned audio depth, or "" when
+ *  every value is still at its default. The audio branch of `genCode` wraps
+ *  this in a component with a host ref and an effect: an attachment belongs to
+ *  a mounted DOM host, never in JSX or at module scope. */
+function audioSnippet(audio: Partial<AudioOptions>): string {
+  const { sensitivity, dip, ...ranges } = audio
+  const parts: string[] = []
+  if (sensitivity !== undefined) parts.push(`sensitivity: ${sensitivity}`)
+  // top-level beside `sensitivity`, NOT inside `ranges` — it is the shape of
+  // the response, not the depth of one target
+  if (dip !== undefined) parts.push(`dip: ${dip}`)
+  const rangeParts = Object.entries(ranges).map(
+    ([key, value]) => `${key}: ${value}`
+  )
+  if (rangeParts.length) parts.push(`ranges: { ${rangeParts.join(", ")} }`)
+  if (!parts.length) return ""
+  return `attachMicAudio(host, { ${parts.join(", ")} })`
+}
+
+/** Audio needs a real host element and cleanup, so it cannot be emitted as the
+ * bare JSX fragment used by ordinary config snippets. Keep that lifecycle in
+ * the generator rather than asking every visitor to invent a ref, remember
+ * cleanup, and handle an attachment that resolves after unmount. */
+function audioComponent(
+  importLine: string,
+  jsx: string,
+  attach: string
+): string {
+  const hostJsx = jsx.replace(
+    "<button className=",
+    "<button ref={hostRef} className="
+  )
+  const indentedJsx = hostJsx
+    .split("\n")
+    .map((line) => `    ${line}`)
+    .join("\n")
+  return `import { useEffect, useRef } from 'react'
+${importLine}
+
+export function AudioReactiveExample() {
+  const hostRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const host = hostRef.current
+    if (!host) return
+
+    let disposed = false
+    let detach: (() => void) | undefined
+    // Attach after the button mounts. If permission resolves after unmount,
+    // immediately release the stream instead of leaving it live.
+    void ${attach}
+      .then((stop) => {
+        if (disposed) stop()
+        else detach = stop
+      })
+      .catch(() => {})
+
+    return () => {
+      disposed = true
+      detach?.()
+    }
+  }, [])
+
+  return (
+${indentedJsx}
+  )
+}`
+}
+
 export function genCode(
   component: "Ethereal" | "EventHorizon" | "EtherealDither",
-  overrides: Record<string, unknown>
+  overrides: Record<string, unknown>,
+  /** non-default audio attach options — omitted keys keep the package default */
+  audio: Partial<AudioOptions> = {}
 ): string {
   const entries = Object.entries(overrides)
-  const importLine = `import { ${component} } from '@theale/ethereal'`
+  const attach = audioSnippet(audio)
+  const importLine = `import { ${component}${attach ? ", attachMicAudio" : ""} } from '@theale/ethereal'`
   const jsx =
     entries.length === 0
       ? `<button className="relative isolate">\n  <span className="relative z-10">…</span>\n  <${component} />\n</button>`
@@ -1274,6 +1429,10 @@ export function genCode(
             .join("\n")
           return `<button className="relative isolate">\n  <span className="relative z-10">…</span>\n  <${component}\n  ${props.replace(/\n/g, "\n  ")}\n  />\n</button>`
         })()
+  if (attach) return audioComponent(importLine, jsx, attach)
+  if (entries.length === 0) {
+    return `${importLine}\n\n${jsx}`
+  }
   return `${importLine}\n\n${jsx}`
 }
 
@@ -1287,6 +1446,7 @@ const domainsFor = (base: object): Map<string, ControlDef<string>> | null => {
     [ETHEREAL, ETHEREAL_CONTROLS],
     [EVENT_HORIZON, EH_CONTROLS],
     [ETHEREAL_DITHER, DITHER_CONTROLS],
+    [AUDIO_DEFAULTS, AUDIO_CONTROLS],
   ])
   const controls = domainTables.get(base)
   return controls
@@ -1362,6 +1522,25 @@ export function parseOverrides<T extends Record<string, unknown>>(
   } catch {
     return {}
   }
+}
+
+/** The `?a=` branch of a shared link. Same trust boundary as `parseOverrides`
+ *  — it IS `parseOverrides`, so the type, finiteness and prototype-pollution
+ *  guards can never drift apart — plus a clamp to each slider's own range:
+ *  ±1000 is a fine ceiling for a blur radius and an absurd one for a depth
+ *  multiplier that tops out at 2. */
+export function parseAudio(
+  raw: string | Record<string, unknown> | undefined
+): Partial<AudioOptions> {
+  const parsed = parseOverrides(raw, AUDIO_DEFAULTS)
+  const out: Partial<AudioOptions> = {}
+  for (const ctl of AUDIO_CONTROLS) {
+    if (ctl.kind !== "slider") continue
+    const value = parsed[ctl.key]
+    if (typeof value !== "number") continue
+    out[ctl.key] = Math.min(ctl.max, Math.max(ctl.min, value))
+  }
+  return out
 }
 
 /** name of the preset whose override set matches, else "Custom" */

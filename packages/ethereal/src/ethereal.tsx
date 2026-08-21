@@ -5,7 +5,7 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
-import { THINKING, lift, scaleDuration, tightenPulse } from './core/derive'
+import { AUDIO, THINKING, damp, lift, scale, scaleDuration, tightenPulse } from './core/derive'
 import { pathPx, quantAspect, rand, randEdgePos, walkRect, walkSmooth } from './core/path'
 import { mergeConfig, useInteraction, type StateConfig, type ThemeConfig } from './core/state'
 import { subscribe } from './core/ticker'
@@ -150,21 +150,28 @@ export const bottomSweepEnvelope = (travel: number) =>
 
 /* states -------------------------------------------------------------------
    The registry of state NAMES, plus anything the derivation rule below cannot
-   work out on its own. Both entries are empty today: `thinking` is derived
-   from whatever config you gave, so it varies your look instead of replacing
-   it. The keys still have to exist — they are what `resolveState` recognises,
-   and an unlisted name warns.
+   work out on its own. Both entries are empty today: `thinking` and
+   `audio` are derived from whatever config you gave, so they vary your
+   look instead of replacing it. The keys still have to exist — they are what
+   `resolveState` recognises, and an unlisted name warns.
 
    An entry here (or in a caller's `states` prop) OVERRIDES the derived
    variation key by key, which is the escape hatch for a preset the rule reads
    wrongly. Each state can also carry per-theme `whileHover` / `whilePressed`
    overlays. Shape and merge order live in ./core/state. */
-export const ETHEREAL_STATES: Record<'idle' | 'thinking', StateConfig<EtherealCfg>> = {
+export const ETHEREAL_STATES: Record<'idle' | 'thinking' | 'audio', StateConfig<EtherealCfg>> = {
   idle: {},
   thinking: {},
+  audio: {},
 }
 
-/** Derive `thinking` from the caller's own config.
+/** Needles are how audio reads on this effect: every needle's height follows
+ *  its frequency band (`--fb0..7`), on every path. Below one needle per band an
+ *  `audio` component with a live source has visibly nothing to move, so the
+ *  rule guarantees a full spectrum's worth. */
+const AUDIO_NEEDLES = 12
+
+/** Derive `thinking` / `audio` from the caller's own config.
  *
  *  What it deliberately does NOT touch: `colors`, `path`, `place`, `heads`,
  *  `spin`, the spot geometry. Those are the identity of a preset — a config
@@ -187,6 +194,21 @@ export function deriveEtherealState(cfg: EtherealCfg, state: string): Partial<Et
       // busy, not interactive — and a `reveal` preset must be VISIBLE while it
       // is thinking, which only happens once reveal is off
       hover: 'none',
+    }
+  if (state === 'audio')
+    return {
+      // steadier travel: slower lap, less of the caller's own wobble, so the
+      // audio is the thing that moves rather than competing with the idle sway
+      duration: scaleDuration(cfg.duration, AUDIO.durationScale),
+      wander: damp(cfg.wander, AUDIO.steadiness),
+      flicker: damp(cfg.flicker, AUDIO.steadiness),
+      needles: Math.max(cfg.needles, AUDIO_NEEDLES),
+      strength: scale(cfg.strength, AUDIO.presence),
+      ...tightenPulse(cfg, AUDIO.pulseTighten),
+      // `boost`/`speed` stay live — a component reacting to sound is still a
+      // thing you can click. `reveal` cannot: an effect nobody is hovering
+      // would be invisible, and an invisible audio indicator is not one.
+      ...(cfg.hover === 'reveal' ? { hover: 'none' as const } : null),
     }
   return {}
 }
@@ -377,9 +399,10 @@ function tickAll(nowSec: number, dt: number) {
           }
         }
     } else if (cfg.path === 'static') {
-      // static: fixed bottom band, needles = waveform. Each band gets its own
-      // gentle desynced sway (`--fb0..7`), so the row reads as a living
-      // waveform rather than a fixed row of bars.
+      // static: fixed bottom band, needles = waveform. Idle: gentle desynced
+      // sway, so the row is alive with no audio attached. attachAudio()
+      // overwrites these with real band levels — it subscribes at priority 1,
+      // so its writes always land after ours within the same frame.
       head1 = { x: 0.5, y: 1, dx: 1, dy: 0 }
       head2 = head1
       beamW = 1
@@ -887,18 +910,17 @@ export function Ethereal({
           ax = `calc(${ax} + var(--nj${group}x,0px))`
           ay = `calc(${ay} + var(--nj${group}y,0px))`
         }
-        // Needle HEIGHT follows its band (--fb0..7), on EVERY path — the same
-        // needles you configured take the band's shape rather than a separate
-        // waveform widget being swapped in. Only `static` drives the bands, and
-        // they fall back to 1 elsewhere, so this multiplies by nothing on the
-        // other paths. `static` reads the band alone because there it IS the
-        // waveform: the row's whole shape is the bands, not bands riding a
-        // breathing pulse.
+        // Needle HEIGHT follows its frequency band (--fb0..7), on EVERY path —
+        // that is what makes audio modulate the needles you configured rather
+        // than swapping in a separate waveform widget. The bands rest at 1, so
+        // with no audio attached this multiplies by nothing. `static` reads the
+        // band alone because there it IS the waveform: the row's whole shape is
+        // the spectrum, not a spectrum riding a breathing pulse.
         const bandVar = `var(--fb${Math.min(7, Math.floor((needleIndex / Math.max(1, clamped.needles - 1)) * 7.999))},1)`
         // Travelling/breathing needles should emerge spatially from the edge,
         // not merely appear when the moving mask reaches them. Their existing
         // desynchronised pulse now scales length as well as width; static keeps
-        // height reserved for the bands.
+        // height reserved for the real/synthetic frequency bands.
         const heightVar = clamped.path === 'static' ? bandVar : `calc(var(--bh,1) * ${bandVar} * ${mult})`
         const dims = side
           ? `calc(${needleH}px * ${heightVar}) calc(${needleW}px * ${mult})`
@@ -958,8 +980,12 @@ export function Ethereal({
           // one core = a tight blob riding its own pulse oscillators plus a
           // wider, dimmer halo on the shared ones. All three placements below
           // are the same pair; only the dimensions and stops change.
+          // --ahot is the audio hotspot swell: 1 in silence, up to ~1.9 on a
+          // loud syllable. It scales the core rather than brightening it — a
+          // spot that GROWS with the voice reads as the same light responding,
+          // where a spot that only gets brighter reads as a level meter.
           const coreSpot = (width: number, height: number, stops: string, scaleW?: string, scaleH?: string) =>
-            `radial-gradient(ellipse ${rotW(width * scale, height * scale, head, scaleW ?? 'var(--bw,1)')} ${rotH(width * scale, height * scale, head, scaleH ?? 'var(--bh,1)')} at ${hx} ${hy}, ${stops})`
+            `radial-gradient(ellipse ${rotW(width * scale, height * scale, head, `${scaleW ?? 'var(--bw,1)'} * var(--ahot,1)`)} ${rotH(width * scale, height * scale, head, `${scaleH ?? 'var(--bh,1)'} * var(--ahot,1)`)} at ${hx} ${hy}, ${stops})`
           if (ext && clamped.spotShape !== 'round') {
             parts.push(
               coreSpot(56, 9, `${white(0.8)} 0%, ${white(0.35)} 45%, transparent 100%`, pulse, pulseMirror),
@@ -1047,10 +1073,12 @@ export function Ethereal({
     // life of a build, and nothing per-frame touches it.
     const glowFilter = (lead: string, hueVar: string) =>
       `${lead}hue-rotate(var(${hueVar}, 0deg)) saturate(${clamped.saturation.toFixed(3)}) brightness(calc(${clamped.brightness} * var(--hovB,1)))`
-    // shared visibility envelope: edge ramp × hover × flicker. Only the
-    // flicker terms and the final scalar differ.
+    // shared visibility envelope: edge ramp × hover × flicker × the external
+    // --aud audio drive. Only the flicker terms and the final scalar differ.
+    // --aud rests at 1 (attachAudio guarantees that), so a silent or
+    // un-attached host renders exactly as configured; sound lifts it ~50%.
     const envelope = (flicker: string, amount: string | number) =>
-      `calc(var(--bedge,0) * var(--hov,1) * ${flicker} * ${amount})`
+      `calc(var(--bedge,0) * var(--hov,1) * ${flicker} * var(--aud,1) * ${amount})`
     // Safari still needs the -webkit- spelling and its composite keywords
     // differ — declare the mask layer list once, emit both spellings
     const masked = (layers: string, composites?: [webkit: string, standard: string]) =>

@@ -6,7 +6,7 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
-import { THINKING, lift, scale, scaleDuration } from './core/derive'
+import { AUDIO, THINKING, damp, lift, scale, scaleDuration } from './core/derive'
 import { pathPx, quantAspect, walkSmooth } from './core/path'
 import { mergeConfig, useInteraction, type StateConfig, type ThemeConfig } from './core/state'
 import { subscribe } from './core/ticker'
@@ -70,19 +70,20 @@ export const EVENT_HORIZON: EventHorizonCfg = {
   hoverEase: 8,
 }
 
-/** The registry of state NAMES. Empty entries: `thinking` is derived from the
- *  caller's config by `deriveEventHorizonState` below, and an explicit entry
- *  here (or in a caller's `states` prop) would override that — which is the
- *  escape hatch, not the default. */
-export const EVENT_HORIZON_STATES: Record<'idle' | 'thinking', StateConfig<EventHorizonCfg>> = {
+/** The registry of state NAMES. Empty entries: `thinking` and `audio` are
+ *  derived from the caller's config by `deriveEventHorizonState` below, and an
+ *  explicit entry here (or in a caller's `states` prop) would override that —
+ *  which is the escape hatch, not the default. */
+export const EVENT_HORIZON_STATES: Record<'idle' | 'thinking' | 'audio', StateConfig<EventHorizonCfg>> = {
   idle: {},
   thinking: {},
+  audio: {},
 }
 
 /** how much of the caller's tail survives a `thinking` orbit */
 const THINKING_TAIL = 0.9
 
-/** Derive `thinking` from the caller's own config.
+/** Derive `thinking` / `audio` from the caller's own config.
  *
  *  Untouched, because they are the identity of a disk: `colors`, `ring`,
  *  `nodes`, `shape`, `corner`, `lens`, `shadow`, `dir`. What varies is how
@@ -98,6 +99,15 @@ export function deriveEventHorizonState(cfg: EventHorizonCfg, state: string): Pa
       // caller's tail length at speed just smears
       tail: scale(cfg.tail, THINKING_TAIL),
       hover: 'none',
+    }
+  if (state === 'audio')
+    return {
+      duration: scaleDuration(cfg.duration, AUDIO.durationScale),
+      shimmer: damp(cfg.shimmer, AUDIO.steadiness),
+      // the halo's opacity is multiplied by `--aud`, so a fuller halo is
+      // literally more headroom for an attached audio source to swell
+      halo: scale(cfg.halo, AUDIO.presence),
+      ...(cfg.hover === 'reveal' ? { hover: 'none' as const } : null),
     }
   return {}
 }
@@ -475,16 +485,18 @@ export function EventHorizon({
     const photonRing = mk('2')
     Object.assign(photonRing.style, {
       padding: '1.5px',
+      // --ahot: the audio hotspot swell (rests at 1). The head GROWS with the
+      // voice rather than only brightening — same choice as Ethereal's cores.
       background: [
-        `radial-gradient(ellipse ${orientW(120, 90)} ${orientH(120, 90)} at ${pos(0, head.x)} ${pos(0, head.y)}, rgba(255,255,255,0.75) 0%, transparent 100%)`,
-        `radial-gradient(ellipse ${orientW(210, 150)} ${orientH(210, 150)} at ${pos(0, head.x)} ${pos(0, head.y)}, rgba(${rimColor},0.95) 0%, rgba(${rimColor},0.35) 45%, rgba(${rimColor},0.07) 100%)`,
+        `radial-gradient(ellipse calc(${orientW(120, 90)} * var(--ahot,1)) calc(${orientH(120, 90)} * var(--ahot,1)) at ${pos(0, head.x)} ${pos(0, head.y)}, rgba(255,255,255,0.75) 0%, transparent 100%)`,
+        `radial-gradient(ellipse calc(${orientW(210, 150)} * var(--ahot,1)) calc(${orientH(210, 150)} * var(--ahot,1)) at ${pos(0, head.x)} ${pos(0, head.y)}, rgba(${rimColor},0.95) 0%, rgba(${rimColor},0.35) 45%, rgba(${rimColor},0.07) 100%)`,
       ].join(', '),
       webkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
       webkitMaskComposite: 'xor',
       mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
       maskComposite: 'exclude',
       borderRadius: 'inherit',
-      opacity: `calc(var(--bn3,1) * 0.8 * var(--hov,1))`,
+      opacity: `calc(var(--bn3,1) * 0.8 * var(--hov,1) * var(--aud,1))`,
     })
     // core shadow — the hole itself, always on, deepest at center
     const vignette = mk('1')
@@ -502,7 +514,7 @@ export function EventHorizon({
       mask: `${spotEH(0, 1)}, linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
       maskComposite: 'intersect, exclude',
       clipPath: clip,
-      opacity: `calc(var(--hov,1) * 1.2)`,
+      opacity: `calc(var(--hov,1) * var(--aud,1) * 1.2)`,
       filter: `brightness(var(--hovB,1))`,
     })
     // halo — the lensed glow escaping past the edge. The layer box must hold
@@ -532,7 +544,7 @@ export function EventHorizon({
       webkitMask: spotEH(haloPad, 1.4),
       mask: spotEH(haloPad, 1.4),
       filter: `blur(${clamped.blur}px) brightness(var(--hovB,1))`,
-      opacity: `calc(var(--hov,1) * ${clamped.halo})`,
+      opacity: `calc(var(--hov,1) * var(--aud,1) * ${clamped.halo})`,
     })
     // halo distance — push the whole halo layer radially outward along the
     // center→head direction; --bx/--by animate, so the offset turns with the

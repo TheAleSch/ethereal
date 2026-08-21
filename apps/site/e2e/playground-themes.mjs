@@ -61,6 +61,20 @@ let server
   await p.goto(`${BASE}/playground`)
   await p.waitForTimeout(2500)
 
+  // the mic button lives inside the gated audio surface — it needs BOTH flags
+  const expectedMicControls =
+    process.env.VITE_ENABLE_AUDIO_REACTIVITY === "true" &&
+    process.env.VITE_ENABLE_MIC_REACTIVITY === "true"
+      ? 1
+      : 0
+  const micControls = await p
+    .getByRole("button", { name: "Use mic", exact: true })
+    .count()
+  ok(
+    micControls === expectedMicControls,
+    `microphone preview follows feature flag (${micControls}/${expectedMicControls})`
+  )
+
   // open the Base accordion
   await openBase(p)
   await p.waitForTimeout(600)

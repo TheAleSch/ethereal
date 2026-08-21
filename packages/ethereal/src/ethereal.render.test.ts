@@ -145,6 +145,7 @@ const CASES: [name: string, props: EtherealProps][] = [
   ['light theme', { theme: 'light', themes: { light: { glowBlur: 4, hueRange: 5 }, dark: { glowBlur: 20, hueRange: 40 } } }],
   ['dark theme', { theme: 'dark', themes: { light: { glowBlur: 4, hueRange: 5 }, dark: { glowBlur: 20, hueRange: 40 } } }],
   ['state thinking', { state: 'thinking' }],
+  ['state audio', { state: 'audio' }],
 ]
 
 describe('Ethereal rendered layers', () => {

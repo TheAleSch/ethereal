@@ -97,7 +97,7 @@ variant for hosts you can't put children inside.
 
 | Path                                       | What                                                                                                                                            |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`packages/ethereal`](./packages/ethereal) | **`@theale/ethereal`** — the React components, the shared ticker, and state/theme resolution. This is what consumers install.                   |
+| [`packages/ethereal`](./packages/ethereal) | **`@theale/ethereal`** — the React components, the shared ticker, state/theme resolution, and the audio driver. This is what consumers install. |
 | [`apps/site`](./apps/site)                 | The [ethereal.ale.design](https://ethereal.ale.design) site — landing demo, docs, and playground (TanStack Start). Not shipped to consumers.    |
 | [`registry`](./registry)                   | The shadcn registry item — an `EtherealButton` wrapper that depends on the npm package rather than vendoring it.                                |
 | [`registry.json`](./registry.json)         | Source of truth for what the shadcn CLI installs.                                                                                               |
@@ -123,6 +123,10 @@ variant for hosts you can't put children inside.
   document-wide `MutationObserver` serves every instance, so a theme toggle
   updates the glow without a remount. Works out of the box with Tailwind
   `darkMode: 'class'`, shadcn/ui, and next-themes.
+- **Audio reactivity that modulates rather than replaces** — three host
+  variables (`--aud`, `--ahot`, `--fb0…7`) all rest at exactly `1`, so a silent
+  or un-attached host renders identically to one that was never attached. Sound
+  scales the glow you tuned; it never imposes a pattern of its own.
 - **Off-screen instances pause** via `IntersectionObserver`, and the loop clamps
   `dt` after background-tab pauses so clocks never jump.
 - **`prefers-reduced-motion: reduce`** renders a static glow with no loop at all.
@@ -131,10 +135,10 @@ variant for hosts you can't put children inside.
 
 `state` is a named partial config merged over your base props; changing it
 rebuilds the layers with a fade-in (`transitionMs`, default `320`). Built-ins
-mirror an AI chat composer — `idle`, `thinking`.
+mirror an AI chat composer — `idle`, `thinking`, `audio`.
 
 ```tsx
-const [state, setState] = useState<'idle' | 'thinking'>('idle')
+const [state, setState] = useState<'idle' | 'thinking' | 'audio'>('idle')
 
 <EtherealWrap path="around" state={state}>
   <ChatComposer />
@@ -176,6 +180,37 @@ The merge order, lowest to highest:
 Mind the shape asymmetry — a `themes` branch is flat, but a `states` branch has
 interaction slots. `themes.light.duration` works; `themes.light.base.duration`
 is a silent no-op.
+
+## Audio
+
+Any config reacts to sound, and nothing is drawn that wasn't there in silence.
+
+| Variable        | At rest | What sound does                                                                                                                                                                   |
+| --------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--aud`         | `1`     | lifts the whole glow (→ ~1.5 at full drive)                                                                                                                                       |
+| `--ahot`        | `1`     | swells the hotspot cores / the Event Horizon head (→ ~1.9)                                                                                                                        |
+| `--fb0`…`--fb7` | `1`     | scales each Ethereal needle by frequency band (0.3…2.4); EtherealDither interpolates the bands around its perimeter so the canvas ripples instead of splitting into eight sectors |
+
+`sensitivity` multiplies the _deviation from rest_, not the output: `0` is a
+total no-op, `2` roughly doubles the excursion. Drive auto-gains against a
+slowly-decaying peak, so a quiet mic and a hot one both reach full drive with no
+per-device tuning.
+
+Drive it from playback — an assistant speaking — not just the mic:
+
+```tsx
+import { attachAudio, attachMicAudio } from "@theale/ethereal";
+
+const stop = await attachAudio(host, audioEl); // <audio> / TTS reply
+const stop = await attachAudio(host, ttsGain); // any Web Audio node
+const stop = await attachAudio(host, remoteStream); // WebRTC MediaStream
+const stop = await attachMicAudio(host, { sensitivity: 1 });
+```
+
+`stop()` detaches and resets the variables. One caveat: an `HTMLMediaElement`
+can only ever be attached to a single `AudioContext` (a spec limitation of
+`createMediaElementSource`) — pass your own `context` if you already route that
+element through Web Audio.
 
 ## Key props
 

@@ -5,7 +5,7 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
-import { THINKING, lift, scaleDuration, tightenPulse } from './core/derive'
+import { AUDIO, THINKING, damp, lift, scale, scaleDuration, tightenPulse } from './core/derive'
 import { pathFractionAt, pathPx, walkSmooth } from './core/path'
 import { mergeConfig, useInteraction, type StateConfig, type ThemeConfig } from './core/state'
 import { subscribe } from './core/ticker'
@@ -102,20 +102,25 @@ export function perimeterHotspotDistanceNormSq(
   return (along / alongReach) ** 2 + (edgeDistance / reach) ** 2
 }
 
-/** The registry of state NAMES. Empty entries: `thinking` is derived from the
- *  caller's config by `deriveEtherealDitherState` below. An explicit entry here
- *  (or in a caller's `states` prop) overrides the derived value key by key —
- *  the escape hatch for a preset the rule misreads. */
-export const ETHEREAL_DITHER_STATES: Record<'idle' | 'thinking', StateConfig<EtherealDitherCfg>> = {
+/** The registry of state NAMES. Empty entries: `thinking` and `audio` are
+ *  derived from the caller's config by `deriveEtherealDitherState` below. An
+ *  explicit entry here (or in a caller's `states` prop) overrides the derived
+ *  value key by key — the escape hatch for a preset the rule misreads. */
+export const ETHEREAL_DITHER_STATES: Record<'idle' | 'thinking' | 'audio', StateConfig<EtherealDitherCfg>> = {
   idle: {},
   thinking: {},
+  audio: {},
 }
 
-/** Derive `thinking` from the caller's own config.
+/** Derive `thinking` / `audio` from the caller's own config.
  *
  *  Untouched, because they are what makes a dither preset itself: `colors`,
  *  `path`, `place`, `block`, `levels`, `band`, `reach`, `corner`. The blocks
- *  stay the same size and chunkiness; only the temperament moves. */
+ *  stay the same size and chunkiness; only the temperament moves.
+ *
+ *  The canvas consumes the same audio custom properties as the CSS renderers:
+ *  `--aud` lifts the field, `--ahot` expands the live core, and `--fb0..7`
+ *  flow continuously around the perimeter instead of becoming rigid sectors. */
 export function deriveEtherealDitherState(cfg: EtherealDitherCfg, state: string): Partial<EtherealDitherCfg> {
   if (state === 'thinking')
     return {
@@ -126,6 +131,14 @@ export function deriveEtherealDitherState(cfg: EtherealDitherCfg, state: string)
       flicker: lift(cfg.flicker, THINKING.restlessness * 0.7),
       ...tightenPulse(cfg, THINKING.pulseTighten),
       hover: 'none',
+    }
+  if (state === 'audio')
+    return {
+      duration: scaleDuration(cfg.duration, AUDIO.durationScale),
+      wander: damp(cfg.wander, AUDIO.steadiness),
+      flicker: damp(cfg.flicker, AUDIO.steadiness),
+      strength: scale(cfg.strength, AUDIO.presence),
+      ...tightenPulse(cfg, AUDIO.pulseTighten),
     }
   return {}
 }
@@ -396,6 +409,16 @@ export function EtherealDither({
     }
 
     const draw = (time: number, dt: number) => {
+      // attachAudio writes directly on the host. Reading the inline custom
+      // properties avoids a computed-style/layout read in this full-canvas hot
+      // path while still letting audio retune an already-mounted renderer.
+      const audioVar = (name: string) => {
+        const value = Number.parseFloat(host.style.getPropertyValue(name))
+        return Number.isFinite(value) ? Math.max(0.2, value) : 1
+      }
+      const audioGlow = audioVar('--aud')
+      const audioHotspot = audioVar('--ahot')
+      const audioBands = Array.from({ length: 8 }, (_unused, band) => audioVar(`--fb${band}`))
       hovC += (hovT - hovC) * Math.min(1, dt * 8)
       const boost = clamped.hover === 'boost' ? 1 + 0.7 * clamped.hoverAmount * hovC : 1
       const duration = clamped.duration
@@ -449,13 +472,18 @@ export function EtherealDither({
         clamped.flicker *
           (0.32 * Math.sin(time * 9.7 + phase * 2.4) * Math.sin(time * 5.3 + phase) +
             0.14 * Math.sin(time * 23.1 + phase * 1.7))
-      const reach = clamped.reach * boost * pulse
+      // The global envelope lifts the field, the hotspot envelope expands the
+      // live core, and the spectrum flows continuously around the perimeter.
+      // Interpolating neighbouring bands avoids eight rigid sectors that would
+      // read as an equalizer pasted onto an otherwise organic glow.
+      const reach = clamped.reach * boost * pulse * Math.sqrt(audioHotspot)
       const reach2 = reach ** 2
       // hot-loop locals — property lookups per cell add up at 10k+ cells.
       // blockPx, not clamped.block: resize() may have coarsened the grid to
       // stay inside the cell budget, and px math must match that grid
-      const { bleed, levels, strength } = clamped
+      const { bleed, levels } = clamped
       const block = blockPx
+      const strength = clamped.strength * audioGlow
       for (let gy = 0; gy < rows; gy++) {
         for (let gx = 0; gx < cols; gx++) {
           // cell center in host coords (grid is offset by the bleed)
@@ -469,6 +497,12 @@ export function EtherealDither({
             clamped.path === 'around'
               ? perimeterPositions[cell]!
               : Math.atan2(py - hostH / 2, px - hostW / 2) / (2 * Math.PI) + 0.5
+          const audioBandPos = perimeterPosition * audioBands.length
+          const audioBandIndex = Math.floor(audioBandPos) % audioBands.length
+          const audioBandMix = audioBandPos - Math.floor(audioBandPos)
+          const audioBand =
+            audioBands[audioBandIndex]! * (1 - audioBandMix) +
+            audioBands[(audioBandIndex + 1) % audioBands.length]! * audioBandMix
           // strongest core wins — each contributes with its OWN flicker
           let gainBest = 0
           let distNorm = 1
@@ -490,7 +524,7 @@ export function EtherealDither({
           // intensity ramps to zero over the last few cells of the grid
           const edgeCells = Math.min(gx, gy, cols - 1 - gx, rows - 1 - gy)
           const rim = Math.min(1, edgeCells / 3)
-          const intensity = gainBest * wEdge * strength * boost * flicker * rim
+          const intensity = gainBest * wEdge * strength * boost * flicker * rim * audioBand
           if (intensity <= 0) continue
           const bay = BAYER[gy % 4]![gx % 4]!
           // Bayer-quantized alpha

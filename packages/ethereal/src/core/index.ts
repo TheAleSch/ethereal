@@ -14,7 +14,7 @@ export { mergeConfig, resolveState, resolveTheme, useInteraction, THEME_VARIANTS
 // state derivation — the sibling renderers derive their own states from the
 // same character constants and numeric shaping, so `thinking` means the same
 // thing in every renderer
-export { THINKING, scaleDuration, lift, damp, scale, tightenPulse } from './derive'
+export { THINKING, AUDIO, scaleDuration, lift, damp, scale, tightenPulse } from './derive'
 export type { StateDeriver } from './derive'
 export type {
   StateConfig,

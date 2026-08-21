@@ -19,3 +19,18 @@ To use the components in your app, import them as follows:
 ```tsx
 import { Button } from "@/components/ui/button";
 ```
+
+## Experimental features
+
+The audio-reactivity surface (demo source, audio state preset, attach-time
+drive knobs) is disabled by default until it is polished. Enable it — and,
+separately, the microphone preview — for local development or a preview
+deployment with:
+
+```sh
+VITE_ENABLE_AUDIO_REACTIVITY=true npm run dev
+VITE_ENABLE_AUDIO_REACTIVITY=true VITE_ENABLE_MIC_REACTIVITY=true npm run dev
+```
+
+The flags control the site preview only; the package audio API remains
+available for development.

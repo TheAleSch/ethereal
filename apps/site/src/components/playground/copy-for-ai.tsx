@@ -26,10 +26,53 @@ export function aiPayload(
   kind: PreviewKind,
   light: boolean
 ) {
-  // the generated code is `import` + a generic host; split them so the real
-  // previewed host can replace the generic one and the import still leads
-  const [imports = "", jsx = ""] = code.split("\n\n")
-  const snippet = `${imports}\n\n${hostSnippet(host, jsx.trim(), label, kind, light)}`
+  // the generated code is `import` + a generic host (+ any trailing block, e.g.
+  // the audio attach call); split them so the real previewed host can replace
+  // the generic one, the import still leads, and anything after the component
+  // is copied through OUTSIDE the host — an attach call pasted inside the JSX
+  // would not compile
+  // Audio snippets are complete components because they need a ref and an
+  // effect cleanup. Do not wrap one in another host: that would strand its ref
+  // on the generic button and turn a valid copied component back into invalid
+  // nested code.
+  const snippet = code.includes("export function AudioReactiveExample")
+    ? (() => {
+        const effectJsx = code.match(
+          /<(?:Ethereal|EventHorizon|EtherealDither)\b[\s\S]*?\/>/
+        )?.[0]
+        const returnStart = code.indexOf("  return (\n")
+        const returnEnd = code.indexOf("\n  )\n}", returnStart)
+        if (!effectJsx || returnStart < 0 || returnEnd < 0) return code
+        // Keep the generated ref/effect lifecycle, but put that ref on the
+        // host the user actually previewed instead of silently reverting Copy
+        // for AI to the generic button used by the plain code panel.
+        const previewHost = hostSnippet(
+          host,
+          effectJsx,
+          label,
+          kind,
+          light
+        ).replace(/^<(button|div)\b/, "<$1 ref={hostRef}")
+        const indentedHost = previewHost
+          .split("\n")
+          .map((line) => `    ${line}`)
+          .join("\n")
+        const rendered = `${code.slice(0, returnStart)}  return (\n${indentedHost}${code.slice(returnEnd)}`
+        return host === "chat" || host === "card"
+          ? rendered.replace(
+              "useRef<HTMLButtonElement>",
+              "useRef<HTMLDivElement>"
+            )
+          : rendered
+      })()
+    : (() => {
+        const [imports = "", jsx = "", ...trailing] = code.split("\n\n")
+        const effectJsx = jsx.trim()
+        const after = trailing.length
+          ? `\n\n${trailing.join("\n\n").trim()}`
+          : ""
+        return `${imports}\n\n${hostSnippet(host, effectJsx, label, kind, light)}${after}`
+      })()
 
   return `I'm using ${effect} from the \`@theale/ethereal\` React package.
 

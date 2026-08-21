@@ -152,7 +152,7 @@ describe("pinnedStateOverride", () => {
     }
     const over = pinnedStateOverride({
       slot: "whileHover",
-      stateName: "thinking",
+      stateName: "audio",
       theme: "dark",
       cfg,
       defaults: ETHEREAL,
@@ -162,10 +162,10 @@ describe("pinnedStateOverride", () => {
     })
     // the derived duration must come from the THEME's 9, not the flat 5 —
     // derivation reads the config as the caller expressed it, themes included
-    expect(over.duration).toBe(deriveEtherealState({ ...ETHEREAL, ...cfg, ...themes.dark }, "thinking").duration)
+    expect(over.duration).toBe(deriveEtherealState({ ...ETHEREAL, ...cfg, ...themes.dark }, "audio").duration)
     expect(configOnly(rendered(cfg, over))).toEqual(
       configOnly(
-        merged(cfg, "thinking", { hovered: true, pressed: false }, undefined, themes) as unknown as Record<
+        merged(cfg, "audio", { hovered: true, pressed: false }, undefined, themes) as unknown as Record<
           string,
           unknown
         >

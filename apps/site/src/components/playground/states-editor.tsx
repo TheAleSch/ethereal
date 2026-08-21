@@ -25,6 +25,7 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { AUDIO_REACTIVITY_ENABLED } from "@/lib/feature-flags"
 import {
   Dialog,
   DialogClose,
@@ -69,10 +70,15 @@ export type PresetOverrides = Partial<EtherealCfg> & {
   themes?: { dark?: Partial<EtherealCfg> }
 }
 
-const BUILT_IN = Object.keys(ETHEREAL_STATES)
-// a built-in name must never become available as a custom state, or a custom
-// entry would shadow the package's own
-const RESERVED = new Set(["idle", ...BUILT_IN])
+// the audio state ships with the rest of the gated audio surface — while the
+// flag is off its row must not render, be activatable, or reach the snippet
+const BUILT_IN = Object.keys(ETHEREAL_STATES).filter(
+  (name) => AUDIO_REACTIVITY_ENABLED || name !== "audio"
+)
+// …but the RESERVED set never shrinks with the flag: a hidden built-in name
+// (`audio`) must not become available as a custom state, or the gated surface
+// is reachable through the back door and lands in copied code
+const RESERVED = new Set(["idle", ...Object.keys(ETHEREAL_STATES)])
 const BUILT_IN_STATES = ETHEREAL_STATES as StateMap
 
 /** `Record<string, …>` indexing is typed as an always-hit, but a miss is the
@@ -148,7 +154,15 @@ export function StatesEditor({
   presetGroups,
   defaultCfg,
   derive,
+  panelExtra,
 }: {
+  /** Rendered at the TOP of a named state's expanded panel, above its config
+   *  cells. The `audio` state uses it for the attach-time drive knobs. They are
+   *  not config — no theme branch, no interaction slot, nothing a state can
+   *  override — but they only mean anything while that state is live, so its
+   *  panel is where they belong. Discoverability is handled by the effect
+   *  below: starting demo/mic activates `audio`, which opens this panel. */
+  panelExtra?: (stateName: string) => React.ReactNode
   states: StateMap
   active: string
   baseCfg: EtherealCfg
@@ -745,6 +759,7 @@ export function StatesEditor({
               </span>
             </AccordionTrigger>
             <AccordionContent className="flex flex-col gap-2.5 pb-3">
+              {panelExtra?.(name)}
               {cellBody(name)}
             </AccordionContent>
           </AccordionItem>

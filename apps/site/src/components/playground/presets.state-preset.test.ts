@@ -134,11 +134,11 @@ describe("state reset isolation", () => {
   it("removes only the requested state and leaves its input untouched", () => {
     const states: Record<string, StateConfig<EtherealCfg>> = {
       thinking: { light: { base: { duration: 4 } } },
-      loading: { dark: { base: { strength: 1.4 } } },
+      audio: { dark: { base: { strength: 1.4 } } },
     }
     const next = withoutState(states, "thinking")
 
-    expect(next).toEqual({ loading: states.loading })
+    expect(next).toEqual({ audio: states.audio })
     expect(states).toHaveProperty("thinking")
   })
 

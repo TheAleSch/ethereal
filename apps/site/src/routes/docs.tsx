@@ -20,6 +20,7 @@ import {
   HOST_CODE,
   STATES_CODE,
   CUSTOM_STATES_CODE,
+  AUDIO_CODE,
   STATE_PROPS,
 } from "@/content/docs-data"
 
@@ -78,7 +79,7 @@ function Code({ children }: { children: React.ReactNode }) {
  *  Ethereal is what made `themes` read as an Ethereal-only feature. `Cfg`
  *  in the type column is the section's own config type.
  *
- *  `rows` defaults to `STATE_PROPS` (idle/thinking built-ins). */
+ *  `rows` defaults to `STATE_PROPS` (idle/thinking/audio built-ins). */
 function StatePropsTable({ rows = STATE_PROPS }: { rows?: typeof STATE_PROPS }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-white/[0.07]">
@@ -213,8 +214,8 @@ function DocsPage() {
               <PropTable groups={ETHEREAL_GROUPS} />
             </Section>
 
-            {/* States */}
-            <Section id="states" title="States">
+            {/* States & audio */}
+            <Section id="states" title="States & audio">
               <Prose>
                 <Code>{"<Ethereal>"}</Code> and{" "}
                 <Code>{"<EtherealWrap>"}</Code> accept a <Code>state</Code> prop
@@ -281,6 +282,44 @@ function DocsPage() {
               </Prose>
               <CodeBlock code={STATES_CODE} />
               <CodeBlock code={CUSTOM_STATES_CODE} />
+
+              <h3 className="pt-2 text-base font-semibold tracking-tight text-foreground">
+                Audio reactivity
+              </h3>
+              <Prose>
+                <Code>attachMicAudio(host, options)</Code> wires microphone
+                input to the glow. It rides the shared ticker to set three host
+                variables the layers already consume: <Code>--aud</Code> lifts
+                the whole glow, <Code>--ahot</Code> swells the hotspot cores,
+                and <Code>--fb0..7</Code> scale each needle&rsquo;s height by
+                its frequency band — on <em>every</em> path, so your needles
+                become the waveform rather than a separate widget appearing.
+                All three rest at exactly <Code>1</Code>: a silent host renders
+                identically to one that was never attached. Mic permission is
+                requested only when you call it, never on mount.
+              </Prose>
+              <ul className="max-w-[68ch] space-y-2 text-[14px] leading-relaxed text-muted-foreground">
+                <li>
+                  <Code>sensitivity?: number</Code> (default <Code>1</Code>) —
+                  multiplies the <em>deviation</em> from the resting look, not
+                  the output, so <Code>0</Code> is a total no-op. The drive
+                  auto-gains against a slowly-decaying peak, so a quiet mic and
+                  a hot one both reach full drive without per-device tuning.
+                </li>
+                <li>
+                  <Code>stream?: MediaStream</Code> — reuse a stream you already
+                  hold (e.g. a call); it is <em>not</em> stopped on detach.
+                  Streams the function opens itself are.
+                </li>
+              </ul>
+              <Prose>
+                Returns a <Code>Promise&lt;() =&gt; void&gt;</Code>. Call it
+                after the effect mounts; the resolved function detaches, stops
+                any stream it opened, and resets <Code>--aud</Code>,{" "}
+                <Code>--ahot</Code> and <Code>--fb0..7</Code>. It rejects if
+                permission is denied.
+              </Prose>
+              <CodeBlock code={AUDIO_CODE} />
 
               <h3 className="mt-10 mb-3 text-base font-medium text-foreground">
                 Tuning this in the playground
@@ -473,12 +512,12 @@ function DocsPage() {
                     State transitions.
                   </strong>{" "}
                   Re-render with a different config and the rebuilt layers
-                  cross-fade in over ~320ms — e.g. idle → thinking on a chat
-                  composer.
+                  cross-fade in over ~320ms — e.g. idle → audio → thinking on a
+                  chat composer.
                 </li>
                 <li>
                   <strong className="font-medium text-foreground">
-                    Theming.
+                    Theming & audio.
                   </strong>{" "}
                   The effect honors <Code>html[data-theme]</Code>,{" "}
                   <Code>.light</Code>/<Code>.dark</Code> classes, or the OS
@@ -489,7 +528,10 @@ function DocsPage() {
                   listener serve every mounted instance, so a theme toggle
                   updates the glow live no matter how many are on the page (use{" "}
                   <Code>themes.light</Code> to tune any of the three effects for
-                  light backgrounds).
+                  light backgrounds). Audio drives{" "}
+                  <Code>--aud</Code>, <Code>--ahot</Code> and{" "}
+                  <Code>--fb0..7</Code>, all resting at <Code>1</Code> — see
+                  Audio reactivity above.
                 </li>
               </ul>
               <CodeBlock code={HOST_CODE} lang="css" />

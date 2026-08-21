@@ -36,11 +36,10 @@ export function getTickRate(): number {
   return rate
 }
 
-// priority orders execution per frame (ascending). Effects tick at 0; a
-// subscriber that must overwrite what they wrote takes a higher priority so
-// its writes always land AFTER the effect's own oscillators — insertion order
-// alone breaks when the effect re-subscribes (last unmount → remount) while
-// the other subscriber stays put.
+// priority orders execution per frame (ascending). Effects tick at 0; the
+// audio drive subscribes at 1 so its --aud/--fb writes always land AFTER the
+// effect's idle oscillators — insertion order alone breaks when the effect
+// re-subscribes (last unmount → remount) while audio stays attached.
 const subs: { fn: TickFn; pri: number }[] = []
 let paused = false
 let raf = 0

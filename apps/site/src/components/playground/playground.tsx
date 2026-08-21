@@ -5,6 +5,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react"
 import type { ReactElement } from "react"
@@ -29,16 +30,22 @@ import {
   RotateCcw,
   Link2,
   Check,
+  Mic,
   Moon,
   Pause,
   Pin,
   Play,
+  Square,
   Sun,
   X,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useCopy } from "@/lib/use-copy"
+import {
+  AUDIO_REACTIVITY_ENABLED,
+  MIC_REACTIVITY_ENABLED,
+} from "@/lib/feature-flags"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Select,
@@ -56,8 +63,12 @@ import type { PreviewHostKind } from "./preview-host-kind"
 import { PerfHud } from "./perf-hud"
 import { StatesEditor, withoutState } from "./states-editor"
 import type { PresetOverrides, StateMap } from "./states-editor"
+import { openDemoAudio, openMicAudio } from "./audio-drive"
 import { pinnedStateOverride } from "./pinned-state"
+import type { AudioSession } from "./audio-drive"
 import {
+  AUDIO_CONTROLS,
+  AUDIO_DEFAULTS,
   ETHEREAL,
   ETHEREAL_DITHER,
   EVENT_HORIZON,
@@ -72,10 +83,11 @@ import {
   diffCfg,
   genCode,
   matchPreset,
+  parseAudio,
   parseOverrides,
   splitSections,
 } from "./presets"
-import type { ControlDef } from "./presets"
+import type { AudioOptions, ControlDef } from "./presets"
 
 const route = getRouteApi("/playground")
 
@@ -91,6 +103,8 @@ type AnyCfg = Record<string, unknown>
 const ETHEREAL_STATE_OPTIONS = [
   { value: "idle", label: "idle" },
   { value: "thinking", label: "thinking" },
+  // the audio state preset ships with the rest of the audio surface
+  ...(AUDIO_REACTIVITY_ENABLED ? [{ value: "audio", label: "audio" }] : []),
 ]
 
 // canonicalize an override set to base key order so preset matching is
@@ -158,6 +172,11 @@ export function Playground() {
     ORBIT_THEMES?.dark ? { dark: ORBIT_THEMES.dark } : {}
   )
   const [eFade, setEFade] = useState(320)
+  // attach-time audio depth. One value for the whole page, not per tab: it is
+  // a property of the source you attached, and every tab attaches the same way.
+  const [audioOpts, setAudioOpts] = useState<AudioOptions>(() => ({
+    ...AUDIO_DEFAULTS,
+  }))
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
@@ -175,13 +194,17 @@ export function Playground() {
         ...ETHEREAL_DITHER,
         ...parseOverrides(search.d, ETHEREAL_DITHER),
       })
+    if (AUDIO_REACTIVITY_ENABLED && search.a)
+      setAudioOpts({ ...AUDIO_DEFAULTS, ...parseAudio(search.a) })
     if (search.st) {
       const map: StateMap = {}
       for (const [name, part] of Object.entries(search.st)) {
         if (typeof name !== "string" || !/^[a-z0-9-]{1,32}$/.test(name))
           continue
         // built-in names never travel as CUSTOM state data: the editor can't
-        // create them, and a link carrying one would shadow the package state
+        // create them, a link carrying one would shadow the package state —
+        // and `audio` would resurrect the feature-gated surface while its
+        // flag is off (a crafted ?st.audio + s=audio link did exactly that)
         if (name === "idle" || name in ETHEREAL_STATES) continue
         if (!part || typeof part !== "object") continue
         // nested shape: state → theme → interaction → partial config, both
@@ -244,6 +267,14 @@ export function Playground() {
   const eOv = useMemo(() => diffCfg(eCfg, ETHEREAL), [eCfg])
   const hOv = useMemo(() => diffCfg(hCfg, EVENT_HORIZON), [hCfg])
   const dOv = useMemo(() => diffCfg(dCfg, ETHEREAL_DITHER), [dCfg])
+  // same diff as every other param: a value left at its default is not written
+  const audioOv = useMemo(() => diffCfg(audioOpts, AUDIO_DEFAULTS), [audioOpts])
+  // While the audio surface is hidden, generated snippets must not quietly
+  // advertise the attach API — same contract the mic flag already had.
+  const generatedAudioOv = useMemo(
+    () => (AUDIO_REACTIVITY_ENABLED && MIC_REACTIVITY_ENABLED ? audioOv : {}),
+    [audioOv]
+  )
 
   // keep the URL in sync — shareable links encode tab + per-effect overrides.
   // Gated on `hydrated` so the defaults-first mount can't wipe the incoming
@@ -277,13 +308,17 @@ export function Playground() {
           tm: Object.keys(eThemes).length
             ? (eThemes as Record<string, unknown>)
             : undefined,
+          a:
+            AUDIO_REACTIVITY_ENABLED && Object.keys(audioOv).length
+              ? (audioOv as Record<string, unknown>)
+              : undefined,
         },
       })
     }, 250)
     return () => clearTimeout(timer)
     // navigate is stable; re-run only when the shareable state changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, eOv, hOv, dOv, eState, eStates, eThemes, hydrated])
+  }, [tab, eOv, hOv, dOv, eState, eStates, eThemes, audioOv, hydrated])
 
   const ePreset = matchPreset(
     withDark(eOv, norm(eThemes.dark ?? {}, ETHEREAL)),
@@ -305,6 +340,10 @@ export function Playground() {
       setDCfg((c: typeof ETHEREAL_DITHER) => ({ ...c, [k]: v })),
     []
   )
+  const setAudioControl = useCallback(
+    (k: string, v: unknown) => setAudioOpts((o) => ({ ...o, [k]: Number(v) })),
+    []
+  )
 
   // shared with the code and "copy for AI" buttons — same flash, and a
   // timeout that is cleared on unmount rather than left to fire into a
@@ -322,15 +361,15 @@ export function Playground() {
     if (Object.keys(eStates).length) extra.states = eStates
     if (Object.keys(eThemes).length) extra.themes = eThemes
     if (eFade !== 320) extra.transitionMs = eFade
-    return genCode("Ethereal", { ...extra, ...eOv })
-  }, [eOv, eState, eStates, eThemes, eFade])
+    return genCode("Ethereal", { ...extra, ...eOv }, generatedAudioOv)
+  }, [eOv, eState, eStates, eThemes, eFade, generatedAudioOv])
   const hCode = useMemo(
-    () => genCode("EventHorizon", hOv as AnyCfg),
-    [hOv]
+    () => genCode("EventHorizon", hOv as AnyCfg, generatedAudioOv),
+    [hOv, generatedAudioOv]
   )
   const dCode = useMemo(
-    () => genCode("EtherealDither", dOv as AnyCfg),
-    [dOv]
+    () => genCode("EtherealDither", dOv as AnyCfg, generatedAudioOv),
+    [dOv, generatedAudioOv]
   )
 
   return (
@@ -396,6 +435,8 @@ export function Playground() {
               }}
               onCopyLink={copyLink}
               linkCopied={linkCopied}
+              audio={audioOpts}
+              onAudioControl={setAudioControl}
               code={eCode}
               preview={
                 <Ethereal
@@ -436,6 +477,8 @@ export function Playground() {
               onReset={() => setHCfg({ ...EVENT_HORIZON })}
               onCopyLink={copyLink}
               linkCopied={linkCopied}
+              audio={audioOpts}
+              onAudioControl={setAudioControl}
               code={hCode}
               preview={<EventHorizon theme={theme} {...hCfg} />}
               label="Enter the void"
@@ -460,6 +503,8 @@ export function Playground() {
               onReset={() => setDCfg({ ...ETHEREAL_DITHER })}
               onCopyLink={copyLink}
               linkCopied={linkCopied}
+              audio={audioOpts}
+              onAudioControl={setAudioControl}
               code={dCode}
               preview={<EtherealDither theme={theme} {...dCfg} />}
               label="Insert coin"
@@ -485,6 +530,8 @@ function EffectSection({
   onReset,
   onCopyLink,
   linkCopied,
+  audio,
+  onAudioControl,
   code,
   preview,
   label,
@@ -514,6 +561,9 @@ function EffectSection({
   onReset: () => void
   onCopyLink: () => void
   linkCopied: boolean
+  /** attach-time audio depth, shared by every tab — never component config */
+  audio: AudioOptions
+  onAudioControl: (key: string, value: unknown) => void
   code: string
   preview: React.ReactNode
   label: string
@@ -561,6 +611,46 @@ function EffectSection({
   const [openSections, setOpenSections] = useState<string[]>(() => [
     sections[0]?.title ?? "",
   ])
+  // AUDIO is its own accordion, with its own open state: those values are not
+  // config, so they belong to neither a state nor a theme cell — folding them
+  // into `sections` would put a per-state override marker beside a knob that
+  // has no per-state meaning. It keeps a separate `open` for the same reason
+  // one shared array would let the config accordion close it on every click.
+  const audioSections = useMemo(
+    () => splitSections(AUDIO_CONTROLS as ControlDef<string>[]),
+    []
+  )
+  // open on arrival: the section only appears once you are in the `audio`
+  // state, which is already the deliberate act of asking for these knobs — a
+  // collapsed accordion is how they went unnoticed in the first place
+  const [openAudio, setOpenAudio] = useState<string[]>(() => [
+    audioSections[0]?.title ?? "",
+  ])
+  // The drive knobs live in the `audio` state's own panel, above its config
+  // cells. They are not config — no theme branch, no interaction slot, nothing
+  // a state overrides — but they are inert unless that state is live, so
+  // hanging them off the panel that is open on arrival would put permanently
+  // dead controls at the top of the page.
+  //
+  // Nesting cost them their discoverability once: two collapsed accordions
+  // deep, reachable only if you already knew the state existed. What pays that
+  // back is `onState("audio")` when a source starts — the states editor syncs
+  // its open panel to the active state, so starting an enabled audio source
+  // expands this panel and the knobs arrive exactly when they start mattering.
+  const audioPanel = useCallback(
+    (stateName: string) =>
+      AUDIO_REACTIVITY_ENABLED && stateName === "audio" ? (
+        <ControlSections
+          sections={audioSections}
+          valueOf={(key) => (audio as unknown as Record<string, unknown>)[key]}
+          onChange={onAudioControl}
+          open={openAudio}
+          onOpenChange={setOpenAudio}
+          idPrefix="audio-"
+        />
+      ) : null,
+    [audioSections, audio, onAudioControl, openAudio]
+  )
   // chat is the demo that sells the effect — a composer-sized host shows the
   // travelling light as product chrome, where the tiny button reads as a toy
   const [host, setHost] = useState<PreviewHostKind>("chat")
@@ -572,6 +662,116 @@ function EffectSection({
   // the light variant, dark the dark one
   const backdrop = previewTheme
   const setBackdrop = onPreviewTheme
+  const previewRef = useRef<HTMLDivElement>(null)
+  const getFxHost = useCallback(
+    () =>
+      previewRef.current?.querySelector<HTMLElement>("[data-fx-host]") ?? null,
+    []
+  )
+
+  // audio drives host CSS variables globally (any effect can react to it),
+  // so it lives beside the preview rather than inside any one state's editor
+  const [audioSource, setAudioSource] = useState<"off" | "demo" | "mic">("off")
+  const sessionRef = useRef<AudioSession | null>(null)
+  // only read when a session is OPENED — a slider moved afterwards reaches the
+  // live drive through the retune effect below, so this ref exists to keep
+  // startAudio out of the sliders' render churn, not to feed a copy loop
+  const audioRef = useRef(audio)
+  useEffect(() => {
+    audioRef.current = audio
+  }, [audio])
+  // generation token: a mic prompt that resolves after a newer start (or after
+  // unmount) must release itself immediately instead of leaking the mic /
+  // AudioContext into a dead component
+  const genRef = useRef(0)
+
+  const stopAudio = useCallback(() => {
+    genRef.current++
+    sessionRef.current?.stop()
+    sessionRef.current = null
+    setAudioSource("off")
+  }, [])
+  useEffect(
+    () => () => {
+      genRef.current++
+      sessionRef.current?.stop()
+      sessionRef.current = null
+    },
+    []
+  )
+
+  const startAudio = useCallback(
+    async (mode: "demo" | "mic") => {
+      // Keep the flags effective at the action layer as well as in the UI.
+      if (!AUDIO_REACTIVITY_ENABLED) return
+      if (mode === "mic" && !MIC_REACTIVITY_ENABLED) return
+      const gen = ++genRef.current
+      sessionRef.current?.stop()
+      sessionRef.current = null
+      // not the `host` state above (which preview shape is on screen) — this
+      // is the DOM element the effect reads its CSS variables from, and the
+      // element the package's drive writes to
+      const fxHost = getFxHost()
+      if (!fxHost) {
+        setAudioSource("off")
+        return
+      }
+      try {
+        const session =
+          mode === "mic"
+            ? await openMicAudio(audioRef.current)
+            : await openDemoAudio(audioRef.current)
+        if (gen !== genRef.current) {
+          // superseded or unmounted while the mic prompt was up — undo instantly
+          session.stop()
+          return
+        }
+        sessionRef.current = session
+        // attachTo never rejects — a failed attach stops and releases the
+        // session itself and resolves false, the cue that nothing is driving
+        const driving = await session.attachTo(fxHost)
+        if (gen !== genRef.current) return
+        if (!driving) {
+          sessionRef.current = null
+          setAudioSource("off")
+          return
+        }
+        setAudioSource(mode)
+        onState?.("audio")
+      } catch {
+        // opening the SOURCE failed (mic denied, playback blocked) — the
+        // open… helpers release what they acquired before rethrowing
+        if (gen === genRef.current) setAudioSource("off")
+      }
+    },
+    [getFxHost, onState]
+  )
+
+  // a slider moved: retune the drive that is already running. The package
+  // reads its settings every frame, so this costs no re-attach — the mic
+  // permission and the loudness envelope both survive the drag.
+  useEffect(() => {
+    sessionRef.current?.retune(audio)
+  }, [audio])
+
+  // the preview shape changed, so `data-fx-host` is a DIFFERENT element now.
+  // The package writes to the element it was handed, so this is an explicit
+  // re-attach: it starts driving the new host and, by detaching, leaves the
+  // old one with our variables removed.
+  useEffect(() => {
+    const session = sessionRef.current
+    if (!session) return
+    const fxHost = getFxHost()
+    if (!fxHost) return
+    // attachTo never rejects; false means the session stopped itself because
+    // the re-attach failed — the UI must stop claiming the source is live
+    void session.attachTo(fxHost).then((driving) => {
+      if (driving || sessionRef.current !== session) return
+      sessionRef.current = null
+      setAudioSource("off")
+    })
+  }, [host, getFxHost])
+
   // the interaction slot pinned into the preview so hover/press treatments
   // stay visible while the pointer is over the control panel — no forcing
   // API in the package, just merging the active state's variant into the
@@ -609,6 +809,7 @@ function EffectSection({
           own; the ancestor has to be allowed to be narrower than its content. */}
       <div className="flex min-h-0 min-w-0 flex-col gap-4 lg:overflow-y-auto lg:pr-1">
         <div
+          ref={previewRef}
           className={cn(
             // pt clears the absolutely-positioned host/theme toolbars; the
             // narrower padding below sm is what keeps the 18rem-wide `card`
@@ -733,6 +934,50 @@ function EffectSection({
           )}
         </div>
 
+        {/* audio source — drives host CSS variables globally, not tied to
+            any one state, so it lives beside the preview. The whole surface
+            ships behind the audio flag until it is polished. */}
+        {AUDIO_REACTIVITY_ENABLED && (
+          <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.02] p-2">
+            <button
+              type="button"
+              onClick={() =>
+                audioSource === "demo" ? stopAudio() : startAudio("demo")
+              }
+              className={cn(
+                "hit-44-tight inline-flex h-7 flex-1 items-center justify-center gap-1.5 rounded border border-white/10 text-[11px] transition-colors",
+                audioSource === "demo"
+                  ? "bg-white/10 text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {audioSource === "demo" ? (
+                <Square className="size-3" />
+              ) : (
+                <Play className="size-3" />
+              )}
+              {audioSource === "demo" ? "Stop demo audio" : "Demo audio"}
+            </button>
+            {MIC_REACTIVITY_ENABLED && (
+              <button
+                type="button"
+                onClick={() =>
+                  audioSource === "mic" ? stopAudio() : startAudio("mic")
+                }
+                className={cn(
+                  "hit-44-tight inline-flex h-7 flex-1 items-center justify-center gap-1.5 rounded border border-white/10 text-[11px] transition-colors",
+                  audioSource === "mic"
+                    ? "bg-white/10 text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Mic className="size-3" />
+                {audioSource === "mic" ? "Stop mic" : "Use mic"}
+              </button>
+            )}
+          </div>
+        )}
+
         {/* shrink-0: the preview above takes lg:flex-1, so without this the
             code panel is the thing that gives — on a short viewport its header
             (and both copy buttons) got squeezed past the bottom edge, out of
@@ -840,6 +1085,7 @@ function EffectSection({
             baseCfg={cfg as never}
             onActive={onState}
             onChange={onStatesChange}
+            panelExtra={audioPanel}
             themes={themes ?? {}}
             onThemes={onThemesChange}
             fade={stateFade}
@@ -859,6 +1105,11 @@ function EffectSection({
           />
         ) : (
           <>
+            {/* no states editor on this tab, so there is no `audio` panel to
+                nest controls in — enabled audio sources still drive this
+                preview, so their tuning renders here rather than becoming
+                controls that exist and cannot be reached */}
+            {audioPanel("audio")}
             <ControlSections
               sections={sections}
               valueOf={(key) => (cfg as Record<string, unknown>)[key]}

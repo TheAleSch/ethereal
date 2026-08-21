@@ -1,9 +1,8 @@
 // The shared loop's contracts are invisible in a screenshot and load-bearing
-// everywhere: priority ordering is the only reason a late subscriber's writes
-// survive the effects' own writes in the same frame, and pause-by-dt-0 is the
-// only reason a frozen frame resumes without teleporting. Each test imports a
-// FRESH ticker module, because the subscriber list and rAF handle are module
-// state.
+// everywhere: priority ordering is the only reason audio's --fb writes survive
+// the effects' own writes in the same frame, and pause-by-dt-0 is the only
+// reason a frozen frame resumes without teleporting. Each test imports a FRESH
+// ticker module, because the subscriber list and rAF handle are module state.
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 type Ticker = typeof import('./ticker')
@@ -49,13 +48,13 @@ beforeEach(async () => {
 describe('subscribe', () => {
   it('runs low priorities first, whatever the subscription order', () => {
     const order: string[] = []
-    ticker.subscribe(() => order.push('overwriter'), 1)
+    ticker.subscribe(() => order.push('audio'), 1)
     ticker.subscribe(() => order.push('effect'), 0)
     ticker.subscribe(() => order.push('late-effect'), 0)
     raf.frame(100)
-    // the higher priority runs LAST: its writes must overwrite the effect's own
+    // audio LAST: its --aud/--fb writes must overwrite the effect's idle
     // oscillators inside the same frame, not the other way round
-    expect(order).toEqual(['effect', 'late-effect', 'overwriter'])
+    expect(order).toEqual(['effect', 'late-effect', 'audio'])
   })
 
   it('keeps insertion order within one priority', () => {

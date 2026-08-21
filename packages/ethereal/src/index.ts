@@ -13,3 +13,14 @@ export { setTickRate, getTickRate, setPaused, isPaused } from './core/ticker'
 // part of the public config types (EtherealCfg.travelEase) — without this a
 // consumer can hold a config but never NAME the union it contains
 export type { TravelEase } from './core/util'
+export { attachAudio, attachMicAudio } from './core/audio'
+// AudioAttachment is what both attach calls resolve to, and AudioRanges is the
+// shape of AttachAudioOptions.ranges — both appear in exported signatures, so
+// both must be nameable by callers storing or building them
+export type {
+  AttachAudioOptions,
+  AttachMicAudioOptions,
+  AudioAttachment,
+  AudioGlowSource,
+  AudioRanges,
+} from './core/audio'

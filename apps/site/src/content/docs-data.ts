@@ -10,7 +10,7 @@ import type { NavItem } from "@/components/docs/section-nav"
 export const NAV: NavItem[] = [
   { id: "getting-started", label: "Getting started" },
   { id: "ethereal-api", label: "<Ethereal> API" },
-  { id: "states", label: "States" },
+  { id: "states", label: "States & audio" },
   { id: "event-horizon-api", label: "<EventHorizon> API" },
   { id: "ethereal-dither-api", label: "<EtherealDither> API" },
   { id: "wrappers", label: "Wrap components" },
@@ -712,7 +712,7 @@ export const HOST_CODE = `/* Every effect needs a positioned, isolated host. Tai
 export const STATES_CODE = `import { Ethereal, ETHEREAL_STATES } from '@theale/ethereal'
 
 // Switch named states — the rebuilt layers cross-fade over transitionMs.
-// Built-ins: 'idle' | 'thinking'.
+// Built-ins: 'idle' | 'thinking' | 'audio'.
 <button className="relative isolate ...">
   <span className="relative z-10">Send</span>
   <Ethereal state={status} />
@@ -745,6 +745,18 @@ export const CUSTOM_STATES_CODE = `// A state is keyed by VARIANT, not by config
   transitionMs={200} // 0 disables the cross-fade
 />`
 
+export const AUDIO_CODE = `import { attachMicAudio } from '@theale/ethereal'
+
+// Call AFTER the effect mounts. Mic permission is requested only now.
+// Drives --aud (glow lift), --ahot (hotspot swell) and --fb0..7 (per-needle
+// band heights) on the host. All three REST AT 1, so silence renders exactly
+// like no audio: sound modulates the effect you tuned, it never replaces it.
+const host = hostRef.current // the positioned, isolated host element
+const stop = await attachMicAudio(host, { sensitivity: 1 })
+
+// later — detaches, stops any stream it opened, resets the CSS vars
+stop()`
+
 /* The state / theme / interaction props — a separate table on the page
  * because they are cross-cutting rather than part of any one config. All
  * three components take them, so the types are written against `Cfg`: the
@@ -755,7 +767,7 @@ export const STATE_PROPS: PropRow[] = [
     type: "string | null",
     default: "'idle'",
     description:
-      "Named state to apply: a built-in ('idle' | 'thinking') or any key of `states`. Unknown names warn once and fall back to the base config; `null` suppresses state resolution entirely.",
+      "Named state to apply: a built-in ('idle' | 'thinking' | 'audio') or any key of `states`. Unknown names warn once and fall back to the base config; `null` suppresses state resolution entirely.",
   },
   {
     name: "states",

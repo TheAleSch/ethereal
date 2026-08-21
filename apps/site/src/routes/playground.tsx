@@ -18,6 +18,10 @@ type PlaygroundSearch = {
   s?: string // Ethereal named state (built-in or a key of st)
   st?: Record<string, unknown> // custom/customized state partials
   tm?: Record<string, unknown> // per-theme base config overrides
+  // attach-time audio depth (sensitivity + per-target ranges). NOT component
+  // config: it never reaches a prop, which is why it rides its own key
+  // instead of `c`.
+  a?: Record<string, unknown>
 }
 
 const asObj = (v: unknown): Record<string, unknown> | undefined =>
@@ -33,6 +37,7 @@ export const Route = createFileRoute("/playground")({
     s: typeof search.s === "string" ? search.s : undefined,
     st: asObj(search.st),
     tm: asObj(search.tm),
+    a: asObj(search.a),
   }),
   head: () => pageHead("/playground"),
   component: Playground,

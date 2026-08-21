@@ -95,14 +95,14 @@ familiar `colors` / `path` / `heads` / `spin` / `duration` / `hover`.
 `Ethereal` (and `EtherealWrap`) accept a `state` prop — a named **variation of
 the config you gave**, not a different look bolted on top. The built-in states
 are derived from your own config: your colors, path, geometry and pacing go in,
-and the same effect comes back quicker and more restless (`thinking`). A red
-comet going `around` stays a red comet going around. Changing state rebuilds
-the layers with a fade-in
+and the same effect comes back quicker and more restless (`thinking`) or
+steadier and ready for sound to move it (`audio`). A red comet going `around` stays a red
+comet going around. Changing state rebuilds the layers with a fade-in
 (`transitionMs`, default `320`, `0` disables). Built-ins mirror an AI chat
 composer:
 
 ```tsx
-const [state, setState] = useState<'idle' | 'thinking'>('idle')
+const [state, setState] = useState<'idle' | 'thinking' | 'audio'>('idle')
 <EtherealWrap path="around" state={state}>
   <ChatComposer />
 </EtherealWrap>
@@ -112,9 +112,10 @@ const [state, setState] = useState<'idle' | 'thinking'>('idle')
 | ---------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `idle`     | your base config, untouched                                                                                               |
 | `thinking` | your config, quicker and more restless — shorter duration, more wander and flicker, a tighter pulse, hover reactions off  |
+| `audio`    | your config, steadier and more present — longer duration, less wobble, a full spectrum of needles for `--fb0..7` to drive |
 
-`EventHorizon` and `EtherealDither` derive the same temperament from their own
-config shapes (orbit and shimmer; block wander and flicker).
+`EventHorizon` and `EtherealDither` derive the same two temperaments from
+their own config shapes (orbit and shimmer; block wander and flicker).
 
 The derivation is a fallback, not an override: anything you state explicitly
 wins. Define or override states with the `states` prop — an entry there
@@ -246,6 +247,46 @@ Two escape hatches:
 Both opt out of watching: if you own the value, you own re-rendering when it
 changes.
 
+### Audio reactivity
+
+Any config reacts to sound — nothing is drawn that wasn't there in silence.
+Sound modulates the effect you already tuned, through three host CSS
+variables the layers consume. **All three rest at exactly `1`**, so a silent
+or un-attached host renders identically to one that was never attached:
+
+| variable        | at rest | what sound does                                                                                                                                                                   |
+| --------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--aud`         | `1`     | lifts the whole glow (→ ~1.5 at full drive)                                                                                                                                       |
+| `--ahot`        | `1`     | swells the hotspot cores / the Event Horizon head (→ ~1.9)                                                                                                                        |
+| `--fb0`…`--fb7` | `1`     | scales each Ethereal needle by frequency band (0.3…2.4); EtherealDither interpolates the bands around its perimeter so the canvas ripples instead of splitting into eight sectors |
+
+`sensitivity` multiplies the _deviation from rest_, not the output: `0` is a
+total no-op and `2` roughly doubles the excursion. The drive auto-gains
+against a slowly-decaying peak, so a quiet mic and a hot one both reach full
+drive without per-device tuning.
+
+Drive it from any source — including **playback** (an assistant speaking),
+not just the mic:
+
+```tsx
+import { attachAudio, attachMicAudio } from "@theale/ethereal";
+
+// TTS / assistant reply playing in an <audio> element
+const stop = await attachAudio(hostElement, audioEl);
+// any Web Audio node (e.g. a streaming-TTS output GainNode)
+const stop = await attachAudio(hostElement, ttsGain);
+// raw MediaStream (WebRTC remote track)
+const stop = await attachAudio(hostElement, remoteStream);
+// microphone (asks permission only when called)
+const stop = await attachMicAudio(hostElement, { sensitivity: 1 });
+```
+
+`stop()` detaches and resets the variables. Caveats: an `HTMLMediaElement`
+can only ever be attached to one `AudioContext` (spec limitation of
+`createMediaElementSource`) — pass your own `context` option if you already
+route that element through Web Audio. Attach after the effect has mounted so
+the audio values win the frame order.
+
 ## Key props
 
 ### Ethereal
@@ -311,8 +352,13 @@ changes.
   MutationObserver and one `matchMedia` listener serve every mounted
   instance, regardless of how deep in the tree they sit. Use `themes.light` to
   tune any of the three effects for light backgrounds.
+- **Audio reactivity**: `--aud`, `--ahot` and `--fb0..--fb7` modulate the
+  glow you configured — brightness, hotspot swell, and per-needle height —
+  all resting at `1` so silence looks exactly like no audio at all. See
+  [Audio reactivity](#audio-reactivity).
 - **State transitions**: re-render with a different config and the rebuilt
-  layers fade in over ~320ms (e.g. idle → thinking on a chat composer).
+  layers fade in over ~320ms (e.g. idle → audio → thinking on a chat
+  composer).
 
 ## Clipping caveat
 
