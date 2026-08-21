@@ -1,0 +1,19 @@
+{
+  "name": "Ethereal — travelling-light glow components for React",
+  "short_name": "Ethereal",
+  "description": "Travelling-light borders and black-hole accretion glows as React components — pure CSS gradients and masks, no canvas or WebGL.",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 48x48 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0a0a0b",
+  "background_color": "#0a0a0b"
+}

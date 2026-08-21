@@ -1,0 +1,16 @@
+{
+  "name": "ethereal-workspace",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @theale/ethereal",
+    "typecheck": "npm run typecheck -w @theale/ethereal && npm run typecheck -w site",
+    "site:dev": "npm run dev -w site",
+    "site:build": "npm run build && npm run build -w site",
+    "test": "npm run build -w @theale/ethereal && npm run test -w @theale/ethereal && npm run test -w site",
+    "verify": "npm run typecheck && npm run test && npm run lint -w site && npm run site:build && npm run test:e2e -w site"
+  }
+}

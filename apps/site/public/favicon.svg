@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Ethereal">
+  <!-- Event Horizon, reduced to what survives a 16px tab: the dark disk, the
+       accretion ring around it, one hot node on the ring, and the halo the
+       node throws. Everything the effect does that a favicon cannot hold —
+       the orbit, the tail, the shimmer, the lensing — is what the ring's
+       gradient stands in for. Palette is the "Ember disk" preset the home
+       page renders. -->
+  <defs>
+    <!-- the ring's brightness runs from the hot node round to nothing, the
+         way the accretion stream fades behind the head -->
+    <linearGradient id="stream" x1="0.1" y1="0.95" x2="0.95" y2="0.1">
+      <stop offset="0" stop-color="#ffd9a8" />
+      <stop offset="0.18" stop-color="#ffb347" />
+      <stop offset="0.5" stop-color="#ff5e35" />
+      <stop offset="0.85" stop-color="#ff5e35" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#ff7a4d" stop-opacity="0.18" />
+    </linearGradient>
+    <radialGradient id="halo">
+      <stop offset="0" stop-color="#ffb347" stop-opacity="0.85" />
+      <stop offset="0.55" stop-color="#ff5e35" stop-opacity="0.25" />
+      <stop offset="1" stop-color="#ff5e35" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="node">
+      <stop offset="0" stop-color="#fff6e8" />
+      <stop offset="0.35" stop-color="#ffd9a8" stop-opacity="0.95" />
+      <stop offset="1" stop-color="#ff8a3d" stop-opacity="0" />
+    </radialGradient>
+    <!-- the disk is not flat black: the effect lights the inside of the ring
+         faintly, and without it the icon reads as a plain donut -->
+    <radialGradient id="disk">
+      <stop offset="0" stop-color="#0a0a0b" />
+      <stop offset="0.72" stop-color="#0e0b0d" />
+      <stop offset="1" stop-color="#2a140e" />
+    </radialGradient>
+  </defs>
+
+  <circle cx="32" cy="32" r="31" fill="#08070a" />
+  <circle cx="32" cy="32" r="30" fill="url(#disk)" />
+  <!-- halo first, so the ring and node sit on top of their own glow -->
+  <circle cx="20" cy="45" r="22" fill="url(#halo)" />
+  <circle cx="32" cy="32" r="23.5" fill="none" stroke="url(#stream)" stroke-width="4.5" stroke-linecap="round" />
+  <!-- the stream's hot core, drawn as a thinner line on top of the same
+       gradient: a flat white stroke here put a grey arc across the dark half,
+       where the effect has no light at all -->
+  <circle cx="32" cy="32" r="23.5" fill="none" stroke="url(#stream)" stroke-width="1.3" stroke-opacity="0.75" />
+  <circle cx="15.4" cy="48.6" r="9" fill="url(#node)" />
+  <circle cx="15.4" cy="48.6" r="2.6" fill="#fff8ee" />
+</svg>

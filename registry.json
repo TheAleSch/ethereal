@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "ethereal",
+  "homepage": "https://ethereal.ale.design",
+  "items": [
+    {
+      "name": "ethereal",
+      "type": "registry:ui",
+      "title": "Ethereal",
+      "description": "Travelling-light and black-hole glow effects for React — pure CSS gradients and masks, no canvas or WebGL, driven by one shared ~60fps loop for every mounted instance. Installs a thin wrapper over the @theale/ethereal package so fixes ship via npm rather than being stranded in your tree.",
+      "categories": [
+        "effect",
+        "animation",
+        "button"
+      ],
+      "dependencies": [
+        "@theale/ethereal"
+      ],
+      "files": [
+        {
+          "path": "registry/ethereal/ethereal-button.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/ethereal-button.tsx"
+        }
+      ],
+      "author": "Alexandre Schrammel <https://ale.design>",
+      "docs": "The host must be `position: relative` and `isolation: isolate`, and the effect must be a CHILD of it — EtherealButton does this for you. To decorate something else, keep your content on `relative z-10` and render <Ethereal/> as the last child. Replaced elements (<input>, <img>) cannot contain children: wrap them in <EtherealWrap> instead. Full reference: https://ethereal.ale.design/llms-full.txt",
+      "meta": {
+        "npm": "@theale/ethereal",
+        "homepage": "https://ethereal.ale.design",
+        "docs": "https://ethereal.ale.design/docs",
+        "llms": "https://ethereal.ale.design/llms-full.txt",
+        "repository": "https://github.com/TheAleSch/ethereal",
+        "license": "MIT"
+      }
+    }
+  ]
+}

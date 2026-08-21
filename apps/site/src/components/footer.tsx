@@ -1,0 +1,59 @@
+import { Link } from "@tanstack/react-router"
+
+export function Footer() {
+  return (
+    <footer className="border-t border-border bg-background">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-6 text-xs text-muted-foreground sm:flex-row">
+        <nav aria-label="Footer" className="flex items-center gap-5">
+          <Link to="/docs" className="transition-colors hover:text-foreground">
+            Docs
+          </Link>
+          <Link to="/playground" className="transition-colors hover:text-foreground">
+            Playground
+          </Link>
+          <a
+            href="https://github.com/TheAleSch/ethereal"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="transition-colors hover:text-foreground"
+          >
+            GitHub
+          </a>
+        </nav>
+        <p className="flex flex-col items-center gap-1 sm:items-end">
+          <span>
+            Created with care and love by{" "}
+            <a
+              href="https://ale.design"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="underline-offset-2 hover:text-foreground hover:underline"
+            >
+              ale.design
+            </a>
+          </span>
+          <span>
+            ©{" "}
+            <a
+              href="https://ale.design"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="underline-offset-2 hover:text-foreground hover:underline"
+            >
+              {new Date().getFullYear()} Alexandre Schrammel
+            </a>{" "}
+            ·{" "}
+            <a
+              href="https://github.com/TheAleSch/ethereal/blob/main/LICENSE"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="underline-offset-2 hover:text-foreground hover:underline"
+            >
+              MIT License
+            </a>
+          </span>
+        </p>
+      </div>
+    </footer>
+  )
+}
