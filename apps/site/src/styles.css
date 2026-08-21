@@ -174,26 +174,32 @@
      hit-44       44×44 minimum — isolated controls
      hit-44-gap   44px tall, width reaches 3px into each side's row gap —
                   dense rows with a ≥6px gap (color chips)
-     hit-44-tight 44px tall, width unchanged — adjacent segmented buttons */
-.hit-44,
-.hit-44-gap,
-.hit-44-tight {
-  position: relative;
-}
-.hit-44::after,
-.hit-44-gap::after,
-.hit-44-tight::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: max(100%, 44px);
-  height: max(100%, 44px);
-  transform: translate(-50%, -50%);
-}
-.hit-44-gap::after {
-  width: calc(100% + 6px);
-}
-.hit-44-tight::after {
-  width: 100%;
+     hit-44-tight 44px tall, width unchanged — adjacent segmented buttons
+
+   In @layer components so Tailwind's utilities layer still wins conflicts —
+   un-layered, the `position: relative` here overrode `absolute` on the
+   preview's pause button and dropped it into the flex flow. */
+@layer components {
+  .hit-44,
+  .hit-44-gap,
+  .hit-44-tight {
+    position: relative;
+  }
+  .hit-44::after,
+  .hit-44-gap::after,
+  .hit-44-tight::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+  .hit-44-gap::after {
+    width: calc(100% + 6px);
+  }
+  .hit-44-tight::after {
+    width: 100%;
+  }
 }
