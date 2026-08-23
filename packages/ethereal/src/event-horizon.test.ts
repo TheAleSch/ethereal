@@ -18,6 +18,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { EventHorizon, type EventHorizonProps } from './event-horizon'
 import { setPaused } from './core/ticker'
+import { installControlledObservers } from './test-observers'
 
 const Subject: (props: EventHorizonProps) => ReturnType<typeof EventHorizon> = EventHorizon
 
@@ -41,16 +42,7 @@ beforeEach(() => {
     removeEventListener() {},
     dispatchEvent: () => false,
   })
-  class Noop {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-    takeRecords() {
-      return []
-    }
-  }
-  globals.ResizeObserver = Noop
-  globals.IntersectionObserver = Noop
+  installControlledObservers()
 
   // jsdom lays nothing out; the halo/lens boxes are sized from the host box
   vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(200)
@@ -73,6 +65,24 @@ function render(props: EventHorizonProps) {
   root = createRoot(host)
   act(() => root!.render(createElement(Subject, props)))
 }
+
+describe('EventHorizon hostile runtime values', () => {
+  it('emits only bounded finite styles', () => {
+    render({
+      colors: ['url(http://127.0.0.1/palette)'],
+      blur: '0px) url(http://127.0.0.1/filter) blur(0' as unknown as number,
+      repeatDelay: Number.NaN,
+      ring: Number.POSITIVE_INFINITY,
+      dist: Number.NEGATIVE_INFINITY,
+      transitionMs: '0);url(http://127.0.0.1/transition)' as unknown as number,
+    })
+    const styles = Array.from(host.querySelectorAll<HTMLElement>('*'))
+      .map((element) => element.getAttribute('style'))
+      .join(' ')
+    expect(styles).not.toMatch(/url\(|NaN|Infinity/)
+    expect(styles).toContain('blur(14px)')
+  })
+})
 
 /** Drop the mounted instance and hand the next render a fresh host — React
  *  refuses to open a second root on a container it has already owned. */

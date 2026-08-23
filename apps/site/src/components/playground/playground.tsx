@@ -1,12 +1,6 @@
 "use client"
 
-import {
-  cloneElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react"
+import { cloneElement, useCallback, useEffect, useMemo, useState } from "react"
 import type { ReactElement } from "react"
 import { getRouteApi } from "@tanstack/react-router"
 import {
@@ -324,14 +318,8 @@ export function Playground() {
     if (eFade !== 320) extra.transitionMs = eFade
     return genCode("Ethereal", { ...extra, ...eOv })
   }, [eOv, eState, eStates, eThemes, eFade])
-  const hCode = useMemo(
-    () => genCode("EventHorizon", hOv as AnyCfg),
-    [hOv]
-  )
-  const dCode = useMemo(
-    () => genCode("EtherealDither", dOv as AnyCfg),
-    [dOv]
-  )
+  const hCode = useMemo(() => genCode("EventHorizon", hOv as AnyCfg), [hOv])
+  const dCode = useMemo(() => genCode("EtherealDither", dOv as AnyCfg), [dOv])
 
   return (
     // app shell at lg+: the page itself never scrolls, each column scrolls on
@@ -343,8 +331,8 @@ export function Playground() {
         <header className="mb-8 lg:mb-6">
           <h1 className="text-3xl font-semibold tracking-tight">Playground</h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Tune both effects live, copy the exact JSX, and share the URL — the
-            current configuration is encoded in the link.
+            Tune all three effects live, copy the exact JSX, and share the URL —
+            the current configuration is encoded in the link.
           </p>
         </header>
 
@@ -774,7 +762,10 @@ function EffectSection({
               value={presetValue}
               onValueChange={(v) => v && v !== "Custom" && onPreset(String(v))}
             >
-              <SelectTrigger className="h-8 w-full" aria-label="main preset">
+              <SelectTrigger
+                className="min-h-11 w-full"
+                aria-label="main preset"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -929,7 +920,7 @@ function PreviewHost({
         <button
           type="button"
           aria-label="Send"
-          className="relative z-10 flex size-7 shrink-0 items-center justify-center rounded-lg bg-white/10 text-xs text-foreground transition-colors hover:bg-white/20"
+          className="hit-44 relative z-10 flex size-7 shrink-0 items-center justify-center rounded-lg bg-white/10 text-xs text-foreground transition-colors hover:bg-white/20"
         >
           ↑
         </button>

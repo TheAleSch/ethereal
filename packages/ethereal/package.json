@@ -1,7 +1,7 @@
 {
   "name": "@theale/ethereal",
   "version": "0.1.0",
-  "description": "Travelling-light and black-hole glow effects for React \u2014 pure CSS gradients and masks driven by one shared animation loop.",
+  "description": "Travelling-light, black-hole and dithered glow effects for React \u2014 CSS and canvas renderers driven by one shared animation loop.",
   "keywords": [
     "react",
     "glow",

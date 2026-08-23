@@ -13,6 +13,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Ethereal, bottomSweepEnvelope, type EtherealProps } from './ethereal'
 import { EventHorizon, type EventHorizonProps } from './event-horizon'
 import { setPaused } from './core/ticker'
+import { ControlledIntersectionObserver, ControlledResizeObserver, installControlledObservers } from './test-observers'
 
 const EtherealSubject: (props: EtherealProps) => ReturnType<typeof Ethereal> = Ethereal
 const HorizonSubject: (props: EventHorizonProps) => ReturnType<typeof EventHorizon> = EventHorizon
@@ -21,9 +22,13 @@ let frame: (now: number) => void
 let root: ReturnType<typeof createRoot> | null = null
 let host: HTMLDivElement
 let reduceMotion = false
+let measuredW = 200
+let measuredH = 60
 
 beforeEach(() => {
   reduceMotion = false
+  measuredW = 200
+  measuredH = 60
   const globals = globalThis as Record<string, unknown>
   globals.IS_REACT_ACT_ENVIRONMENT = true
   let pending: ((now: number) => void) | null = null
@@ -49,18 +54,9 @@ beforeEach(() => {
     removeEventListener() {},
     dispatchEvent: () => false,
   })
-  class Noop {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-    takeRecords() {
-      return []
-    }
-  }
-  globals.ResizeObserver = Noop
-  globals.IntersectionObserver = Noop
-  vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(200)
-  vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(60)
+  installControlledObservers()
+  vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(() => measuredW)
+  vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(() => measuredH)
 
   host = document.createElement('div')
   host.style.position = 'relative'
@@ -86,6 +82,11 @@ const read = (name: string) => host.style.getPropertyValue(name)
 function run(count: number, start = 100) {
   for (let index = 0; index < count; index++) frame(start + index * 16)
 }
+
+const dispatchMousePointer = (type: string) =>
+  act(() => {
+    host.dispatchEvent(Object.assign(new MouseEvent(type, { bubbles: true }), { pointerType: 'mouse', pointerId: 1 }))
+  })
 
 describe('Ethereal drives its host every frame', () => {
   it('halves the hidden interval between every bottom sweep', () => {
@@ -152,6 +153,50 @@ describe('Ethereal drives its host every frame', () => {
     run(20, 5000)
     expect(['--bx', '--by', '--bw', '--bh'].map(read)).toEqual(held)
     setPaused(false)
+  })
+
+  it('performs no style writes while paused', () => {
+    render(createElement(EtherealSubject, { path: 'around', heads: 2, hotspots: 8, spotSamples: 16 }))
+    run(3)
+    const writes = vi.spyOn(CSSStyleDeclaration.prototype, 'setProperty')
+    writes.mockClear()
+    setPaused(true)
+    run(10, 1000)
+    expect(writes).not.toHaveBeenCalled()
+  })
+
+  it('keeps reveal interaction active across a whileHover rebuild', () => {
+    render(createElement(EtherealSubject, { hover: 'reveal', whileHover: { colors: ['#ff0000'] } }))
+    dispatchMousePointer('pointerenter')
+    run(48)
+    expect(Number(read('--hov'))).toBeGreaterThan(0.9)
+  })
+
+  it('recomputes size-derived internal masks after a responsive shrink', () => {
+    measuredW = 200
+    measuredH = 200
+    render(createElement(EtherealSubject, { place: 'internal' }))
+    const masks = () =>
+      Array.from(host.querySelectorAll<HTMLElement>('span span'))
+        .map((element) => element.style.mask)
+        .join(' ')
+    expect(masks()).toContain('28px')
+    measuredH = 40
+    for (const observer of ControlledResizeObserver.instances) observer.trigger()
+    expect(masks()).toContain('16px')
+    expect(masks()).not.toContain('transparent 28px')
+  })
+
+  it('stops CSS work offscreen and resumes after intersection', () => {
+    render(createElement(EtherealSubject, { path: 'around' }))
+    const observer = ControlledIntersectionObserver.instances[0]!
+    observer.trigger(false)
+    const before = read('--bx')
+    run(6)
+    expect(read('--bx')).toBe(before)
+    observer.trigger(true)
+    run(2, 500)
+    expect(read('--bx')).not.toBe(before)
   })
 
   it('breathes the glow height between heightMin and heightMax on travel paths', () => {
@@ -294,5 +339,24 @@ describe('EventHorizon drives its host every frame', () => {
     run(20, 5000)
     expect(['--bx', '--by', '--tx1', '--ty1'].map(read)).toEqual(held)
     setPaused(false)
+  })
+
+  it('keeps reveal interaction active across a whileHover rebuild', () => {
+    render(createElement(HorizonSubject, { hover: 'reveal', whileHover: { colors: ['#ff0000'] } }))
+    dispatchMousePointer('pointerenter')
+    run(48)
+    expect(Number(read('--hov'))).toBeGreaterThan(0.9)
+  })
+
+  it('honors intersection visibility transitions', () => {
+    render(createElement(HorizonSubject, { duration: 2 }))
+    const observer = ControlledIntersectionObserver.instances[0]!
+    observer.trigger(false)
+    const before = read('--bx')
+    run(5)
+    expect(read('--bx')).toBe(before)
+    observer.trigger(true)
+    run(2, 500)
+    expect(read('--bx')).not.toBe(before)
   })
 })

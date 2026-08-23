@@ -1,33 +1,33 @@
-import { converter, type Color } from "culori";
-import type { ColorFormat, OklchColor } from "./types";
-import { findMaxChroma, gamutFromFormat, toGamut } from "./color";
+import { converter, type Color } from "culori"
+import type { ColorFormat, OklchColor } from "./types"
+import { findMaxChroma, gamutFromFormat, toGamut } from "./color"
 
-const toOklch = converter("oklch");
-const toRgb = converter("rgb");
-const toHsl = converter("hsl");
-const toHsv = converter("hsv");
-const toOklab = converter("oklab");
-const toP3 = converter("p3");
+const toOklch = converter("oklch")
+const toRgb = converter("rgb")
+const toHsl = converter("hsl")
+const toHsv = converter("hsv")
+const toOklab = converter("oklab")
+const toP3 = converter("p3")
 
 export interface ChannelDescriptor {
   /** Internal key used by setColorChannel. */
-  key: string;
+  key: string
   /** One- or two-letter UI label (R, G, B, H, S, L, etc.). */
-  label: string;
+  label: string
   /** Current value in display units (e.g. RGB 0–255, OKLCH L 0–100). */
-  value: number;
-  min: number;
+  value: number
+  min: number
   /** Hard edit bound; `Infinity` for channels unbounded in their space
    * (OKLCH chroma). Clamping inputs must skip non-finite bounds. */
-  max: number;
+  max: number
   /** Arrow-key step. */
-  step: number;
+  step: number
   /** Shift+arrow step. */
-  bigStep: number;
+  bigStep: number
   /** Decimals to render. */
-  precision: number;
+  precision: number
   /** Optional unit suffix shown after the field. */
-  suffix?: string;
+  suffix?: string
 }
 
 const ALPHA_DESCRIPTOR = (alpha: number): ChannelDescriptor => ({
@@ -40,7 +40,7 @@ const ALPHA_DESCRIPTOR = (alpha: number): ChannelDescriptor => ({
   bigStep: 10,
   precision: 0,
   suffix: "%",
-});
+})
 
 /**
  * Per-format channel descriptors for the multi-field input. Hex returns an
@@ -48,49 +48,61 @@ const ALPHA_DESCRIPTOR = (alpha: number): ChannelDescriptor => ({
  */
 export function colorChannels(
   color: OklchColor,
-  format: ColorFormat,
+  format: ColorFormat
 ): ChannelDescriptor[] {
   switch (format) {
     case "hex":
-      return [];
+      return []
     case "rgb": {
       const rgb = toRgb({
         mode: "oklch",
         ...oklchObj(toGamut(color, "srgb")),
-      });
-      const r = round((rgb?.r ?? 0) * 255, 0);
-      const g = round((rgb?.g ?? 0) * 255, 0);
-      const b = round((rgb?.b ?? 0) * 255, 0);
+      })
+      const r = round((rgb?.r ?? 0) * 255, 0)
+      const g = round((rgb?.g ?? 0) * 255, 0)
+      const b = round((rgb?.b ?? 0) * 255, 0)
       return [
         intChannel("r", "R", r, 0, 255),
         intChannel("g", "G", g, 0, 255),
         intChannel("b", "B", b, 0, 255),
         ALPHA_DESCRIPTOR(color.alpha),
-      ];
+      ]
     }
     case "hsl": {
       const hsl = toHsl({
         mode: "oklch",
         ...oklchObj(toGamut(color, "srgb")),
-      });
+      })
       return [
-        intChannel("h", "H", round(stableFormatHue(toHsl, color, hsl?.h), 0), 0, 360),
+        intChannel(
+          "h",
+          "H",
+          round(stableFormatHue(toHsl, color, hsl?.h), 0),
+          0,
+          360
+        ),
         intChannel("s", "S", round((hsl?.s ?? 0) * 100, 0), 0, 100, "%"),
         intChannel("l", "L", round((hsl?.l ?? 0) * 100, 0), 0, 100, "%"),
         ALPHA_DESCRIPTOR(color.alpha),
-      ];
+      ]
     }
     case "hsb": {
       const hsv = toHsv({
         mode: "oklch",
         ...oklchObj(toGamut(color, "srgb")),
-      });
+      })
       return [
-        intChannel("h", "H", round(stableFormatHue(toHsv, color, hsv?.h), 0), 0, 360),
+        intChannel(
+          "h",
+          "H",
+          round(stableFormatHue(toHsv, color, hsv?.h), 0),
+          0,
+          360
+        ),
         intChannel("s", "S", round((hsv?.s ?? 0) * 100, 0), 0, 100, "%"),
         intChannel("b", "B", round((hsv?.v ?? 0) * 100, 0), 0, 100, "%"),
         ALPHA_DESCRIPTOR(color.alpha),
-      ];
+      ]
     }
     case "oklch":
       return [
@@ -101,27 +113,45 @@ export function colorChannels(
         floatChannel("c", "C", round(color.c, 3), 0, Infinity, 0.005, 0.05, 3),
         intChannel("h", "H", round(color.h, 0), 0, 360),
         ALPHA_DESCRIPTOR(color.alpha),
-      ];
+      ]
     case "oklab": {
-      const lab = toOklab({ mode: "oklch", ...oklchObj(color) });
+      const lab = toOklab({ mode: "oklch", ...oklchObj(color) })
       return [
         intChannel("l", "L", round((lab?.l ?? color.l) * 100, 0), 0, 100, "%"),
-        floatChannel("a", "a", round(lab?.a ?? 0, 3), -0.5, 0.5, 0.005, 0.05, 3),
-        floatChannel("b", "b", round(lab?.b ?? 0, 3), -0.5, 0.5, 0.005, 0.05, 3),
+        floatChannel(
+          "a",
+          "a",
+          round(lab?.a ?? 0, 3),
+          -0.5,
+          0.5,
+          0.005,
+          0.05,
+          3
+        ),
+        floatChannel(
+          "b",
+          "b",
+          round(lab?.b ?? 0, 3),
+          -0.5,
+          0.5,
+          0.005,
+          0.05,
+          3
+        ),
         ALPHA_DESCRIPTOR(color.alpha),
-      ];
+      ]
     }
     case "p3": {
       const p3 = toP3({
         mode: "oklch",
         ...oklchObj(toGamut(color, "p3")),
-      });
+      })
       return [
         floatChannel("r", "R", round(p3?.r ?? 0, 3), 0, 1, 0.01, 0.1, 3),
         floatChannel("g", "G", round(p3?.g ?? 0, 3), 0, 1, 0.01, 0.1, 3),
         floatChannel("b", "B", round(p3?.b ?? 0, 3), 0, 1, 0.01, 0.1, 3),
         ALPHA_DESCRIPTOR(color.alpha),
-      ];
+      ]
     }
   }
 }
@@ -135,59 +165,61 @@ export function setColorChannel(
   color: OklchColor,
   format: ColorFormat,
   key: string,
-  value: number,
+  value: number
 ): OklchColor {
   if (key === "alpha") {
-    return { ...color, alpha: clamp(value / 100, 0, 1) };
+    return { ...color, alpha: clamp(value / 100, 0, 1) }
   }
   switch (format) {
     case "hex":
       // Hex isn't channel-addressable; callers should special-case it.
-      return color;
+      return color
     case "rgb": {
       const rgb = toRgb({
         mode: "oklch",
         ...oklchObj(toGamut(color, "srgb")),
-      }) ?? { r: 0, g: 0, b: 0 };
+      }) ?? { r: 0, g: 0, b: 0 }
       const next = {
         ...rgb,
         [key]: clamp(value / 255, 0, 1),
         mode: "rgb" as const,
-      };
-      return fromCulori(next, color.alpha, color.h);
+      }
+      return fromCulori(next, color.alpha, color.h)
     }
     case "hsl": {
       const hsl = toHsl({
         mode: "oklch",
         ...oklchObj(toGamut(color, "srgb")),
-      }) ?? { h: 0, s: 0, l: 0 };
-      const h = key === "h" ? wrap(value, 360) : stableFormatHue(toHsl, color, hsl.h);
-      const s = key === "s" ? clamp(value / 100, 0, 1) : hsl.s;
-      const l = key === "l" ? clamp(value / 100, 0, 1) : hsl.l;
-      return fromCulori({ mode: "hsl" as const, h, s, l }, color.alpha, color.h);
+      }) ?? { h: 0, s: 0, l: 0 }
+      const h =
+        key === "h" ? wrap(value, 360) : stableFormatHue(toHsl, color, hsl.h)
+      const s = key === "s" ? clamp(value / 100, 0, 1) : hsl.s
+      const l = key === "l" ? clamp(value / 100, 0, 1) : hsl.l
+      return fromCulori({ mode: "hsl" as const, h, s, l }, color.alpha, color.h)
     }
     case "hsb": {
       const hsv = toHsv({
         mode: "oklch",
         ...oklchObj(toGamut(color, "srgb")),
-      }) ?? { h: 0, s: 0, v: 0 };
-      const h = key === "h" ? wrap(value, 360) : stableFormatHue(toHsv, color, hsv.h);
-      const s = key === "s" ? clamp(value / 100, 0, 1) : hsv.s;
-      const v = key === "b" ? clamp(value / 100, 0, 1) : hsv.v;
-      return fromCulori({ mode: "hsv" as const, h, s, v }, color.alpha, color.h);
+      }) ?? { h: 0, s: 0, v: 0 }
+      const h =
+        key === "h" ? wrap(value, 360) : stableFormatHue(toHsv, color, hsv.h)
+      const s = key === "s" ? clamp(value / 100, 0, 1) : hsv.s
+      const v = key === "b" ? clamp(value / 100, 0, 1) : hsv.v
+      return fromCulori({ mode: "hsv" as const, h, s, v }, color.alpha, color.h)
     }
     case "oklch": {
       switch (key) {
         case "l":
-          return { ...color, l: clamp(value / 100, 0, 1) };
+          return { ...color, l: clamp(value / 100, 0, 1) }
         case "c":
           // OKLCH chroma is unbounded above; gamut limits are applied at
           // display time via toGamut, never at channel-edit time.
-          return { ...color, c: Math.max(value, 0) };
+          return { ...color, c: Math.max(value, 0) }
         case "h":
-          return { ...color, h: wrap(value, 360) };
+          return { ...color, h: wrap(value, 360) }
         default:
-          return color;
+          return color
       }
     }
     case "oklab": {
@@ -195,23 +227,27 @@ export function setColorChannel(
         l: 0,
         a: 0,
         b: 0,
-      };
-      const l = key === "l" ? clamp(value / 100, 0, 1) : (lab.l ?? 0);
-      const a = key === "a" ? clamp(value, -0.5, 0.5) : (lab.a ?? 0);
-      const b = key === "b" ? clamp(value, -0.5, 0.5) : (lab.b ?? 0);
-      return fromCulori({ mode: "oklab" as const, l, a, b }, color.alpha, color.h);
+      }
+      const l = key === "l" ? clamp(value / 100, 0, 1) : (lab.l ?? 0)
+      const a = key === "a" ? clamp(value, -0.5, 0.5) : (lab.a ?? 0)
+      const b = key === "b" ? clamp(value, -0.5, 0.5) : (lab.b ?? 0)
+      return fromCulori(
+        { mode: "oklab" as const, l, a, b },
+        color.alpha,
+        color.h
+      )
     }
     case "p3": {
       const p3 = toP3({
         mode: "oklch",
         ...oklchObj(toGamut(color, "p3")),
-      }) ?? { r: 0, g: 0, b: 0 };
+      }) ?? { r: 0, g: 0, b: 0 }
       const next = {
         ...p3,
         [key]: clamp(value, 0, 1),
         mode: "p3" as const,
-      };
-      return fromCulori(next, color.alpha, color.h);
+      }
+      return fromCulori(next, color.alpha, color.h)
     }
   }
 }
@@ -235,25 +271,23 @@ export function setColorChannel(
 export function setHueFromSlider(
   color: OklchColor,
   newHue: number,
-  format: ColorFormat,
+  format: ColorFormat
 ): OklchColor {
-  const wrapped = wrap(newHue, 360);
+  const wrapped = wrap(newHue, 360)
   if (format === "hsl" || format === "hsb") {
-    return setColorChannel(color, format, "h", wrapped);
+    return setColorChannel(color, format, "h", wrapped)
   }
-  const gamut = gamutFromFormat(format);
-  const oldMaxC = findMaxChroma(color.l, color.h, gamut);
-  const newMaxC = findMaxChroma(color.l, wrapped, gamut);
-  const saturation = oldMaxC > 1e-6 ? color.c / oldMaxC : 0;
-  return { ...color, h: wrapped, c: saturation * newMaxC };
+  const gamut = gamutFromFormat(format)
+  const oldMaxC = findMaxChroma(color.l, color.h, gamut)
+  const newMaxC = findMaxChroma(color.l, wrapped, gamut)
+  const saturation = oldMaxC > 1e-6 ? color.c / oldMaxC : 0
+  return { ...color, h: wrapped, c: saturation * newMaxC }
 }
 
-const ACHROMATIC_EPS = 1e-4;
+const ACHROMATIC_EPS = 1e-4
 
 function isAchromatic(l: number, c: number): boolean {
-  return (
-    c <= ACHROMATIC_EPS || l <= ACHROMATIC_EPS || l >= 1 - ACHROMATIC_EPS
-  );
+  return c <= ACHROMATIC_EPS || l <= ACHROMATIC_EPS || l >= 1 - ACHROMATIC_EPS
 }
 
 /**
@@ -264,10 +298,10 @@ function isAchromatic(l: number, c: number): boolean {
  * Chroma is the only axis allowed to be lossy; hue must round-trip.
  */
 function fromCulori(c: Color, alpha: number, fallbackHue: number): OklchColor {
-  const ok = toOklch(c);
-  if (!ok) return { l: 0, c: 0, h: fallbackHue, alpha };
-  const chroma = Math.max(ok.c ?? 0, 0);
-  const l = ok.l ?? 0;
+  const ok = toOklch(c)
+  if (!ok) return { l: 0, c: 0, h: fallbackHue, alpha }
+  const chroma = Math.max(ok.c ?? 0, 0)
+  const l = ok.l ?? 0
   return {
     l,
     c: chroma,
@@ -276,7 +310,7 @@ function fromCulori(c: Color, alpha: number, fallbackHue: number): OklchColor {
         ? fallbackHue
         : (ok.h as number),
     alpha,
-  };
+  }
 }
 
 /**
@@ -289,17 +323,17 @@ function fromCulori(c: Color, alpha: number, fallbackHue: number): OklchColor {
 function stableFormatHue(
   convert: (c: Color) => { h?: number } | undefined,
   color: OklchColor,
-  raw: number | undefined,
+  raw: number | undefined
 ): number {
   if (!isAchromatic(color.l, color.c) && Number.isFinite(raw)) {
-    return raw as number;
+    return raw as number
   }
-  const probe = convert({ mode: "oklch", l: 0.6, c: 0.08, h: color.h });
-  return probe?.h ?? color.h;
+  const probe = convert({ mode: "oklch", l: 0.6, c: 0.08, h: color.h })
+  return probe?.h ?? color.h
 }
 
 function oklchObj(c: OklchColor) {
-  return { l: c.l, c: c.c, h: c.h, alpha: c.alpha };
+  return { l: c.l, c: c.c, h: c.h, alpha: c.alpha }
 }
 
 function intChannel(
@@ -308,7 +342,7 @@ function intChannel(
   value: number,
   min: number,
   max: number,
-  suffix?: string,
+  suffix?: string
 ): ChannelDescriptor {
   return {
     key,
@@ -320,7 +354,7 @@ function intChannel(
     bigStep: 10,
     precision: 0,
     suffix,
-  };
+  }
 }
 
 function floatChannel(
@@ -332,20 +366,20 @@ function floatChannel(
   step: number,
   bigStep: number,
   precision: number,
-  suffix?: string,
+  suffix?: string
 ): ChannelDescriptor {
-  return { key, label, value, min, max, step, bigStep, precision, suffix };
+  return { key, label, value, min, max, step, bigStep, precision, suffix }
 }
 
 function clamp(v: number, min: number, max: number) {
-  return v < min ? min : v > max ? max : v;
+  return v < min ? min : v > max ? max : v
 }
 
 function wrap(v: number, mod: number) {
-  return ((v % mod) + mod) % mod;
+  return ((v % mod) + mod) % mod
 }
 
 function round(v: number, precision: number) {
-  const m = 10 ** precision;
-  return Math.round(v * m) / m;
+  const m = 10 ** precision
+  return Math.round(v * m) / m
 }

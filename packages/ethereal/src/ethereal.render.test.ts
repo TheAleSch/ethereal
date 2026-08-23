@@ -155,6 +155,22 @@ describe('Ethereal rendered layers', () => {
   }
 })
 
+describe('Ethereal hostile runtime values', () => {
+  it('never emits injected URLs, NaN, Infinity, or unbounded blur geometry', () => {
+    const dump = renderStyles({
+      colors: ['url(http://127.0.0.1/palette)'],
+      spotBlur: '0px) url(http://127.0.0.1/filter.svg#pwn) blur(0' as unknown as number,
+      glowBlur: 100_000,
+      repeatDelay: Number.NaN,
+      strokeWidth: Number.POSITIVE_INFINITY,
+      saturation: Number.NEGATIVE_INFINITY,
+    })
+    expect(dump).not.toMatch(/url\(|NaN|Infinity/)
+    expect(dump).toContain('blur(120px)')
+    expect(dump).not.toContain('-220021px')
+  })
+})
+
 /** same dump, but with the host measuring a real size — the zero-size jsdom
  *  host above exercises the fallback bounds and misses every size-dependent
  *  clamp (that gap hid the tall-beam composer spill) */

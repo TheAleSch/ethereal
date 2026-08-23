@@ -5,7 +5,7 @@
 // fraction that is often ~0) walks off the front of the LUT.
 import { describe, expect, it } from 'vitest'
 
-import { PATH_N, getLUT, pathFractionAt, pathPx, quantAspect, walkRect, walkSmooth } from './path'
+import { PATH_CACHE_LIMIT, PATH_N, getLUT, pathFractionAt, pathPx, quantAspect, walkRect, walkSmooth } from './path'
 
 const finite = (...values: number[]) => values.every((value) => Number.isFinite(value))
 
@@ -36,6 +36,13 @@ describe('getLUT', () => {
   it('caches per (corner, aspect) pair', () => {
     expect(getLUT(0.3, 2)).toBe(getLUT(0.3, 2))
     expect(getLUT(0.3, 2)).not.toBe(getLUT(0.3, 2.5))
+  })
+
+  it('quantizes keys and evicts old LUTs at the fixed cache bound', () => {
+    expect(getLUT(0.3001, 2.01)).toBe(getLUT(0.3002, 2.02))
+    const old = getLUT(0.0525, 7.75)
+    for (let index = 0; index <= PATH_CACHE_LIMIT; index++) getLUT(0.2 + index * 0.01, 3)
+    expect(getLUT(0.0525, 7.75)).not.toBe(old)
   })
 })
 
@@ -125,4 +132,13 @@ describe('pathFractionAt', () => {
     const top = pathFractionAt(0.5, 0, 0.3, 3)
     expect(Math.abs(bottom - top)).toBeCloseTo(0.5, 2)
   })
+
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY])(
+    'normalizes a hostile aspect %s consistently',
+    (aspect) => {
+      const fraction = pathFractionAt(0.5, 1, 0.3, aspect)
+      expect(Number.isFinite(fraction)).toBe(true)
+      expect(fraction).toBeCloseTo(pathFractionAt(0.5, 1, 0.3, 3), 8)
+    },
+  )
 })

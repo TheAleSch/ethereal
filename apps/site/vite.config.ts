@@ -8,6 +8,10 @@ import { aiEndpoints } from "./vite-ai-endpoints"
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
+  // TanStack Start prerenders through a temporary Vite preview server. Bind
+  // it explicitly to IPv4 so Node does not resolve `localhost` to ::1 while
+  // the preview listener is on 127.0.0.1 (a repeatable macOS build failure).
+  preview: { host: "127.0.0.1" },
   plugins: [
     // Console piping relays every browser console call to the dev server, and
     // the server's own log back to the browser — which re-logs it, which pipes

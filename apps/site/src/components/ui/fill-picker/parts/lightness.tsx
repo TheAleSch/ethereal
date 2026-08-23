@@ -1,92 +1,94 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { useColorPickerContext } from "../context";
-import { formatColor } from "../lib/color";
-import { cn } from "@/lib/utils";
+import * as React from "react"
+import { useColorPickerContext } from "../context"
+import { formatColor } from "../lib/color"
+import { cn } from "@/lib/utils"
 
-export interface LightnessProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onKeyDown"> {
-  orientation?: "horizontal" | "vertical";
+export interface LightnessProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onKeyDown"
+> {
+  orientation?: "horizontal" | "vertical"
 }
 
 export const Lightness = React.forwardRef<HTMLDivElement, LightnessProps>(
   function Lightness({ orientation = "horizontal", className, ...rest }, ref) {
-    const { color, setComponent } = useColorPickerContext();
-    const trackRef = React.useRef<HTMLDivElement | null>(null);
-    React.useImperativeHandle(ref, () => trackRef.current as HTMLDivElement);
+    const { color, setComponent } = useColorPickerContext()
+    const trackRef = React.useRef<HTMLDivElement | null>(null)
+    React.useImperativeHandle(ref, () => trackRef.current as HTMLDivElement)
 
     const moveTo = (clientCoord: number) => {
-      const el = trackRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
+      const el = trackRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
       const ratio =
         orientation === "horizontal"
           ? (clientCoord - rect.left) / rect.width
-          : (clientCoord - rect.top) / rect.height;
-      const clamped = Math.max(0, Math.min(1, ratio));
-      setComponent("l", clamped);
-    };
+          : (clientCoord - rect.top) / rect.height
+      const clamped = Math.max(0, Math.min(1, ratio))
+      setComponent("l", clamped)
+    }
 
     const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-      (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
-      moveTo(orientation === "horizontal" ? e.clientX : e.clientY);
-    };
+      ;(e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId)
+      moveTo(orientation === "horizontal" ? e.clientX : e.clientY)
+    }
     const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-      if (e.buttons !== 1) return;
-      moveTo(orientation === "horizontal" ? e.clientX : e.clientY);
-    };
+      if (e.buttons !== 1) return
+      moveTo(orientation === "horizontal" ? e.clientX : e.clientY)
+    }
     const releaseCapture = (e: React.PointerEvent<HTMLDivElement>) => {
-      const el = e.currentTarget as HTMLDivElement;
+      const el = e.currentTarget as HTMLDivElement
       if (el.hasPointerCapture(e.pointerId))
-        el.releasePointerCapture(e.pointerId);
-    };
+        el.releasePointerCapture(e.pointerId)
+    }
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-      const big = e.shiftKey ? 0.1 : 0.01;
-      let next = color.l;
+      const big = e.shiftKey ? 0.1 : 0.01
+      let next = color.l
       switch (e.key) {
         case "ArrowLeft":
         case "ArrowDown":
-          next -= big;
-          break;
+          next -= big
+          break
         case "ArrowRight":
         case "ArrowUp":
-          next += big;
-          break;
+          next += big
+          break
         case "Home":
-          next = 0;
-          break;
+          next = 0
+          break
         case "End":
-          next = 1;
-          break;
+          next = 1
+          break
         case "PageUp":
-          next += 0.1;
-          break;
+          next += 0.1
+          break
         case "PageDown":
-          next -= 0.1;
-          break;
+          next -= 0.1
+          break
         default:
-          return;
+          return
       }
-      e.preventDefault();
-      setComponent("l", next);
-    };
+      e.preventDefault()
+      setComponent("l", next)
+    }
 
-    const isVertical = orientation === "vertical";
+    const isVertical = orientation === "vertical"
     // Build the gradient at the current hue & chroma so users see how lightness
     // changes _their_ color, not a generic black→white ramp.
     // Fields are spelled out rather than spread so the ramp only re-derives
     // on the two channels it actually reads.
     const stops = React.useMemo(() => {
-      const samples = 8;
-      const arr: string[] = [];
+      const samples = 8
+      const arr: string[] = []
       for (let i = 0; i <= samples; i++) {
-        const l = i / samples;
-        arr.push(formatColor({ l, c: color.c, h: color.h, alpha: 1 }, "oklch"));
+        const l = i / samples
+        arr.push(formatColor({ l, c: color.c, h: color.h, alpha: 1 }, "oklch"))
       }
-      return arr.join(", ");
-    }, [color.h, color.c]);
+      return arr.join(", ")
+    }, [color.h, color.c])
 
     return (
       <div
@@ -106,14 +108,14 @@ export const Lightness = React.forwardRef<HTMLDivElement, LightnessProps>(
         onPointerCancel={releaseCapture}
         onKeyDown={onKeyDown}
         className={cn(
-          "relative cursor-pointer rounded-full outline-none touch-none",
+          "relative cursor-pointer touch-none rounded-full outline-none",
           // WCAG 2.5.8: the visual track stays 12px thin, but a pseudo-element
-        // widens the pointer target to 24px on the thin axis.
-        isVertical
-          ? "h-32 w-3 before:absolute before:-inset-x-1.5 before:content-['']"
-          : "h-3 w-full before:absolute before:-inset-y-1.5 before:content-['']",
+          // widens the pointer target to 24px on the thin axis.
+          isVertical
+            ? "h-32 w-3 before:absolute before:-inset-x-1.5 before:content-['']"
+            : "h-3 w-full before:absolute before:-inset-y-1.5 before:content-['']",
           "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-popover",
-          className,
+          className
         )}
         style={{
           background: isVertical
@@ -139,6 +141,6 @@ export const Lightness = React.forwardRef<HTMLDivElement, LightnessProps>(
           }
         />
       </div>
-    );
-  },
-);
+    )
+  }
+)

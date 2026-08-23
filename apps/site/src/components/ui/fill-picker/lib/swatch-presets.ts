@@ -1,4 +1,4 @@
-import type { OklchColor } from "./types";
+import type { OklchColor } from "./types"
 
 /** Default swatch presets shared by both Swatches variants. */
 export const DEFAULT_SWATCH_PRESETS = [
@@ -12,7 +12,7 @@ export const DEFAULT_SWATCH_PRESETS = [
   "oklch(0.7 0.18 150)",
   "oklch(0.7 0.18 210)",
   "oklch(0.7 0.18 270)",
-];
+]
 
 /**
  * Compare a preset to the current color in canonical OKLCH form so the
@@ -24,13 +24,13 @@ export const DEFAULT_SWATCH_PRESETS = [
  */
 export function isSameSwatchColor(
   preset: OklchColor,
-  color: OklchColor,
+  color: OklchColor
 ): boolean {
-  if (Math.abs(preset.l - color.l) >= 1e-3) return false;
-  if (Math.abs(preset.c - color.c) >= 1e-3) return false;
-  if (Math.abs(preset.alpha - color.alpha) >= 1e-3) return false;
-  if (preset.c < 1e-3 || color.c < 1e-3) return true;
-  const d = (((preset.h - color.h) % 360) + 360) % 360;
-  const wrapped = d > 180 ? 360 - d : d;
-  return wrapped < 0.1;
+  if (Math.abs(preset.l - color.l) >= 1e-3) return false
+  if (Math.abs(preset.c - color.c) >= 1e-3) return false
+  if (Math.abs(preset.alpha - color.alpha) >= 1e-3) return false
+  if (preset.c < 1e-3 || color.c < 1e-3) return true
+  const d = (((preset.h - color.h) % 360) + 360) % 360
+  const wrapped = d > 180 ? 360 - d : d
+  return wrapped < 0.1
 }

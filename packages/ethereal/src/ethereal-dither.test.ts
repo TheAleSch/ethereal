@@ -9,9 +9,15 @@ import { act, createElement } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { EtherealDither, perimeterHotspotDistanceNormSq, type EtherealDitherProps } from './ethereal-dither'
+import {
+  EtherealDither,
+  bottomSweepPosition,
+  perimeterHotspotDistanceNormSq,
+  type EtherealDitherProps,
+} from './ethereal-dither'
 import { pathFractionAt, pathPx } from './core/path'
 import { setPaused } from './core/ticker'
+import { ControlledIntersectionObserver, ControlledResizeObserver, installControlledObservers } from './test-observers'
 
 const Subject: (props: EtherealDitherProps) => ReturnType<typeof EtherealDither> = EtherealDither
 
@@ -27,9 +33,13 @@ let painted: Painted[]
 let frame: (now: number) => void
 let root: ReturnType<typeof createRoot> | null = null
 let container: HTMLDivElement
+let measuredW = HOST_W
+let measuredH = HOST_H
 
 beforeEach(() => {
   painted = []
+  measuredW = HOST_W
+  measuredH = HOST_H
   const globals = globalThis as Record<string, unknown>
   globals.IS_REACT_ACT_ENVIRONMENT = true
   let pending: ((now: number) => void) | null = null
@@ -55,20 +65,11 @@ beforeEach(() => {
     removeEventListener() {},
     dispatchEvent: () => false,
   })
-  class Noop {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-    takeRecords() {
-      return []
-    }
-  }
-  globals.ResizeObserver = Noop
-  globals.IntersectionObserver = Noop
+  installControlledObservers()
 
   // jsdom lays nothing out: the grid would be 1×1 without a host box
-  vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(HOST_W)
-  vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(HOST_H)
+  vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(() => measuredW)
+  vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(() => measuredH)
   vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(function (this: HTMLCanvasElement) {
     return {
       createImageData: (width: number, height: number) => ({
@@ -212,10 +213,38 @@ describe('EtherealDither canvas', () => {
     render({ band: 1000, block: 2, duration: 4 })
     run(2)
     const canvas = container.querySelector('canvas')!
-    expect(canvas.width * canvas.height).toBeLessThanOrEqual(500_000)
+    expect(canvas.width * canvas.height).toBeLessThanOrEqual(100_000)
     // and the auto bleed derived from the band wears the same ceiling as an
     // explicit one, so the grid overhang cannot grow unbounded either
     expect(canvas.width).toBeLessThanOrEqual(Math.ceil((HOST_W + 2 * 400) / 2) + 1)
+  })
+
+  it('uses exported defaults for every invalid numeric fallback', () => {
+    render({})
+    const defaultCanvas = container.querySelector('canvas')!
+    const expected = { width: defaultCanvas.width, height: defaultCanvas.height, inset: defaultCanvas.style.inset }
+    remount()
+    render({
+      block: Number.NaN,
+      reach: Number.NaN,
+      band: Number.NaN,
+      levels: Number.NaN,
+      bleed: Number.NaN,
+      corner: Number.NaN,
+      duration: Number.NaN,
+      repeatDelay: Number.NaN,
+      strength: Number.NaN,
+      saturation: Number.NaN,
+      brightness: Number.NaN,
+      hueRange: Number.NaN,
+    })
+    const invalidCanvas = container.querySelector('canvas')!
+    expect({ width: invalidCanvas.width, height: invalidCanvas.height, inset: invalidCanvas.style.inset }).toEqual(expected)
+  })
+
+  it('gives bottom counter heads mirrored positions instead of collapsing them', () => {
+    for (const travel of [0, 0.1, 0.4, 0.5, 0.6, 0.9])
+      expect(bottomSweepPosition(travel, true)).not.toBeCloseTo(bottomSweepPosition(travel, false), 8)
   })
 
   it('place: external paints OUTSIDE the host silhouette only', () => {
@@ -324,6 +353,37 @@ describe('EtherealDither canvas', () => {
     let moved = 0
     for (let index = 3; index < resumed.length; index += 4) if (resumed[index] !== frozen[index]) moved++
     expect(moved).toBeLessThan(resumed.length / 4 / 2)
+  })
+
+  it('repaints config rebuilds and resizes synchronously while paused', () => {
+    render({ block: 4, band: 10, bleed: 16, duration: 2 })
+    run(6)
+    setPaused(true)
+    const beforeConfig = painted.length
+    act(() => root!.render(createElement(Subject, { block: 4, band: 10, bleed: 16, duration: 3 })))
+    expect(painted.length).toBeGreaterThan(beforeConfig)
+    expect(cells(4, 16).litCells).toBeGreaterThan(0)
+
+    measuredW = 320
+    measuredH = 80
+    const beforeResize = painted.length
+    for (const observer of ControlledResizeObserver.instances) observer.trigger()
+    expect(painted.length).toBeGreaterThan(beforeResize)
+    expect(last(painted).width).toBe(Math.ceil((320 + 32) / 4))
+    expect(last(painted).height).toBe(Math.ceil((80 + 32) / 4))
+    expect(cells(4, 16).litCells).toBeGreaterThan(0)
+  })
+
+  it('skips frames while offscreen and resumes when visible again', () => {
+    render({ block: 4, band: 10, bleed: 16 })
+    const observer = ControlledIntersectionObserver.instances[0]!
+    observer.trigger(false)
+    const before = painted.length
+    run(4)
+    expect(painted).toHaveLength(before)
+    observer.trigger(true)
+    run(1, 500)
+    expect(painted).toHaveLength(before + 1)
   })
 
   it('paints a static frame under prefers-reduced-motion, without the ticker', () => {

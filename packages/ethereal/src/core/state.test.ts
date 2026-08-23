@@ -257,8 +257,9 @@ describe('the components use the shared pipeline', () => {
       expect(src).not.toMatch(/resolveState\(\w/)
     })
 
-    it(`${path} reads transitionMs rather than only accepting it`, () => {
-      expect(src).toMatch(/\$\{transitionMs\}ms/)
+    it(`${path} normalizes and reads transitionMs rather than only accepting it`, () => {
+      expect(src).toMatch(/finiteNumber\(transitionMs, 320, 0, 10_000\)/)
+      expect(src).toMatch(/\$\{safeTransitionMs\}ms/)
     })
   }
 })

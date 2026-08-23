@@ -5,10 +5,10 @@
  * contrast readout). Pair the SM variant with `backgroundSize: "8px 8px"`.
  */
 export const CHECKERBOARD_LG =
-  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><rect width='6' height='6' fill='%23ccc'/><rect x='6' y='6' width='6' height='6' fill='%23ccc'/></svg>\")";
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><rect width='6' height='6' fill='%23ccc'/><rect x='6' y='6' width='6' height='6' fill='%23ccc'/></svg>\")"
 
 export const CHECKERBOARD_SM =
-  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'><rect width='4' height='4' fill='%23ccc'/><rect x='4' y='4' width='4' height='4' fill='%23ccc'/></svg>\")";
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'><rect width='4' height='4' fill='%23ccc'/><rect x='4' y='4' width='4' height='4' fill='%23ccc'/></svg>\")"
 
 /**
  * Edge treatment for sample chips — swatches, gradient presets, the preview.
@@ -32,4 +32,4 @@ export const CHECKERBOARD_SM =
  */
 export const SAMPLE_EDGE =
   "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:content-[''] " +
-  "after:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.16)] dark:after:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.18)]";
+  "after:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.16)] dark:after:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.18)]"

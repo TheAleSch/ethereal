@@ -142,6 +142,12 @@
   animation: star-twinkle 4s ease-in-out infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .star-twinkle {
+    animation: none;
+  }
+}
+
 @keyframes shooting-star {
   0% {
     transform: translateX(0);
@@ -163,6 +169,13 @@
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5) 70%, #fff);
   filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
   animation: shooting-star 1.4s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shooting-star {
+    display: none;
+    animation: none;
+  }
 }
 
 /* ── touch-target expansion ──────────────────────────────────────────────

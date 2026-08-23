@@ -16,7 +16,11 @@ function DialogClose({ ...props }: DialogPrimitive.Close.Props) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 }
 
-function DialogContent({ className, children, ...props }: DialogPrimitive.Popup.Props) {
+function DialogContent({
+  className,
+  children,
+  ...props
+}: DialogPrimitive.Popup.Props) {
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Backdrop className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm duration-100 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
@@ -44,7 +48,10 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
   )
 }
 
-function DialogDescription({ className, ...props }: DialogPrimitive.Description.Props) {
+function DialogDescription({
+  className,
+  ...props
+}: DialogPrimitive.Description.Props) {
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
@@ -54,4 +61,11 @@ function DialogDescription({ className, ...props }: DialogPrimitive.Description.
   )
 }
 
-export { Dialog, DialogTrigger, DialogClose, DialogContent, DialogTitle, DialogDescription }
+export {
+  Dialog,
+  DialogTrigger,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+}

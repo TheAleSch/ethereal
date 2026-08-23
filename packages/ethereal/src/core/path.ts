@@ -1,6 +1,7 @@
 // Smooth constant-speed perimeter path — superellipse + arc-length LUT, so
 // position and tangent never snap at the corners.
 export const PATH_N = 512
+export const PATH_CACHE_LIMIT = 64
 
 type LUT = { pts: [number, number][]; cum: number[]; total: number }
 
@@ -9,13 +10,28 @@ type LUT = { pts: [number, number][]; cum: number[]; total: number }
 // blob lags) land at the same physical distance on every edge.
 const pathLUTs = new Map<string, LUT>()
 
+const normalizedCorner = (corner: number) => {
+  const finite = Number.isFinite(corner) ? corner : 0.3
+  return Math.round(Math.max(0.05, Math.min(1.5, finite)) * 400) / 400
+}
+
+const normalizedAspect = (aspect: number) => {
+  const finite = Number.isFinite(aspect) ? aspect : 3
+  return Math.max(0.5, Math.min(8, Math.round(finite * 4) / 4))
+}
+
 export function getLUT(corner: number, aspect: number): LUT {
   // corner ≤ 0 → pow(0, negative) = Infinity → NaN cascade poisoning the
   // cached LUT (and every --bx/--by var) forever; clamp before the cache key
-  const exponent = Math.max(0.05, Math.min(1.5, corner))
-  const key = `${exponent}|${aspect}`
+  const exponent = normalizedCorner(corner)
+  const safeAspect = normalizedAspect(aspect)
+  const key = `${exponent}|${safeAspect}`
   let lut = pathLUTs.get(key)
-  if (!lut) {
+  if (lut) {
+    // Refresh insertion order so the bounded map behaves as an LRU.
+    pathLUTs.delete(key)
+    pathLUTs.set(key, lut)
+  } else {
     // lower exponent → squarer path: the head stays pressed on the border
     // through corners instead of cutting across them
     const superellipse = (value: number) => Math.sign(value) * Math.pow(Math.abs(value), exponent)
@@ -28,10 +44,11 @@ export function getLUT(corner: number, aspect: number): LUT {
     for (let step = 1; step <= PATH_N; step++)
       cum.push(
         cum[step - 1]! +
-          Math.hypot((pts[step]![0] - pts[step - 1]![0]) * aspect, pts[step]![1] - pts[step - 1]![1])
+        Math.hypot((pts[step]![0] - pts[step - 1]![0]) * safeAspect, pts[step]![1] - pts[step - 1]![1])
       )
     lut = { pts, cum, total: cum[PATH_N]! }
     pathLUTs.set(key, lut)
+    if (pathLUTs.size > PATH_CACHE_LIMIT) pathLUTs.delete(pathLUTs.keys().next().value!)
   }
   return lut
 }
@@ -44,7 +61,8 @@ export const pathPx = (corner: number, aspect: number, hostPx: number) => hostPx
  * needed by canvas pixels: two points can be close in straight-line distance
  * while living on opposite sides of a pill. */
 export function pathFractionAt(x: number, y: number, corner = 0.3, aspect = 3) {
-  const exponent = Math.max(0.05, Math.min(1.5, corner))
+  const exponent = normalizedCorner(corner)
+  const safeAspect = normalizedAspect(aspect)
   const inverse = 1 / exponent
   const dx = 2 * x - 1
   const dy = 2 * y - 1
@@ -54,7 +72,7 @@ export function pathFractionAt(x: number, y: number, corner = 0.3, aspect = 3) {
   if (angle < 0) angle += 2 * Math.PI
 
   const approximate = Math.round((angle / (2 * Math.PI)) * PATH_N) % PATH_N
-  const { pts, cum, total } = getLUT(exponent, aspect)
+  const { pts, cum, total } = getLUT(exponent, safeAspect)
   let bestSquared = Number.POSITIVE_INFINITY
   let bestDistance = 0
   // LUT interpolation cuts slightly inside the mathematical superellipse at
@@ -64,9 +82,9 @@ export function pathFractionAt(x: number, y: number, corner = 0.3, aspect = 3) {
     const index = (approximate + offset + PATH_N) % PATH_N
     const from = pts[index]!
     const to = pts[index + 1]!
-    const vx = (to[0] - from[0]) * aspect
+    const vx = (to[0] - from[0]) * safeAspect
     const vy = to[1] - from[1]
-    const tx = (x - from[0]) * aspect
+    const tx = (x - from[0]) * safeAspect
     const ty = y - from[1]
     const blend = Math.max(0, Math.min(1, (tx * vx + ty * vy) / (vx * vx + vy * vy || 1)))
     const projectedX = tx - vx * blend
@@ -82,7 +100,7 @@ export function pathFractionAt(x: number, y: number, corner = 0.3, aspect = 3) {
 
 // quantized (0.25 steps) and clamped so LUT cache stays small
 export const quantAspect = (width: number, height: number) =>
-  Math.max(0.5, Math.min(8, Math.round((width / Math.max(1, height)) * 4) / 4))
+  normalizedAspect(width / Math.max(1, height))
 
 export function walkSmooth(fraction: number, corner = 0.3, aspect = 3) {
   const along = ((fraction % 1) + 1) % 1

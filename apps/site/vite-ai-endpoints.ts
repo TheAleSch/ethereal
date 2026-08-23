@@ -21,7 +21,9 @@ const OUT = resolve(here, "public")
  *  a missing optional section beats a wrong one, and beats failing the build. */
 async function presetNames(): Promise<string[] | undefined> {
   try {
-    const mod = (await import(PKG_DIST)) as { EVENT_HORIZON_PRESETS?: Record<string, unknown> }
+    const mod = (await import(PKG_DIST)) as {
+      EVENT_HORIZON_PRESETS?: Record<string, unknown>
+    }
     const names = Object.keys(mod.EVENT_HORIZON_PRESETS ?? {})
     return names.length ? names : undefined
   } catch (err) {
@@ -85,7 +87,9 @@ export function aiEndpoints(): Plugin {
         writeFileSync(resolve(OUT, name), body, "utf8")
       }
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- rollup types `info` as always present on the plugin context, but it only exists from Rollup 3 / Vite 4 on, and the hook also runs under Vitest's stub context
-      this.info?.(`generated ${Object.keys(files).length} endpoints for ${SITE.url}`)
+      this.info?.(
+        `generated ${Object.keys(files).length} endpoints for ${SITE.url}`
+      )
     },
   }
 }

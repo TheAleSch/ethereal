@@ -711,7 +711,6 @@ const HINTS: Record<string, string> = {
   shadow: "Depth of the vignette darkening the element's center.",
   strength: "Overall intensity multiplier for the whole effect.",
 
-
   /* interaction */
   hover:
     "The eased, per-frame hover reaction. boost brightens · speed accelerates the lap · reveal fades the effect in · none opts out. Distinct from the whileHover state overlay, which rebuilds layers with a crossfade — don't use both on the same effect.",

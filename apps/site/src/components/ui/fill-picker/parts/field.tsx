@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as React from "react"
+import { cn } from "@/lib/utils"
 import {
   Select,
   SelectContent,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 
 /**
  * Bordered, h-8 shell every multi-field input inside the picker shares.
@@ -26,16 +26,16 @@ export const FieldShell = React.forwardRef<
       className={cn(
         "flex h-8 items-stretch overflow-hidden rounded-md border border-input bg-transparent font-mono text-xs shadow-xs",
         "focus-within:ring-1 focus-within:ring-ring",
-        className,
+        className
       )}
       {...rest}
     />
-  );
-});
+  )
+})
 
 /** Vertical 1px divider between fields inside a `FieldShell`. */
 export function FieldDivider() {
-  return <div aria-hidden className="w-px self-stretch bg-border" />;
+  return <div aria-hidden className="w-px self-stretch bg-border" />
 }
 
 /**
@@ -54,11 +54,14 @@ export interface FieldInputProps extends React.InputHTMLAttributes<HTMLInputElem
    * Step amount for ↑/↓ keyboard nudge. Shift multiplies by 10. Omit
    * to disable nudge (text fields and non-numeric inputs).
    */
-  nudge?: number;
+  nudge?: number
 }
 
 export const FieldInput = React.forwardRef<HTMLInputElement, FieldInputProps>(
-  function FieldInput({ className, type = "text", nudge, onKeyDown, ...rest }, ref) {
+  function FieldInput(
+    { className, type = "text", nudge, onKeyDown, ...rest },
+    ref
+  ) {
     return (
       <input
         ref={ref}
@@ -69,36 +72,36 @@ export const FieldInput = React.forwardRef<HTMLInputElement, FieldInputProps>(
         autoCapitalize="off"
         onKeyDown={(e) => {
           if (nudge && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
-            e.preventDefault();
+            e.preventDefault()
             // Treat empty / unparseable input (e.g. RadiusInput in its
             // "auto" placeholder state) as 0 so the first arrow press
             // commits a real numeric value instead of doing nothing.
-            const parsed = parseFloat(e.currentTarget.value);
-            const cur = Number.isFinite(parsed) ? parsed : 0;
+            const parsed = parseFloat(e.currentTarget.value)
+            const cur = Number.isFinite(parsed) ? parsed : 0
             const delta =
-              (e.key === "ArrowUp" ? 1 : -1) * (e.shiftKey ? nudge * 10 : nudge);
-            const next = cur + delta;
+              (e.key === "ArrowUp" ? 1 : -1) * (e.shiftKey ? nudge * 10 : nudge)
+            const next = cur + delta
             // Use the native value setter so React's synthetic onChange
             // fires — directly assigning `.value` is swallowed by React's
             // controlled-input tracker.
             const setter = Object.getOwnPropertyDescriptor(
               window.HTMLInputElement.prototype,
-              "value",
-            )?.set;
-            setter?.call(e.currentTarget, String(next));
-            e.currentTarget.dispatchEvent(new Event("input", { bubbles: true }));
+              "value"
+            )?.set
+            setter?.call(e.currentTarget, String(next))
+            e.currentTarget.dispatchEvent(new Event("input", { bubbles: true }))
           }
-          onKeyDown?.(e);
+          onKeyDown?.(e)
         }}
         className={cn(
-          "w-full min-w-0 bg-transparent px-1.5 text-right outline-none tabular-nums",
-          className,
+          "w-full min-w-0 bg-transparent px-1.5 text-right tabular-nums outline-none",
+          className
         )}
         {...rest}
       />
-    );
-  },
-);
+    )
+  }
+)
 
 /**
  * Flex slot that pairs a `FieldInput` with an optional `FieldSuffix`
@@ -114,12 +117,12 @@ export const FieldInputGroup = React.forwardRef<
       ref={ref}
       className={cn(
         "relative inline-flex h-full min-w-0 flex-1 items-center justify-end",
-        className,
+        className
       )}
       {...rest}
     />
-  );
-});
+  )
+})
 
 /** Muted, non-interactive suffix label (°, %, px, ×). */
 export const FieldSuffix = React.forwardRef<
@@ -132,12 +135,12 @@ export const FieldSuffix = React.forwardRef<
       aria-hidden
       className={cn(
         "pointer-events-none pr-1.5 text-muted-foreground",
-        className,
+        className
       )}
       {...rest}
     />
-  );
-});
+  )
+})
 
 export interface FieldSelectProps {
   /**
@@ -148,28 +151,28 @@ export interface FieldSelectProps {
    * `inline` — borderless variant that lives inside a `FieldShell` (used
    * by `ChannelInput`'s format toggle on the left).
    */
-  variant?: "standalone" | "inline";
-  value?: string;
-  defaultValue?: string;
-  onValueChange?: (value: string) => void;
-  disabled?: boolean;
-  placeholder?: string;
+  variant?: "standalone" | "inline"
+  value?: string
+  defaultValue?: string
+  onValueChange?: (value: string) => void
+  disabled?: boolean
+  placeholder?: string
   /** Trigger button class — extends the variant's defaults. */
-  className?: string;
+  className?: string
   /** Props forwarded to the outer wrapper `<div>`. Use for `data-slot`,
    *  width overrides, etc. */
   wrapperProps?: React.HTMLAttributes<HTMLDivElement> & {
-    [key: `data-${string}`]: string | undefined;
-  };
+    [key: `data-${string}`]: string | undefined
+  }
   /**
    * Class applied to the popover `<SelectContent>`. Defaults to a
    * `font-mono text-xs tracking-wide` block so item rows match the
    * trigger font.
    */
-  contentClassName?: string;
-  "aria-label"?: string;
+  contentClassName?: string
+  "aria-label"?: string
   /** Pass `<SelectItem>`s as children. */
-  children?: React.ReactNode;
+  children?: React.ReactNode
 }
 
 /**
@@ -205,17 +208,17 @@ export const FieldSelect = React.forwardRef<
     children,
     "aria-label": ariaLabel,
   },
-  ref,
+  ref
 ) {
-  const inline = variant === "inline";
-  const { className: wrapperClassName, ...wrapperRest } = wrapperProps ?? {};
+  const inline = variant === "inline"
+  const { className: wrapperClassName, ...wrapperRest } = wrapperProps ?? {}
   return (
     <div
       className={cn(
         inline
           ? "relative inline-flex h-full shrink-0 items-center"
           : "relative inline-flex items-center",
-        wrapperClassName,
+        wrapperClassName
       )}
       {...wrapperRest}
     >
@@ -223,7 +226,7 @@ export const FieldSelect = React.forwardRef<
         value={value}
         defaultValue={defaultValue}
         onValueChange={(v) => {
-          if (v != null) onValueChange?.(v as string);
+          if (v != null) onValueChange?.(v as string)
         }}
         disabled={disabled}
       >
@@ -236,7 +239,7 @@ export const FieldSelect = React.forwardRef<
             inline
               ? "h-full rounded-none border-0 bg-transparent px-2 shadow-none focus-visible:border-transparent focus-visible:ring-0 dark:bg-transparent dark:hover:bg-transparent"
               : "w-full",
-            className,
+            className
           )}
         >
           <SelectValue placeholder={placeholder} />
@@ -248,5 +251,5 @@ export const FieldSelect = React.forwardRef<
         </SelectContent>
       </Select>
     </div>
-  );
-});
+  )
+})

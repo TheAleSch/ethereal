@@ -28,10 +28,9 @@ import {
   ETHEREAL_CONTROLS,
   ETHEREAL_PRESETS,
   genCode,
-  parseOverrides
-  
+  parseOverrides,
 } from "./presets"
-import type {ControlDef} from "./presets";
+import type { ControlDef } from "./presets"
 
 describe("parseOverrides rejects everything it does not recognise", () => {
   it("drops keys that are not fields of the base config", () => {
@@ -99,9 +98,10 @@ describe("parseOverrides refuses numbers that would break the animation", () => 
   })
 
   it("caps the dither grid controls so one link cannot allocate a 100+ MiB grid", () => {
-    expect(
-      parseOverrides({ band: 1000, block: 2 }, ETHEREAL_DITHER)
-    ).toEqual({ band: 64, block: 2 })
+    expect(parseOverrides({ band: 1000, block: 2 }, ETHEREAL_DITHER)).toEqual({
+      band: 64,
+      block: 2,
+    })
     expect(parseOverrides({ bleed: 1000 }, ETHEREAL_DITHER)).toEqual({
       bleed: 48,
     })
@@ -314,11 +314,7 @@ describe("every preset value sits inside its control's domain", () => {
   ][] = [
     ["Ethereal", ETHEREAL_CONTROLS, ETHEREAL_PRESETS],
     ["EventHorizon", EH_CONTROLS, EH_PRESETS],
-    [
-      "EtherealDither",
-      DITHER_CONTROLS,
-      DITHER_PRESETS,
-    ],
+    ["EtherealDither", DITHER_CONTROLS, DITHER_PRESETS],
   ]
   it("keeps sliders in range and selects inside their option lists", () => {
     for (const [componentName, controls, presets] of tables) {

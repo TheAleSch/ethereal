@@ -691,13 +691,15 @@ export const MINIMAL = `import { Ethereal, EventHorizon } from '@theale/ethereal
   <EventHorizon />
 </button>`
 
-export const WRAP = `import { EtherealWrap, EventHorizonWrap } from '@theale/ethereal'
+export const WRAP = `import { EtherealWrap, EventHorizonWrap, EtherealDitherWrap } from '@theale/ethereal'
 
 // Replaced elements (inputs, textareas) can't contain the effect span —
 // wrap them instead. The wrapper span becomes the positioned, isolated host.
 <EtherealWrap path="static">
   <SearchInput />
-</EtherealWrap>`
+</EtherealWrap>
+
+// EventHorizonWrap and EtherealDitherWrap provide the same host contract.`
 
 export const PRESETS_CODE = `import { EventHorizon, EVENT_HORIZON_PRESETS } from '@theale/ethereal'
 

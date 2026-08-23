@@ -1,27 +1,20 @@
 {
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "ethereal",
-  "type": "registry:ui",
   "title": "Ethereal",
-  "description": "Travelling-light and black-hole glow effects for React — pure CSS gradients and masks, no canvas or WebGL, driven by one shared ~60fps loop for every mounted instance. Installs a thin wrapper over the @theale/ethereal package so fixes ship via npm rather than being stranded in your tree.",
-  "categories": [
-    "effect",
-    "animation",
-    "button"
-  ],
+  "author": "Alexandre Schrammel <https://ale.design>",
+  "description": "Travelling-light, black-hole and dithered glow effects for React — two CSS renderers plus a pixelated-canvas renderer, driven by one shared ~60fps loop. Installs a thin wrapper over the @theale/ethereal package so fixes ship via npm rather than being stranded in your tree.",
   "dependencies": [
     "@theale/ethereal"
   ],
   "files": [
     {
       "path": "registry/ethereal/ethereal-button.tsx",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\nimport { Ethereal, type EtherealProps } from \"@theale/ethereal\";\n\nimport { cn } from \"@/lib/utils\";\n\n/**\n * A button wearing the travelling-light glow.\n *\n * The only host contract is a stacking context — `relative isolate` — which\n * this component applies for you. Everything else is an ordinary <button>.\n *\n * Pass any Ethereal config through `glow`:\n *   <EtherealButton glow={{ path: \"around\", heads: 2, spin: \"counter\" }}>\n */\nexport function EtherealButton({\n  glow,\n  className,\n  style,\n  children,\n  ...props\n}: React.ComponentProps<\"button\"> & { glow?: EtherealProps }) {\n  return (\n    <button\n      className={cn(\n        \"items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-medium transition-colors hover:bg-white/[0.08]\",\n        className,\n        // Host-contract and touch-target invariants come last so tailwind-merge\n        // cannot let caller utilities such as `static`, `contents`, or\n        // `isolation-auto` cancel them.\n        \"relative isolate inline-flex min-h-11 min-w-11\",\n      )}\n      style={{\n        ...style,\n        position: \"relative\",\n        isolation: \"isolate\",\n        display: \"inline-flex\",\n        minWidth: 44,\n        minHeight: 44,\n      }}\n      {...props}\n    >\n      {/* z-10 keeps the label above the glow layers */}\n      <span className=\"relative z-10 inline-flex items-center gap-2\">\n        {children}\n      </span>\n      <Ethereal path=\"around\" heads={2} spin=\"counter\" {...glow} />\n    </button>\n  );\n}\n",
       "type": "registry:ui",
-      "target": "components/ui/ethereal-button.tsx",
-      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport { Ethereal, type EtherealProps } from \"@theale/ethereal\"\n\nimport { cn } from \"@/lib/utils\"\n\n/**\n * A button wearing the travelling-light glow.\n *\n * The only host contract is a stacking context — `relative isolate` — which\n * this component applies for you. Everything else is an ordinary <button>.\n *\n * Pass any Ethereal config through `glow`:\n *   <EtherealButton glow={{ path: \"around\", heads: 2, spin: \"counter\" }}>\n */\nexport function EtherealButton({\n  glow,\n  className,\n  children,\n  ...props\n}: React.ComponentProps<\"button\"> & { glow?: EtherealProps }) {\n  return (\n    <button\n      className={cn(\n        \"relative isolate inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-medium transition-colors hover:bg-white/[0.08]\",\n        className\n      )}\n      {...props}\n    >\n      {/* z-10 keeps the label above the glow layers */}\n      <span className=\"relative z-10\">{children}</span>\n      <Ethereal path=\"around\" heads={2} spin=\"counter\" {...glow} />\n    </button>\n  )\n}\n"
+      "target": "components/ui/ethereal-button.tsx"
     }
   ],
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "author": "Alexandre Schrammel <https://ale.design>",
-  "docs": "The host must be `position: relative` and `isolation: isolate`, and the effect must be a CHILD of it — EtherealButton does this for you. To decorate something else, keep your content on `relative z-10` and render <Ethereal/> as the last child. Replaced elements (<input>, <img>) cannot contain children: wrap them in <EtherealWrap> instead. Full reference: https://ethereal.ale.design/llms-full.txt",
   "meta": {
     "npm": "@theale/ethereal",
     "homepage": "https://ethereal.ale.design",
@@ -29,5 +22,12 @@
     "llms": "https://ethereal.ale.design/llms-full.txt",
     "repository": "https://github.com/TheAleSch/ethereal",
     "license": "MIT"
-  }
+  },
+  "docs": "The host must be `position: relative` and `isolation: isolate`, and the effect must be a CHILD of it — EtherealButton does this for you. To decorate something else, keep your content on `relative z-10` and render <Ethereal/> as the last child. Replaced elements (<input>, <img>) cannot contain children: wrap them in <EtherealWrap> instead. Full reference: https://ethereal.ale.design/llms-full.txt",
+  "categories": [
+    "effect",
+    "animation",
+    "button"
+  ],
+  "type": "registry:ui"
 }

@@ -1,10 +1,10 @@
 # @theale/ethereal
 
-Travelling-light and black-hole glow effects for React. Pure CSS gradients and
-masks — no canvas, no WebGL — driven by **one shared ~60fps loop** for every
-mounted instance.
+Travelling-light, black-hole and dithered glow effects for React. Two renderers
+use CSS gradients and masks; the dithered renderer uses a pixelated canvas. All
+three are driven by **one shared ~60fps loop** for every mounted instance.
 
-Two effects:
+Three effects:
 
 - **`<Ethereal/>`** — a comet head travels along your element behind a
   spotlight mask: a lit stretch of the border ring, an interior color wash,
@@ -12,6 +12,8 @@ Two effects:
 - **`<EventHorizon/>`** — a black-hole accretion disk: a white-hot head
   orbits trailing a doppler-tinted plasma stream, wrapped in a graduated
   gravitational lens, a living photon rim and a lensed halo.
+- **`<EtherealDither/>`** — the travelling-light comet rendered as quantized
+  canvas blocks through a Bayer 4×4 matrix.
 
 ## Install
 
@@ -19,7 +21,7 @@ Two effects:
 npm i @theale/ethereal
 ```
 
-React ≥18 is a peer dependency. Both components are client components
+React ≥18 is a peer dependency. All three components are client components
 (`'use client'`) — safe to import from React Server Components.
 
 ## Use
@@ -45,7 +47,11 @@ When you can't edit the child (inputs, third-party components), use the
 wrapper form — replaced elements can't contain the effect span:
 
 ```tsx
-import { EtherealWrap, EventHorizonWrap } from "@theale/ethereal";
+import {
+  EtherealWrap,
+  EventHorizonWrap,
+  EtherealDitherWrap,
+} from "@theale/ethereal";
 
 <EtherealWrap path="static">
   <SearchInput />
@@ -53,7 +59,7 @@ import { EtherealWrap, EventHorizonWrap } from "@theale/ethereal";
 ```
 
 All props are optional overrides of the exported defaults (`ETHEREAL`,
-`EVENT_HORIZON`). The playground's **Copy link** / code panel emits a
+`EVENT_HORIZON`, `ETHEREAL_DITHER`). The playground's **Copy link** / code panel emits a
 ready-to-spread props object:
 
 ```tsx
@@ -278,7 +284,7 @@ changes.
 
 ## Behavior & performance
 
-- **One rAF loop** drives every instance of both effects, targeting ~60fps —
+- **One rAF loop** drives every instance of all three effects, targeting ~60fps —
   one tick per frame on a 60Hz display; higher-refresh displays are gated
   down to the target. It stops entirely when the last instance unmounts.
 - **The frame rate is tunable** via `setTickRate(fps)` — pass `0` to tick at
@@ -295,10 +301,9 @@ changes.
   loop, so the last caller wins. `getTickRate()` reads it back if a component
   needs to restore the previous value on unmount.
 
-  `<EtherealDither/>` does a full canvas redraw every tick rather than writing
-  CSS custom properties, so the default 60fps rate doubles its CPU cost
-  outright with nothing for the browser to coalesce — call
-  `setTickRate(30)` if you're using it.
+  `<EtherealDither/>` redraws its canvas every tick rather than only writing
+  CSS custom properties, so it can be the most expensive renderer on a large
+  host — consider `setTickRate(30)` when using it.
 
 - **Off-screen instances pause** (IntersectionObserver, 160px margin) and
   the loop clamps `dt` after background-tab pauses so clocks never jump.

@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 
 // ↑ ↑ ↓ ↓ ← → ← → B A
 const KONAMI = [
@@ -19,7 +20,14 @@ const KONAMI = [
 type Vec = { x: number; y: number }
 type Ship = Vec & { vx: number; vy: number; a: number; inv: number }
 type Bullet = Vec & { vx: number; vy: number; life: number; hue?: number }
-type Rock = Vec & { vx: number; vy: number; r: number; verts: number[]; rot: number; vr: number }
+type Rock = Vec & {
+  vx: number
+  vy: number
+  r: number
+  verts: number[]
+  rot: number
+  vr: number
+}
 
 const TAU = Math.PI * 2
 
@@ -27,12 +35,22 @@ function makeRock(x: number, y: number, r: number): Rock {
   const verts = Array.from({ length: 10 }, () => 0.72 + Math.random() * 0.4)
   const sp = (0.4 + Math.random() * 0.9) * (60 / r)
   const dir = Math.random() * TAU
-  return { x, y, r, verts, rot: Math.random() * TAU, vr: (Math.random() - 0.5) * 1.2, vx: Math.cos(dir) * sp, vy: Math.sin(dir) * sp }
+  return {
+    x,
+    y,
+    r,
+    verts,
+    rot: Math.random() * TAU,
+    vr: (Math.random() - 0.5) * 1.2,
+    vx: Math.cos(dir) * sp,
+    vy: Math.sin(dir) * sp,
+  }
 }
 
 /** Hidden Asteroids game, armed by the Konami code. ESC quits. */
 export function KonamiAsteroids() {
   const [active, setActive] = useState(false)
+  const close = useCallback(() => setActive(false), [])
 
   // sequence watcher — always listening, cheap
   useEffect(() => {
@@ -53,15 +71,43 @@ export function KonamiAsteroids() {
   }, [])
 
   if (!active) return null
-  return <Game onQuit={() => setActive(false)} />
+  return createPortal(<Game onQuit={close} />, document.body)
 }
 
 function Game({ onQuit }: { onQuit: () => void }) {
+  const dialogRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const quitRef = useRef<HTMLButtonElement>(null)
+  const [status, setStatus] = useState({
+    score: 0,
+    lives: 3,
+    wave: 1,
+    over: false,
+  })
 
   useEffect(() => {
+    const dialog = dialogRef.current!
     const canvas = canvasRef.current!
     const ctx = canvas.getContext("2d")!
+    const previouslyFocused =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null
+    const overlayRoot = (() => {
+      let node: HTMLElement = dialog
+      while (node.parentElement && node.parentElement !== document.body)
+        node = node.parentElement
+      return node
+    })()
+    const background = Array.from(document.body.children)
+      .filter(
+        (child): child is HTMLElement =>
+          child instanceof HTMLElement && child !== overlayRoot
+      )
+      .map((element) => ({ element, inert: element.inert }))
+    for (const { element } of background) element.inert = true
+    dialog.focus()
+
     const dpr = Math.min(2, window.devicePixelRatio || 1)
     let W = 0
     let H = 0
@@ -75,7 +121,14 @@ function Game({ onQuit }: { onQuit: () => void }) {
     resize()
     window.addEventListener("resize", resize)
 
-    const ship: Ship = { x: W / 2, y: H / 2, vx: 0, vy: 0, a: -Math.PI / 2, inv: 2 }
+    const ship: Ship = {
+      x: W / 2,
+      y: H / 2,
+      vx: 0,
+      vy: 0,
+      a: -Math.PI / 2,
+      inv: 2,
+    }
     let bullets: Bullet[] = []
     let rocks: Rock[] = []
     let score = 0
@@ -87,6 +140,7 @@ function Game({ onQuit }: { onQuit: () => void }) {
     let rapidUntil = 0
     let lastShot = 0
     const keys = new Set<string>()
+    const publishStatus = () => setStatus({ score, lives, wave, over })
 
     const fire = (now: number) => {
       const rapid = now < rapidUntil
@@ -109,8 +163,13 @@ function Game({ onQuit }: { onQuit: () => void }) {
       rocks = Array.from({ length: n }, () => {
         // spawn on the edges, never on the ship
         const onX = Math.random() < 0.5
-        return makeRock(onX ? Math.random() * W : Math.random() < 0.5 ? -40 : W + 40, onX ? (Math.random() < 0.5 ? -40 : H + 40) : Math.random() * H, 34 + Math.random() * 22)
+        return makeRock(
+          onX ? Math.random() * W : Math.random() < 0.5 ? -40 : W + 40,
+          onX ? (Math.random() < 0.5 ? -40 : H + 40) : Math.random() * H,
+          34 + Math.random() * 22
+        )
       })
+      publishStatus()
     }
     spawnWave()
 
@@ -121,18 +180,43 @@ function Game({ onQuit }: { onQuit: () => void }) {
       over = false
       hits = 0
       rapidUntil = 0
-      Object.assign(ship, { x: W / 2, y: H / 2, vx: 0, vy: 0, a: -Math.PI / 2, inv: 2 })
+      Object.assign(ship, {
+        x: W / 2,
+        y: H / 2,
+        vx: 0,
+        vy: 0,
+        a: -Math.PI / 2,
+        inv: 2,
+      })
       bullets = []
       spawnWave()
     }
 
     const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Tab") {
+        e.preventDefault()
+        quitRef.current?.focus()
+        return
+      }
       if (e.code === "Escape") {
         onQuit()
         return
       }
       // keep the page from scrolling / clicking buttons underneath
-      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space", "Enter", "KeyW", "KeyA", "KeyD"].includes(e.code)) e.preventDefault()
+      if (
+        [
+          "ArrowUp",
+          "ArrowDown",
+          "ArrowLeft",
+          "ArrowRight",
+          "Space",
+          "Enter",
+          "KeyW",
+          "KeyA",
+          "KeyD",
+        ].includes(e.code)
+      )
+        e.preventDefault()
       if (e.code === "Enter" && over) reset()
       keys.add(e.code)
     }
@@ -151,9 +235,18 @@ function Game({ onQuit }: { onQuit: () => void }) {
       lives--
       if (lives <= 0) {
         over = true
+        publishStatus()
         return
       }
-      Object.assign(ship, { x: W / 2, y: H / 2, vx: 0, vy: 0, a: -Math.PI / 2, inv: 2.5 })
+      Object.assign(ship, {
+        x: W / 2,
+        y: H / 2,
+        vx: 0,
+        vy: 0,
+        a: -Math.PI / 2,
+        inv: 2.5,
+      })
+      publishStatus()
     }
 
     let raf = 0
@@ -201,12 +294,16 @@ function Game({ onQuit }: { onQuit: () => void }) {
               b.life = 0
               score += Math.round(120 - r.r)
               hits++
+              publishStatus()
               if (hits % 3 === 0) rapidUntil = now + 5000
               break
             }
           }
           if (hit && r.r > 16) {
-            nextRocks.push(makeRock(r.x, r.y, r.r * 0.55), makeRock(r.x, r.y, r.r * 0.55))
+            nextRocks.push(
+              makeRock(r.x, r.y, r.r * 0.55),
+              makeRock(r.x, r.y, r.r * 0.55)
+            )
           } else if (!hit) {
             nextRocks.push(r)
           }
@@ -262,7 +359,8 @@ function Game({ onQuit }: { onQuit: () => void }) {
         ctx.save()
         ctx.translate(ship.x, ship.y)
         ctx.rotate(ship.a)
-        if (prev < rapidUntil) ctx.strokeStyle = `hsl(${(prev * 0.36) % 360} 100% 70%)`
+        if (prev < rapidUntil)
+          ctx.strokeStyle = `hsl(${(prev * 0.36) % 360} 100% 70%)`
         ctx.beginPath()
         ctx.moveTo(14, 0)
         ctx.lineTo(-10, 8)
@@ -287,7 +385,11 @@ function Game({ onQuit }: { onQuit: () => void }) {
       ctx.fillText(`SHIPS ${"▲".repeat(Math.max(0, lives))}`, 24, 58)
       if (prev < rapidUntil) {
         ctx.fillStyle = `hsl(${(prev * 0.36) % 360} 100% 70%)`
-        ctx.fillText(`RAINBOW ${((rapidUntil - prev) / 1000).toFixed(1)}s`, 24, 80)
+        ctx.fillText(
+          `RAINBOW ${((rapidUntil - prev) / 1000).toFixed(1)}s`,
+          24,
+          80
+        )
         ctx.fillStyle = "rgba(255,255,255,0.85)"
       }
       ctx.textAlign = "right"
@@ -310,12 +412,52 @@ function Game({ onQuit }: { onQuit: () => void }) {
       window.removeEventListener("keydown", onKeyDown)
       window.removeEventListener("keyup", onKeyUp)
       document.body.style.overflow = prevOverflow
+      for (const { element, inert } of background) element.inert = inert
+      previouslyFocused?.focus()
     }
   }, [onQuit])
 
   return (
-    <div className="fixed inset-0 z-[100]">
-      <canvas ref={canvasRef} className="block h-full w-full" data-testid="asteroids" />
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="asteroids-title"
+      aria-describedby="asteroids-instructions asteroids-status"
+      tabIndex={-1}
+      className="fixed inset-0 z-[100] bg-[#060606] focus:outline-none"
+      data-testid="asteroids-dialog"
+    >
+      <h2 id="asteroids-title" className="sr-only">
+        Ethereal Asteroids
+      </h2>
+      <p id="asteroids-instructions" className="sr-only">
+        Use Left and Right Arrow or A and D to turn, Up Arrow or W to thrust,
+        and Space to fire. Press Escape or the Quit game button to leave.
+      </p>
+      <p
+        id="asteroids-status"
+        role="status"
+        aria-live="polite"
+        className="sr-only"
+      >
+        Score {status.score}. Ships {status.lives}. Wave {status.wave}.
+        {status.over ? " Game over. Press Enter to play again." : ""}
+      </p>
+      <button
+        ref={quitRef}
+        type="button"
+        onClick={onQuit}
+        className="absolute top-4 right-4 z-10 inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-white/20 bg-black/70 px-3 text-sm text-white transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+      >
+        Quit game
+      </button>
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className="block h-full w-full"
+        data-testid="asteroids"
+      />
     </div>
   )
 }

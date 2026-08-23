@@ -15,10 +15,18 @@
 //     leave a timer firing into a component that no longer existed.
 import { act, createElement, useState } from "react"
 import { createRoot } from "react-dom/client"
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest"
 
-import { COPY_FLASH_MS, useCopy  } from "./use-copy"
-import type {CopyState} from "./use-copy";
+import { COPY_FLASH_MS, useCopy } from "./use-copy"
+import type { CopySource, CopyState } from "./use-copy"
 
 beforeAll(() => {
   ;(globalThis as Record<string, unknown>).IS_REACT_ACT_ENVIRONMENT = true
@@ -28,7 +36,7 @@ type Harness = {
   /** every state the hook has rendered, in order — so we can prove that
    *  "copied" was never shown even for a single frame */
   rendered: CopyState[]
-  copy: (text: string | (() => string | null | undefined)) => Promise<void>
+  copy: (text: CopySource) => Promise<void>
   unmount: () => void
 }
 
@@ -55,7 +63,10 @@ function mountCopyButton(flashMs?: number): Harness {
 }
 
 /** run the hook's async `copy` and flush the state update it schedules */
-const runCopy = async (harness: Harness, text: Parameters<Harness["copy"]>[0]) =>
+const runCopy = async (
+  harness: Harness,
+  text: Parameters<Harness["copy"]>[0]
+) =>
   act(async () => {
     await harness.copy(text)
   })
@@ -85,7 +96,9 @@ describe("useCopy on the happy path", () => {
     active = mountCopyButton()
     expect(active.rendered.at(-1)).toBe("idle")
     await runCopy(active, "https://example.test/playground?c=%7B%7D")
-    expect(writeText).toHaveBeenCalledWith("https://example.test/playground?c=%7B%7D")
+    expect(writeText).toHaveBeenCalledWith(
+      "https://example.test/playground?c=%7B%7D"
+    )
     expect(active.rendered.at(-1)).toBe("copied")
   })
 
@@ -124,6 +137,13 @@ describe("useCopy on the happy path", () => {
     expect(produce).toHaveBeenCalledTimes(1)
     expect(writeText).toHaveBeenCalledWith("computed at click")
   })
+
+  it("awaits an async text producer before writing", async () => {
+    active = mountCopyButton()
+    await runCopy(active, async () => "fetched at click")
+    expect(writeText).toHaveBeenCalledWith("fetched at click")
+    expect(active.rendered.at(-1)).toBe("copied")
+  })
 })
 
 describe("useCopy never claims success it did not have", () => {
@@ -138,9 +158,22 @@ describe("useCopy never claims success it did not have", () => {
   it("shows error, and never copied, when the Clipboard API is missing entirely", async () => {
     // insecure origins: `navigator.clipboard` is undefined and reading
     // through it throws synchronously inside the hook
-    Object.defineProperty(navigator, "clipboard", { value: undefined, configurable: true })
+    Object.defineProperty(navigator, "clipboard", {
+      value: undefined,
+      configurable: true,
+    })
     active = mountCopyButton()
     await runCopy(active, "text")
+    expect(active.rendered.at(-1)).toBe("error")
+    expect(active.rendered).not.toContain("copied")
+  })
+
+  it("shows error when an async text producer rejects", async () => {
+    active = mountCopyButton()
+    await runCopy(active, async () => {
+      throw new Error("fetch failed")
+    })
+    expect(writeText).not.toHaveBeenCalled()
     expect(active.rendered.at(-1)).toBe("error")
     expect(active.rendered).not.toContain("copied")
   })

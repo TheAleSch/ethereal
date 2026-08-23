@@ -133,7 +133,7 @@ describe('dt', () => {
 })
 
 describe('setPaused', () => {
-  it('keeps ticking with dt 0 — every clock holds, `now` keeps advancing', () => {
+  it('does not invoke subscribers while paused', () => {
     const frames: [number, number][] = []
     ticker.subscribe((now, dt) => frames.push([now, dt]))
     raf.frame(100)
@@ -142,10 +142,7 @@ describe('setPaused', () => {
     raf.frame(2100)
     raf.frame(3100)
     expect(ticker.isPaused()).toBe(true)
-    expect(frames.slice(2)).toEqual([
-      [2.1, 0],
-      [3.1, 0],
-    ])
+    expect(frames).toHaveLength(2)
     ticker.setPaused(false)
   })
 
@@ -184,6 +181,17 @@ describe('setTickRate', () => {
     raf.frame(3)
     expect(tick).toHaveBeenCalledTimes(3)
     expect(ticker.getTickRate()).toBe(0)
+    ticker.setTickRate(60)
+  })
+
+  it.each([1, 5])('preserves wall-clock speed at %i fps', (fps) => {
+    const seen: number[] = []
+    ticker.setTickRate(fps)
+    ticker.subscribe((_now, dt) => seen.push(dt))
+    const step = 1000 / fps
+    raf.frame(step)
+    raf.frame(2 * step)
+    expect(seen[seen.length - 1]).toBeCloseTo(step / 1000, 3)
     ticker.setTickRate(60)
   })
 })

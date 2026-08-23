@@ -16,9 +16,7 @@ describe("Copy for AI snippets", () => {
         false
       )
 
-      expect(payload).toContain(
-        "import { Ethereal } from '@theale/ethereal'"
-      )
+      expect(payload).toContain("import { Ethereal } from '@theale/ethereal'")
       expect(payload).toContain("needles={12}")
       if (host === "chat") {
         expect(payload).toMatch(/<input\s+type="text"/)

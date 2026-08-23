@@ -27,7 +27,9 @@ export const HOST_CLASS: Record<PreviewHostKind, string> = {
  *  snippet, where they would target classes the user's app does not have. */
 export function surfaceClass(kind: PreviewKind, light: boolean) {
   if (light) return "border-black/15 bg-white/70 text-zinc-900"
-  return kind === "eh" ? "border-white/10 bg-black/40" : "border-white/12 bg-white/[0.03]"
+  return kind === "eh"
+    ? "border-white/10 bg-black/40"
+    : "border-white/12 bg-white/[0.03]"
 }
 
 /** Wrap the effect JSX in the host the playground is previewing it on.

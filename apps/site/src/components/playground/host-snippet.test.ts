@@ -18,8 +18,8 @@
 //     reformat by hand.
 import { describe, expect, it } from "vitest"
 
-import { HOST_CLASS, hostSnippet, surfaceClass  } from "./host-snippet"
-import type {PreviewKind} from "./host-snippet";
+import { HOST_CLASS, hostSnippet, surfaceClass } from "./host-snippet"
+import type { PreviewKind } from "./host-snippet"
 import type { PreviewHostKind } from "./preview-host-kind"
 
 const ALL_HOSTS: PreviewHostKind[] = ["button", "chat", "card", "pill"]
@@ -33,12 +33,16 @@ const EFFECT = `<Ethereal
 describe("surfaceClass", () => {
   it("uses one light surface for every effect, and a darker fill for Event Horizon", () => {
     for (const kind of ALL_KINDS) {
-      expect(surfaceClass(kind, true)).toBe("border-black/15 bg-white/70 text-zinc-900")
+      expect(surfaceClass(kind, true)).toBe(
+        "border-black/15 bg-white/70 text-zinc-900"
+      )
     }
     // the black-hole effect needs a genuinely dark plate to read against;
     // the glow effects sit on a near-transparent one
     expect(surfaceClass("eh", false)).toBe("border-white/10 bg-black/40")
-    expect(surfaceClass("ethereal", false)).toBe("border-white/12 bg-white/[0.03]")
+    expect(surfaceClass("ethereal", false)).toBe(
+      "border-white/12 bg-white/[0.03]"
+    )
     expect(surfaceClass("dither", false)).toBe(surfaceClass("ethereal", false))
   })
 
@@ -54,23 +58,44 @@ describe("surfaceClass", () => {
 })
 
 describe("hostSnippet layers the effect correctly for every host", () => {
-  it.each(ALL_HOSTS)("gives the %s host isolation and its content a stacking context", (host) => {
-    const snippet = hostSnippet(host, EFFECT, "Get started", "ethereal", false)
-    expect(snippet).toContain("relative isolate")
-    expect(snippet).toContain("relative z-10")
-  })
-
-  it.each(ALL_HOSTS)("styles the %s host with the shared surface classes", (host) => {
-    for (const light of [true, false]) {
-      const snippet = hostSnippet(host, EFFECT, "Get started", "eh", light)
-      expect(snippet).toContain(surfaceClass("eh", light))
+  it.each(ALL_HOSTS)(
+    "gives the %s host isolation and its content a stacking context",
+    (host) => {
+      const snippet = hostSnippet(
+        host,
+        EFFECT,
+        "Get started",
+        "ethereal",
+        false
+      )
+      expect(snippet).toContain("relative isolate")
+      expect(snippet).toContain("relative z-10")
     }
-  })
+  )
 
-  it.each(ALL_HOSTS)("reuses the live preview's own layout classes for the %s host", (host) => {
-    const snippet = hostSnippet(host, EFFECT, "Get started", "ethereal", false)
-    expect(snippet).toContain(HOST_CLASS[host])
-  })
+  it.each(ALL_HOSTS)(
+    "styles the %s host with the shared surface classes",
+    (host) => {
+      for (const light of [true, false]) {
+        const snippet = hostSnippet(host, EFFECT, "Get started", "eh", light)
+        expect(snippet).toContain(surfaceClass("eh", light))
+      }
+    }
+  )
+
+  it.each(ALL_HOSTS)(
+    "reuses the live preview's own layout classes for the %s host",
+    (host) => {
+      const snippet = hostSnippet(
+        host,
+        EFFECT,
+        "Get started",
+        "ethereal",
+        false
+      )
+      expect(snippet).toContain(HOST_CLASS[host])
+    }
+  )
 
   it.each(ALL_HOSTS)("closes every tag it opens for the %s host", (host) => {
     const snippet = hostSnippet(host, EFFECT, "Get started", "ethereal", false)
@@ -82,12 +107,12 @@ describe("hostSnippet layers the effect correctly for every host", () => {
 
 describe("hostSnippet per-host shape", () => {
   it("uses the caller's label for the button host and nothing else does", () => {
-    expect(hostSnippet("button", EFFECT, "Launch console", "ethereal", false)).toContain(
-      ">Launch console<"
-    )
-    expect(hostSnippet("pill", EFFECT, "Launch console", "ethereal", false)).not.toContain(
-      "Launch console"
-    )
+    expect(
+      hostSnippet("button", EFFECT, "Launch console", "ethereal", false)
+    ).toContain(">Launch console<")
+    expect(
+      hostSnippet("pill", EFFECT, "Launch console", "ethereal", false)
+    ).not.toContain("Launch console")
   })
 
   it("keeps the chat effect a sibling of the input rather than a child of it", () => {
@@ -110,11 +135,19 @@ describe("hostSnippet per-host shape", () => {
 describe("hostSnippet indentation", () => {
   it("indents every line of the effect by two spaces so it nests inside the host", () => {
     const snippet = hostSnippet("button", EFFECT, "Go", "ethereal", false)
-    expect(snippet).toContain("\n  <Ethereal\n    path=\"around\"\n    needles={9}\n  />\n")
+    expect(snippet).toContain(
+      '\n  <Ethereal\n    path="around"\n    needles={9}\n  />\n'
+    )
   })
 
   it("leaves blank lines blank instead of filling them with trailing whitespace", () => {
-    const snippet = hostSnippet("button", "<Ethereal />\n\n<Ethereal />", "Go", "ethereal", false)
+    const snippet = hostSnippet(
+      "button",
+      "<Ethereal />\n\n<Ethereal />",
+      "Go",
+      "ethereal",
+      false
+    )
     expect(snippet).not.toMatch(/^ +$/m)
   })
 })

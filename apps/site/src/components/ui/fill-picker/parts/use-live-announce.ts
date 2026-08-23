@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import * as React from "react"
 
 /**
  * Debounced screen-reader announcements for 2D controls (`role="application"`
@@ -10,22 +10,22 @@ import * as React from "react";
  * flooding the SR queue.
  */
 export function useLiveAnnounce(
-  delayMs = 150,
+  delayMs = 150
 ): [string, (text: string) => void] {
-  const [liveText, setLiveText] = React.useState("");
-  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [liveText, setLiveText] = React.useState("")
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   const announce = React.useCallback(
     (text: string) => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => setLiveText(text), delayMs);
+      if (timerRef.current) clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => setLiveText(text), delayMs)
     },
-    [delayMs],
-  );
+    [delayMs]
+  )
   React.useEffect(
     () => () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef.current) clearTimeout(timerRef.current)
     },
-    [],
-  );
-  return [liveText, announce];
+    []
+  )
+  return [liveText, announce]
 }

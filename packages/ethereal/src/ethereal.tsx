@@ -7,6 +7,7 @@ import { useEffect, useRef } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { THINKING, lift, scaleDuration, tightenPulse } from './core/derive'
 import { pathPx, quantAspect, rand, randEdgePos, walkRect, walkSmooth } from './core/path'
+import { boundedPalette, finiteNumber, runtimeConfigSignature } from './core/normalize'
 import { mergeConfig, useInteraction, type StateConfig, type ThemeConfig } from './core/state'
 import { subscribe } from './core/ticker'
 import { useReducedMotion, useTheme, type Theme } from './core/theme'
@@ -236,6 +237,7 @@ type HostRec = {
   needleCyc?: number
   needleBG?: (inset: number, seed?: number) => string
 }
+type DriverState = Pick<HostRec, 'phase' | 'hovT' | 'hovC' | 'clk'>
 const hostsSet = new Set<HostRec>()
 let unsub: (() => void) | null = null
 
@@ -596,6 +598,15 @@ export function Ethereal({
   const theme = useTheme(ref, explicitTheme, themeDetector)
   const reducedMotion = useReducedMotion()
   const interaction = useInteraction(ref)
+  const driverRef = useRef<DriverState | null>(null)
+  const activeRecRef = useRef<HostRec | null>(null)
+  if (!driverRef.current) driverRef.current = { phase: nextPhase(), hovT: 0, hovC: 0, clk: 0 }
+  driverRef.current.hovT = interaction.hovered ? 1 : 0
+  const safeTransitionMs = finiteNumber(transitionMs, 320, 0, 10_000)
+
+  useEffect(() => {
+    if (activeRecRef.current) activeRecRef.current.hovT = interaction.hovered ? 1 : 0
+  }, [interaction.hovered])
 
   const cfg = mergeConfig<EtherealCfg>({
     defaults: ETHEREAL,
@@ -611,6 +622,7 @@ export function Ethereal({
     whilePressed,
     componentName: 'ethereal',
   })
+  const cfgSignature = runtimeConfigSignature(cfg, boundedPalette(cfg.colors, ETHEREAL.colors))
 
   useEffect(() => {
     const fx = ref.current,
@@ -622,27 +634,46 @@ export function Ethereal({
     // loop-driving counts — configs can arrive from untrusted places
     // (URL-shared playground links) where needles:1e8 would OOM the tab
     // building gradient strings, and any NaN poisons the animation clocks.
-    const num = (value: number, fallback: number, lo: number, hi: number) =>
-      Number.isFinite(value) ? Math.min(hi, Math.max(lo, value)) : fallback
     const clamped: EtherealCfg = {
       ...cfg,
-      colors: Array.isArray(cfg.colors) && cfg.colors.length ? cfg.colors : ETHEREAL.colors,
-      spotW: num(cfg.spotW, ETHEREAL.spotW, 1, 4000),
-      spotH: num(cfg.spotH, ETHEREAL.spotH, 1, 4000),
-      duration: num(cfg.duration, ETHEREAL.duration, 0.1, 600),
-      needles: num(cfg.needles, ETHEREAL.needles, 0, 64),
-      hotspots: num(cfg.hotspots, ETHEREAL.hotspots, 1, 16),
-      spotSamples: num(cfg.spotSamples, ETHEREAL.spotSamples, 0, 16),
-      hotSpread: num(cfg.hotSpread, ETHEREAL.hotSpread, 0, 1000),
-      trail: num(cfg.trail, 1, 0.2, 4),
-      lead: num(cfg.lead, 0, 0, 2),
-      trailFade: num(cfg.trailFade, 0.45, 0, 1),
-      heightMin: num(cfg.heightMin, ETHEREAL.heightMin, 0.1, 4),
-      heightMax: num(cfg.heightMax, ETHEREAL.heightMax, 0.1, 4),
+      colors: boundedPalette(cfg.colors, ETHEREAL.colors),
+      hoverAmount: finiteNumber(cfg.hoverAmount, ETHEREAL.hoverAmount, 0, 10),
+      hoverEase: finiteNumber(cfg.hoverEase, ETHEREAL.hoverEase, 0.1, 100),
+      duration: finiteNumber(cfg.duration, ETHEREAL.duration, 0.1, 600),
+      repeatDelay: finiteNumber(cfg.repeatDelay, ETHEREAL.repeatDelay, 0, 600),
+      spotSamples: finiteNumber(cfg.spotSamples, ETHEREAL.spotSamples, 0, 16),
+      spotW: finiteNumber(cfg.spotW, ETHEREAL.spotW, 1, 4000),
+      spotH: finiteNumber(cfg.spotH, ETHEREAL.spotH, 1, 4000),
+      trail: finiteNumber(cfg.trail, ETHEREAL.trail, 0.2, 4),
+      lead: finiteNumber(cfg.lead, ETHEREAL.lead, 0, 2),
+      trailFade: finiteNumber(cfg.trailFade, ETHEREAL.trailFade, 0, 1),
+      strokeWidth: finiteNumber(cfg.strokeWidth, ETHEREAL.strokeWidth, 0, 100),
+      blendSoftness: finiteNumber(cfg.blendSoftness, ETHEREAL.blendSoftness, 0, 1),
+      spotBlur: finiteNumber(cfg.spotBlur, ETHEREAL.spotBlur, 0, 120),
+      spotOffset: finiteNumber(cfg.spotOffset, ETHEREAL.spotOffset, -400, 400),
+      hotspots: finiteNumber(cfg.hotspots, ETHEREAL.hotspots, 1, 16),
+      hotSpread: finiteNumber(cfg.hotSpread, ETHEREAL.hotSpread, 0, 1000),
+      reveal: finiteNumber(cfg.reveal, ETHEREAL.reveal, 0, 4),
+      heightMin: finiteNumber(cfg.heightMin, ETHEREAL.heightMin, 0.1, 4),
+      heightMax: finiteNumber(cfg.heightMax, ETHEREAL.heightMax, 0.1, 4),
       // beamW = 1.1 + 0.6·amp·sin(...) — amp past ~1.8 swings --bw/--bh
       // negative mid-cycle, which invalidates every gradient radius built
       // from them and blanks the glow for that half of the breath
-      breatheAmp: num(cfg.breatheAmp, ETHEREAL.breatheAmp, 0, 1.5),
+      breatheAmp: finiteNumber(cfg.breatheAmp, ETHEREAL.breatheAmp, 0, 1.5),
+      flicker: finiteNumber(cfg.flicker, ETHEREAL.flicker, 0, 2),
+      wander: finiteNumber(cfg.wander, ETHEREAL.wander, 0, 2),
+      pulseMin: finiteNumber(cfg.pulseMin, ETHEREAL.pulseMin, 0.2, 3),
+      pulseMax: finiteNumber(cfg.pulseMax, ETHEREAL.pulseMax, 0.2, 3),
+      needles: finiteNumber(cfg.needles, ETHEREAL.needles, 0, 64),
+      needleHeight: finiteNumber(cfg.needleHeight, ETHEREAL.needleHeight, 0, 10),
+      glowBlur: finiteNumber(cfg.glowBlur, ETHEREAL.glowBlur, 0, 120),
+      strokeOpacity: finiteNumber(cfg.strokeOpacity, ETHEREAL.strokeOpacity, 0, 4),
+      innerOpacity: finiteNumber(cfg.innerOpacity, ETHEREAL.innerOpacity, 0, 4),
+      bloomOpacity: finiteNumber(cfg.bloomOpacity, ETHEREAL.bloomOpacity, 0, 4),
+      strength: finiteNumber(cfg.strength, ETHEREAL.strength, 0, 4),
+      saturation: finiteNumber(cfg.saturation, ETHEREAL.saturation, 0, 3),
+      brightness: finiteNumber(cfg.brightness, ETHEREAL.brightness, 0.2, 3),
+      hueRange: finiteNumber(cfg.hueRange, ETHEREAL.hueRange, 0, 360),
     }
     // spotH is the real height of the LIGHT, not just the reveal window: the
     // wash blobs, needles and edge-relight bands all scale with it, so a big
@@ -997,9 +1028,9 @@ export function Ethereal({
     // STATE TRANSITIONS: when cfg changes (a different `state`, or any prop)
     // the rebuilt layers fade in over `transitionMs` (e.g. idle → sending →
     // thinking on a chat composer)
-    if (transitionMs > 0 && !reducedMotion) {
+    if (safeTransitionMs > 0 && !reducedMotion) {
       fx.style.opacity = '0'
-      fx.style.transition = `opacity ${transitionMs}ms ease`
+      fx.style.transition = `opacity ${safeTransitionMs}ms ease`
       // force a style flush so the 0 is actually committed — a single rAF
       // fires before style recalc and the transition would never run
       void fx.offsetWidth
@@ -1037,10 +1068,21 @@ export function Ethereal({
     // bands meet in the middle at half of it, and past that point the "edge
     // relight" is just a full interior wash. 0 = unmeasured (jsdom, display:
     // none) — fall back to a size where the caps don't bite.
-    const hostShort = Math.min(host.offsetWidth, host.offsetHeight) || 320
-    const edgePx = Math.min(Math.round(28 * hScale), Math.max(8, Math.floor(hostShort * 0.4)))
-    const edgeY = band('', '#fff', 'transparent', `${edgePx}px`)
-    const edgeX = band('to right', '#fff', 'transparent', `${edgePx}px`)
+    const responsiveBands = () => {
+      const hostShort = Math.min(host.offsetWidth, host.offsetHeight) || 320
+      const edgePx = Math.min(Math.round(28 * hScale), Math.max(8, Math.floor(hostShort * 0.4)))
+      const bloomBand = Math.max(
+        8,
+        Math.min(Math.round(18 + 64 * Math.max(0, hScale - 1)), Math.round(hostShort * 0.28)),
+      )
+      return {
+        edgeY: band('', '#fff', 'transparent', `${edgePx}px`),
+        edgeX: band('to right', '#fff', 'transparent', `${edgePx}px`),
+        bloomEdgeY: band('', '#fff', 'transparent', `${bloomBand}px`),
+        bloomEdgeX: band('to right', '#fff', 'transparent', `${bloomBand}px`),
+      }
+    }
+    let { edgeY, edgeX, bloomEdgeY, bloomEdgeX } = responsiveBands()
     // every painted layer wears the same filter chain — hue drift, saturation,
     // and a brightness that boost-hover scales through --hovB. Saturation is
     // baked in rather than read from a custom property: it is fixed for the
@@ -1062,6 +1104,15 @@ export function Ethereal({
             maskComposite: composites[1],
           }
         : { webkitMask: layers, mask: layers }
+    const responsiveInnerMasks: { el: HTMLElement; spotMask: string }[] = []
+    const responsiveBloomMasks: HTMLElement[] = []
+    const updateResponsiveMasks = () => {
+      ;({ edgeY, edgeX, bloomEdgeY, bloomEdgeX } = responsiveBands())
+      for (const { el, spotMask } of responsiveInnerMasks)
+        Object.assign(el.style, masked(`${spotMask}, ${edgeY}, ${edgeX}`, ['source-in, source-over', 'intersect, add']))
+      for (const el of responsiveBloomMasks)
+        Object.assign(el.style, masked(`${bloomEdgeY}, ${bloomEdgeX}`, ['source-over', 'add']))
+    }
     const spotScale = clamped.path === 'breathe' ? 3 : 1 // breathe: spotlight covers the whole element
     // static path: fixed band hugging the bottom edge instead of a moving spot
     const staticSpot = `linear-gradient(to top, #fff, rgba(255,255,255,0.55) ${Math.round(26 + 18 * soft)}%, transparent ${Math.round(58 + 20 * soft)}%)`
@@ -1091,6 +1142,7 @@ export function Ethereal({
             opacity: envelope('var(--flk2,1)', (clamped.innerOpacity * clamped.strength * damp).toFixed(3)),
             filter: glowFilter(spotBlurF, '--bhue'),
           })
+          responsiveInnerMasks.push({ el: inner, spotMask })
         }
         const whiteHead = `radial-gradient(ellipse ${rotW(24, 28, head)} ${rotH(24, 28, head)} at ${pos(0, head.x)} ${pos(0, head.y)}, rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%)`
         const stroke = mk('2')
@@ -1127,15 +1179,6 @@ export function Ethereal({
     // white beams straight through the interior, the exact spill the
     // post-blur band exists to prevent. Tall EXTERNAL reach is unaffected:
     // the external bloom sizes its own box from typReach below.
-    const bloomBand = Math.max(
-      8,
-      Math.min(
-        Math.round(18 + 64 * Math.max(0, hScale - 1)),
-        Math.round(hostShort * 0.28)
-      )
-    )
-    const bloomEdgeY = band('', '#fff', 'transparent', `${bloomBand}px`)
-    const bloomEdgeX = band('to right', '#fff', 'transparent', `${bloomBand}px`)
     let holeRO: ResizeObserver | undefined
     const makeBloom = (external: boolean) => {
       // A round bloom is a circle on either side of the border. It must keep
@@ -1177,6 +1220,7 @@ export function Ethereal({
         // latter still smears white core light into the host centre.
         const wrap = mk('3')
         Object.assign(wrap.style, masked(`${bloomEdgeY}, ${bloomEdgeX}`, ['source-over', 'add']))
+        responsiveBloomMasks.push(wrap)
         box = wrap
       }
       const bloom = mk('3', box)
@@ -1226,6 +1270,7 @@ export function Ethereal({
     const needleLayers: { el: HTMLElement; inset: number }[] = []
     if (clamped.place === 'internal' || clamped.place === 'both') needleLayers.push(makeBloom(false))
     if (clamped.place !== 'internal') needleLayers.push(makeBloom(true))
+    updateResponsiveMasks()
 
     // reveal starts hidden; other modes at full
     host.style.setProperty('--hov', clamped.hover === 'reveal' ? '0' : '1')
@@ -1246,10 +1291,10 @@ export function Ethereal({
     const rec: HostRec = {
       el: host,
       cfg: clamped,
-      phase: nextPhase(),
-      hovT: 0,
-      hovC: 0,
-      clk: 0,
+      phase: driverRef.current!.phase,
+      hovT: driverRef.current!.hovT,
+      hovC: driverRef.current!.hovC,
+      clk: driverRef.current!.clk,
       aspect: quantAspect(host.offsetWidth, host.offsetHeight),
       hPx: Math.max(1, host.offsetHeight),
       visible: true,
@@ -1261,6 +1306,7 @@ export function Ethereal({
     const metricsRO = new ResizeObserver(() => {
       rec.aspect = quantAspect(host.offsetWidth, host.offsetHeight)
       rec.hPx = Math.max(1, host.offsetHeight)
+      updateResponsiveMasks()
     })
     metricsRO.observe(host)
     // off-screen hosts pause entirely (generous margin — the glow overflows)
@@ -1271,25 +1317,19 @@ export function Ethereal({
       { rootMargin: '160px' }
     )
     io.observe(host)
-    const enter = () => {
-      rec.hovT = 1
-    }
-    const leave = () => {
-      rec.hovT = 0
-    }
-    host.addEventListener('pointerenter', enter)
-    host.addEventListener('pointerleave', leave)
+    activeRecRef.current = rec
     addHost(rec)
     return () => {
+      driverRef.current!.clk = rec.clk
+      driverRef.current!.hovC = rec.hovC
+      if (activeRecRef.current === rec) activeRecRef.current = null
       cleanupStatic()
       metricsRO.disconnect()
       io.disconnect()
-      host.removeEventListener('pointerenter', enter)
-      host.removeEventListener('pointerleave', leave)
       removeHost(rec)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(cfg), transitionMs, reducedMotion])
+  }, [cfgSignature, safeTransitionMs, reducedMotion])
   // inline styles, no Tailwind dependency — the library must not assume the
   // consumer's CSS stack
   return (
@@ -1327,10 +1367,10 @@ export function EtherealWrap({
     <span
       className={className}
       style={{
+        ...style,
         position: 'relative',
         isolation: 'isolate',
         display: 'inline-block',
-        ...style,
       }}
     >
       <span style={{ position: 'relative', zIndex: 10, display: 'block' }}>{children}</span>

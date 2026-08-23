@@ -8,16 +8,27 @@
 // So the important tests here do not assert hand-written expectations: they
 // assert AGREEMENT with `mergeConfig` itself.
 import { describe, expect, it } from "vitest"
-import { ETHEREAL, ETHEREAL_STATES, deriveEtherealState, mergeConfig } from "@theale/ethereal"
+import {
+  ETHEREAL,
+  ETHEREAL_STATES,
+  deriveEtherealState,
+  mergeConfig,
+} from "@theale/ethereal"
 import type { EtherealCfg, StateConfig } from "@theale/ethereal"
 
 import { pinnedStateOverride } from "./pinned-state"
 
-const builtIns = ETHEREAL_STATES as unknown as Record<string, StateConfig<EtherealCfg>>
+const builtIns = ETHEREAL_STATES as unknown as Record<
+  string,
+  StateConfig<EtherealCfg>
+>
 
 /** what the component actually renders: the flat config with the pinned
  *  override spread on top, the same way `cloneElement` applies it */
-const rendered = (cfg: Partial<EtherealCfg>, over: Record<string, unknown>) => ({
+const rendered = (
+  cfg: Partial<EtherealCfg>,
+  over: Record<string, unknown>
+) => ({
   ...ETHEREAL,
   ...cfg,
   ...over,
@@ -95,7 +106,9 @@ describe("pinnedStateOverride", () => {
       derive: deriveEtherealState,
     })
     // 8 * 0.7 — the value the deriver produces, not the base 8
-    expect(over.duration).toBe(deriveEtherealState({ ...ETHEREAL, ...cfg }, "thinking").duration)
+    expect(over.duration).toBe(
+      deriveEtherealState({ ...ETHEREAL, ...cfg }, "thinking").duration
+    )
     expect(over.duration).not.toBe(8)
   })
 
@@ -111,7 +124,12 @@ describe("pinnedStateOverride", () => {
       derive: deriveEtherealState,
     })
     expect(configOnly(rendered(cfg, over))).toEqual(
-      configOnly(merged(cfg, "thinking", { hovered: true, pressed: false }) as unknown as Record<string, unknown>)
+      configOnly(
+        merged(cfg, "thinking", {
+          hovered: true,
+          pressed: false,
+        }) as unknown as Record<string, unknown>
+      )
     )
   })
 
@@ -141,7 +159,14 @@ describe("pinnedStateOverride", () => {
     expect(over.strength).toBe(4)
     expect(over.needles).toBe(9)
     expect(configOnly(rendered(cfg, over))).toEqual(
-      configOnly(merged(cfg, "thinking", { hovered: true, pressed: true }, custom) as unknown as Record<string, unknown>)
+      configOnly(
+        merged(
+          cfg,
+          "thinking",
+          { hovered: true, pressed: true },
+          custom
+        ) as unknown as Record<string, unknown>
+      )
     )
   })
 
@@ -162,13 +187,19 @@ describe("pinnedStateOverride", () => {
     })
     // the derived duration must come from the THEME's 9, not the flat 5 —
     // derivation reads the config as the caller expressed it, themes included
-    expect(over.duration).toBe(deriveEtherealState({ ...ETHEREAL, ...cfg, ...themes.dark }, "thinking").duration)
+    expect(over.duration).toBe(
+      deriveEtherealState({ ...ETHEREAL, ...cfg, ...themes.dark }, "thinking")
+        .duration
+    )
     expect(configOnly(rendered(cfg, over))).toEqual(
       configOnly(
-        merged(cfg, "thinking", { hovered: true, pressed: false }, undefined, themes) as unknown as Record<
-          string,
-          unknown
-        >
+        merged(
+          cfg,
+          "thinking",
+          { hovered: true, pressed: false },
+          undefined,
+          themes
+        ) as unknown as Record<string, unknown>
       )
     )
   })
@@ -176,7 +207,9 @@ describe("pinnedStateOverride", () => {
   it("lets an explicit state entry beat the derived variation, as mergeConfig does", () => {
     const cfg = { duration: 8 } as Partial<EtherealCfg>
     const custom: Record<string, StateConfig<EtherealCfg>> = {
-      thinking: { dark: { base: { duration: 2 }, whileHover: { strength: 3 } } },
+      thinking: {
+        dark: { base: { duration: 2 }, whileHover: { strength: 3 } },
+      },
     }
     const over = pinnedStateOverride({
       slot: "whileHover",
@@ -204,7 +237,12 @@ describe("pinnedStateOverride", () => {
     })
     expect(over.duration).toBeUndefined()
     expect(configOnly(rendered(cfg, over))).toEqual(
-      configOnly(merged(cfg, "idle", { hovered: true, pressed: false }) as unknown as Record<string, unknown>)
+      configOnly(
+        merged(cfg, "idle", {
+          hovered: true,
+          pressed: false,
+        }) as unknown as Record<string, unknown>
+      )
     )
   })
 

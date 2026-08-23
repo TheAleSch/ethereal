@@ -145,7 +145,9 @@ export function useTheme(
  * users who enable Reduce Motion while the page is open must be able to stop
  * the animation immediately without reloading. */
 export function useReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(false)
+  const [reduced, setReduced] = useState(
+    () => typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
+  )
 
   useIsoLayoutEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return

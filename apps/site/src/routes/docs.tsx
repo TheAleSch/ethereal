@@ -79,7 +79,11 @@ function Code({ children }: { children: React.ReactNode }) {
  *  in the type column is the section's own config type.
  *
  *  `rows` defaults to `STATE_PROPS` (idle/thinking built-ins). */
-function StatePropsTable({ rows = STATE_PROPS }: { rows?: typeof STATE_PROPS }) {
+function StatePropsTable({
+  rows = STATE_PROPS,
+}: {
+  rows?: typeof STATE_PROPS
+}) {
   return (
     <div className="overflow-x-auto rounded-xl border border-white/[0.07]">
       <table className="w-full min-w-[46rem] border-collapse text-left text-sm">
@@ -135,9 +139,9 @@ function DocsPage() {
             <CopyPage />
           </div>
           <p className="mt-3 max-w-[68ch] text-[15px] leading-relaxed text-muted-foreground">
-            Travelling-light and black-hole glow effects for React — pure CSS
-            gradients and masks, no canvas or WebGL, driven by one shared ~60fps
-            loop for every mounted instance.
+            Travelling-light, black-hole and dithered glow effects for React —
+            two CSS renderers and one pixelated-canvas renderer, driven by one
+            shared ~60fps loop.
           </p>
           <div className="mt-6">
             <LiveDemo />
@@ -195,7 +199,7 @@ function DocsPage() {
                 <strong className="font-semibold text-foreground">
                   Next.js App Router:
                 </strong>{" "}
-                both components already ship the <Code>'use client'</Code>{" "}
+                all three components already ship the <Code>'use client'</Code>{" "}
                 directive, so you can import them straight into a Server
                 Component. You only need your own <Code>'use client'</Code> if
                 the surrounding file also uses state or event handlers.
@@ -216,20 +220,20 @@ function DocsPage() {
             {/* States */}
             <Section id="states" title="States">
               <Prose>
-                <Code>{"<Ethereal>"}</Code> and{" "}
-                <Code>{"<EtherealWrap>"}</Code> accept a <Code>state</Code> prop
-                — a named partial config merged over your base props. Change it
-                and the rebuilt layers cross-fade. The three built-ins are
-                exported as <Code>ETHEREAL_STATES</Code>.
+                <Code>{"<Ethereal>"}</Code> and <Code>{"<EtherealWrap>"}</Code>{" "}
+                accept a <Code>state</Code> prop — a named partial config merged
+                over your base props. Change it and the rebuilt layers
+                cross-fade. The two built-ins are exported as{" "}
+                <Code>ETHEREAL_STATES</Code>.
               </Prose>
               <StatePropsTable />
               <Prose>
-                Light and dark can also want different <em>values</em>, not
-                just a dimmer version of the same glow — branch the base
-                config with <Code>themes</Code>. It sits below states on
-                purpose: a state is the more specific thing, so a named{" "}
-                <Code>state</Code> can still override the theme baseline. The
-                full merge order, lowest to highest:
+                Light and dark can also want different <em>values</em>, not just
+                a dimmer version of the same glow — branch the base config with{" "}
+                <Code>themes</Code>. It sits below states on purpose: a state is
+                the more specific thing, so a named <Code>state</Code> can still
+                override the theme baseline. The full merge order, lowest to
+                highest:
               </Prose>
               <div className="overflow-x-auto rounded-xl border border-white/[0.07]">
                 <table className="w-full min-w-[28rem] border-collapse text-left text-sm">
@@ -286,28 +290,33 @@ function DocsPage() {
                 Tuning this in the playground
               </h3>
               <Prose>
-                The <Link to="/playground" className="underline underline-offset-2">playground</Link>{" "}
-                edits the same cascade this page describes, one cell at a time. The{" "}
-                <Code>Base</Code> row is the flat config every state inherits; each named
-                state below it is a <Code>states</Code> entry. Inside a row, the two pill
-                strips pick which cell you are editing: theme, then interaction slot.
+                The{" "}
+                <Link to="/playground" className="underline underline-offset-2">
+                  playground
+                </Link>{" "}
+                edits the same cascade this page describes, one cell at a time.
+                The <Code>Base</Code> row is the flat config every state
+                inherits; each named state below it is a <Code>states</Code>{" "}
+                entry. Inside a row, the two pill strips pick which cell you are
+                editing: theme, then interaction slot.
               </Prose>
               <Prose>
-                On the <Code>Base</Code> row the theme pills read <Code>base</Code> and{" "}
-                <Code>dark ↑</Code> rather than light/dark, because the base config is not
-                symmetric: <Code>base</Code> edits the shared flat props, and{" "}
-                <Code>dark ↑</Code> writes a <Code>themes.dark</Code> override on top —
-                the same shape as Tailwind&rsquo;s base styles plus{" "}
-                <Code>dark:</Code> variants. On a named state the pills are plain{" "}
-                <Code>light</Code> / <Code>dark</Code>, because a state really does have
-                two symmetric branches.
+                On the <Code>Base</Code> row the theme pills read{" "}
+                <Code>base</Code> and <Code>dark ↑</Code> rather than
+                light/dark, because the base config is not symmetric:{" "}
+                <Code>base</Code> edits the shared flat props, and{" "}
+                <Code>dark ↑</Code> writes a <Code>themes.dark</Code> override
+                on top — the same shape as Tailwind&rsquo;s base styles plus{" "}
+                <Code>dark:</Code> variants. On a named state the pills are
+                plain <Code>light</Code> / <Code>dark</Code>, because a state
+                really does have two symmetric branches.
               </Prose>
               <Prose>
-                A green dot on a pill means that cell holds overrides; an amber dot beside
-                a control means <em>this</em> cell sets it — click it to clear. Whichever
-                control section you have expanded stays expanded as you switch theme, slot
-                or state, so you can compare one group of values across cells without
-                losing your place.
+                A green dot on a pill means that cell holds overrides; an amber
+                dot beside a control means <em>this</em> cell sets it — click it
+                to clear. Whichever control section you have expanded stays
+                expanded as you switch theme, slot or state, so you can compare
+                one group of values across cells without losing your place.
               </Prose>
             </Section>
 
@@ -369,11 +378,11 @@ function DocsPage() {
             <Section id="ethereal-dither-api" title="<EtherealDither> API">
               <Prose>
                 The same travelling comet, rendered as ordered-dithered blocks
-                on a canvas instead of CSS gradients — a Bayer-quantized
-                palette that reads as pixel art. It is the one effect that
-                repaints every tick rather than writing CSS variables, so
-                consider <Code>setTickRate(30)</Code> when you use it.
-                Overrides the exported <Code>ETHEREAL_DITHER</Code> defaults.
+                on a canvas instead of CSS gradients — a Bayer-quantized palette
+                that reads as pixel art. It is the one effect that repaints
+                every tick rather than writing CSS variables, so consider{" "}
+                <Code>setTickRate(30)</Code> when you use it. Overrides the
+                exported <Code>ETHEREAL_DITHER</Code> defaults.
               </Prose>
               <PropTable groups={ETHEREAL_DITHER_GROUPS} />
 
@@ -391,11 +400,12 @@ function DocsPage() {
             {/* 5. Wrappers */}
             <Section id="wrappers" title="Wrap components">
               <Prose>
-                <Code>{"<EtherealWrap>"}</Code> and{" "}
-                <Code>{"<EventHorizonWrap>"}</Code> render the positioned,
+                <Code>{"<EtherealWrap>"}</Code>,{" "}
+                <Code>{"<EventHorizonWrap>"}</Code> and{" "}
+                <Code>{"<EtherealDitherWrap>"}</Code> render the positioned,
                 isolated host span for you and place the effect inside it, with
-                your children on a raised layer. Use them when you can't edit the
-                child — third-party components, or replaced elements like{" "}
+                your children on a raised layer. Use them when you can't edit
+                the child — third-party components, or replaced elements like{" "}
                 <Code>{"<input>"}</Code> and <Code>{"<textarea>"}</Code>, which
                 can't contain the effect span at all.
               </Prose>
@@ -418,11 +428,11 @@ function DocsPage() {
                   A single <Code>requestAnimationFrame</Code> loop, targeting
                   ~60fps — one tick per frame on a 60Hz display; higher-refresh
                   displays are gated down to the target — drives every instance
-                  of both effects; it stops entirely when the last instance
-                  unmounts. Off-screen instances
-                  pause via an IntersectionObserver (160px margin), and the loop
-                  clamps <Code>dt</Code> after background-tab pauses so clocks
-                  never jump.
+                  of all three effects; it stops entirely when the last instance
+                  unmounts. Off-screen instances pause via an
+                  IntersectionObserver (160px margin), and the loop clamps{" "}
+                  <Code>dt</Code> after background-tab pauses so clocks never
+                  jump.
                 </li>
                 <li>
                   <strong className="font-medium text-foreground">
@@ -456,9 +466,9 @@ function DocsPage() {
                     Host requirements.
                   </strong>{" "}
                   The parent must be <Code>position: relative</Code> +{" "}
-                  <Code>isolation: isolate</Code>. A <Code>position: static</Code>{" "}
-                  host is warned about in the console (the glow would anchor to
-                  the wrong ancestor).
+                  <Code>isolation: isolate</Code>. A{" "}
+                  <Code>position: static</Code> host is warned about in the
+                  console (the glow would anchor to the wrong ancestor).
                 </li>
                 <li>
                   <strong className="font-medium text-foreground">
@@ -497,8 +507,8 @@ function DocsPage() {
                 <strong className="font-semibold text-foreground">
                   Clipping caveat.
                 </strong>{" "}
-                With <Code>place: "external"</Code> / <Code>"ext-border"</Code> /{" "}
-                <Code>"both"</Code> (and Event Horizon's halo always) the glow
+                With <Code>place: "external"</Code> / <Code>"ext-border"</Code>{" "}
+                / <Code>"both"</Code> (and Event Horizon's halo always) the glow
                 paints outside the host, so any ancestor that clips will cut it
                 off: <Code>overflow</Code> hidden/auto/scroll/clip,{" "}
                 <Code>contain: paint</Code>, <Code>clip-path</Code>, or a
@@ -506,12 +516,11 @@ function DocsPage() {
                 container by roughly <Code>glowBlur × 2 + 30px</Code>, lift the
                 element out of the clipping wrapper, or use{" "}
                 <Code>place: "internal"</Code>. Note that internal placement
-                draws inside the element and barely reads on a solid bright fill —
-                use external placement there, or keep ethereal elements
+                draws inside the element and barely reads on a solid bright fill
+                — use external placement there, or keep ethereal elements
                 dark/outlined.
               </Note>
             </Section>
-
           </div>
         </div>
       </div>

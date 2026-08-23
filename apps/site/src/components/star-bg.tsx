@@ -32,16 +32,21 @@ export function StarBg() {
   const [shots, setShots] = useState<Shot[]>([])
 
   useEffect(() => {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    const motion = matchMedia("(prefers-reduced-motion: reduce)")
+    let reduced = motion.matches
     let n = 0
     const spawn = (x: number, y: number) =>
-      setShots((s) => [...s.slice(-5), { id: n++, x, y, angle: 15 + Math.random() * 40 }])
+      setShots((s) => [
+        ...s.slice(-5),
+        { id: n++, x, y, angle: 15 + Math.random() * 40 },
+      ])
     // ambient: one every few seconds from the upper sky
     let timer: ReturnType<typeof setTimeout>
     const schedule = () => {
+      if (reduced) return
       timer = setTimeout(
         () => {
-          spawn(5 + Math.random() * 60, Math.random() * 45)
+          if (!reduced) spawn(5 + Math.random() * 60, Math.random() * 45)
           schedule()
         },
         4000 + Math.random() * 7000
@@ -50,17 +55,32 @@ export function StarBg() {
     schedule()
     // interactive: every click launches one from the click point
     const onClick = (e: MouseEvent) => {
-      spawn((e.clientX / window.innerWidth) * 100, (e.clientY / window.innerHeight) * 100)
+      if (reduced) return
+      spawn(
+        (e.clientX / window.innerWidth) * 100,
+        (e.clientY / window.innerHeight) * 100
+      )
+    }
+    const onMotionChange = () => {
+      reduced = motion.matches
+      clearTimeout(timer)
+      if (reduced) setShots([])
+      else schedule()
     }
     window.addEventListener("click", onClick)
+    motion.addEventListener("change", onMotionChange)
     return () => {
       clearTimeout(timer)
       window.removeEventListener("click", onClick)
+      motion.removeEventListener("change", onMotionChange)
     }
   }, [])
 
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+    >
       {/* deep-space wash, brightest near the top like the preview panel */}
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#101012_0%,#0a0a0b_45%,#060606_100%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(120%_70%_at_50%_-10%,rgba(255,255,255,0.05),transparent_60%)]" />
@@ -88,11 +108,17 @@ export function StarBg() {
         <span
           key={shot.id}
           className="absolute"
-          style={{ left: `${shot.x}%`, top: `${shot.y}%`, transform: `rotate(${shot.angle}deg)` }}
+          style={{
+            left: `${shot.x}%`,
+            top: `${shot.y}%`,
+            transform: `rotate(${shot.angle}deg)`,
+          }}
         >
           <span
             className="shooting-star block"
-            onAnimationEnd={() => setShots((s) => s.filter((x) => x.id !== shot.id))}
+            onAnimationEnd={() =>
+              setShots((s) => s.filter((x) => x.id !== shot.id))
+            }
           />
         </span>
       ))}

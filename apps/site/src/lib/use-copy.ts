@@ -6,6 +6,9 @@ import { useCallback, useEffect, useRef, useState } from "react"
 export const COPY_FLASH_MS = 1600
 
 export type CopyState = "idle" | "copied" | "error"
+export type CopySource =
+  | string
+  | (() => string | null | undefined | Promise<string | null | undefined>)
 
 /**
  * Clipboard write + the "Copied" flash that follows it, in one place.
@@ -24,10 +27,10 @@ export function useCopy(flashMs: number = COPY_FLASH_MS) {
   useEffect(() => () => void (timer.current && clearTimeout(timer.current)), [])
 
   const copy = useCallback(
-    async (text: string | (() => string | null | undefined)) => {
-      const value = typeof text === "function" ? text() : text
-      if (value == null) return
+    async (text: CopySource) => {
       try {
+        const value = typeof text === "function" ? await text() : text
+        if (value == null) return
         // the Clipboard API is absent on insecure origins, whatever the DOM
         // types claim — reading through it there throws, which lands in the
         // catch below as an error state rather than a false "Copied"

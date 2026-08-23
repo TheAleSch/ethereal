@@ -14,7 +14,12 @@
 // arrived in mergeConfig and this cascade did not learn about it, so pinning a
 // slot on `thinking` previewed the plain base config with none of the state's
 // character. Out here it can be tested against the real merge.
-import type { EtherealCfg, InteractionSlot, StateConfig, ThemeConfig } from "@theale/ethereal"
+import type {
+  EtherealCfg,
+  InteractionSlot,
+  StateConfig,
+  ThemeConfig,
+} from "@theale/ethereal"
 
 export type PinnedStateInput = {
   /** which slot is pinned; `base` means nothing is pinned */

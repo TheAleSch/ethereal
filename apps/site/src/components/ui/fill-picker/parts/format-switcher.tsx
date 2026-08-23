@@ -1,23 +1,23 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { SelectItem } from "@/components/ui/select";
-import { useColorPickerContext } from "../context";
-import type { ColorFormat } from "../lib/types";
-import { FieldSelect } from "./field";
+import * as React from "react"
+import { SelectItem } from "@/components/ui/select"
+import { useColorPickerContext } from "../context"
+import type { ColorFormat } from "../lib/types"
+import { FieldSelect } from "./field"
 
 export interface FormatSwitcherProps {
   /** Override the formats from <ColorPicker.Root formats={...} />. */
-  formats?: ColorFormat[];
-  className?: string;
+  formats?: ColorFormat[]
+  className?: string
 }
 
 export const FormatSwitcher = React.forwardRef<
   HTMLButtonElement,
   FormatSwitcherProps
 >(function FormatSwitcher({ formats: formatsProp, className }, ref) {
-  const { format, setFormat, formats: ctxFormats } = useColorPickerContext();
-  const formats = formatsProp ?? ctxFormats;
+  const { format, setFormat, formats: ctxFormats } = useColorPickerContext()
+  const formats = formatsProp ?? ctxFormats
 
   return (
     <FieldSelect
@@ -37,5 +37,5 @@ export const FormatSwitcher = React.forwardRef<
         </SelectItem>
       ))}
     </FieldSelect>
-  );
-});
+  )
+})

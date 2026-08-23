@@ -21,12 +21,21 @@ type PlaygroundSearch = {
 }
 
 const asObj = (v: unknown): Record<string, unknown> | undefined =>
-  v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : undefined
+  v && typeof v === "object" && !Array.isArray(v)
+    ? (v as Record<string, unknown>)
+    : undefined
 
 export const Route = createFileRoute("/playground")({
   // parse defensively: only known shapes survive, everything else falls back
   validateSearch: (search: Record<string, unknown>): PlaygroundSearch => ({
-    tab: search.tab === "eh" ? "eh" : search.tab === "dither" ? "dither" : search.tab === "ethereal" ? "ethereal" : undefined,
+    tab:
+      search.tab === "eh"
+        ? "eh"
+        : search.tab === "dither"
+          ? "dither"
+          : search.tab === "ethereal"
+            ? "ethereal"
+            : undefined,
     c: asObj(search.c),
     h: asObj(search.h),
     d: asObj(search.d),

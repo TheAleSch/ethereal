@@ -6,6 +6,7 @@
 import { useEffect, useRef } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { THINKING, lift, scaleDuration, tightenPulse } from './core/derive'
+import { boundedPalette, finiteNumber, runtimeConfigSignature } from './core/normalize'
 import { pathFractionAt, pathPx, walkSmooth } from './core/path'
 import { mergeConfig, useInteraction, type StateConfig, type ThemeConfig } from './core/state'
 import { subscribe } from './core/ticker'
@@ -102,6 +103,15 @@ export function perimeterHotspotDistanceNormSq(
   return (along / alongReach) ** 2 + (edgeDistance / reach) ** 2
 }
 
+/** Horizontal 0..1 position for the bidirectional bottom sweep. The mirrored
+ * form gives a counter-spinning second head its own position instead of the
+ * mathematically identical `headPx(1 - travel)` used previously. */
+export function bottomSweepPosition(travel: number, mirrored = false): number {
+  const wrapped = ((travel % 1) + 1) % 1
+  const sweep = wrapped < 0.5 ? wrapped * 2 : (1 - wrapped) * 2
+  return mirrored ? 1 - sweep : sweep
+}
+
 /** The registry of state NAMES. Empty entries: `thinking` is derived from the
  *  caller's config by `deriveEtherealDitherState` below. An explicit entry here
  *  (or in a caller's `states` prop) overrides the derived value key by key —
@@ -141,8 +151,8 @@ const BAYER = [
 // grid overhang: explicit bleed wins; 0 = auto, wide enough that the edge
 // band's gaussian tail fades below the draw threshold before the canvas ends
 const bleedOf = (cfg: EtherealDitherCfg) => {
-  const band = Number.isFinite(cfg.band) ? Math.min(400, Math.max(2, cfg.band)) : 26
-  const explicit = Number.isFinite(cfg.bleed) ? Math.min(400, Math.max(0, cfg.bleed)) : 0
+  const band = finiteNumber(cfg.band, ETHEREAL_DITHER.band, 2, 400)
+  const explicit = finiteNumber(cfg.bleed, ETHEREAL_DITHER.bleed, 0, 400)
   // 3× band: the quantizer rounds faint tails UP to the minimum visible
   // level, so the gaussian needs to be truly dead before the grid ends.
   // The auto value wears the same 400px ceiling as an explicit one — an
@@ -183,6 +193,10 @@ export function EtherealDither({
   const theme = useTheme(ref, explicitTheme, themeDetector)
   const reducedMotion = useReducedMotion()
   const interaction = useInteraction(ref)
+  const driverRef = useRef<{ phase: number; clock: number; hovT: number; hovC: number } | null>(null)
+  if (!driverRef.current) driverRef.current = { phase: nextPhase(), clock: 0, hovT: 0, hovC: 0 }
+  driverRef.current.hovT = interaction.hovered ? 1 : 0
+  const safeTransitionMs = finiteNumber(transitionMs, 320, 0, 10_000)
 
   const cfg = mergeConfig<EtherealDitherCfg>({
     defaults: ETHEREAL_DITHER,
@@ -198,34 +212,34 @@ export function EtherealDither({
     whilePressed,
     componentName: 'ethereal-dither',
   })
+  const cfgSignature = runtimeConfigSignature(cfg, boundedPalette(cfg.colors, ETHEREAL_DITHER.colors))
 
   useEffect(() => {
     const canvas = ref.current
     const host = canvas?.parentElement as HTMLElement | null
     if (!canvas || !host) return
-    const num = (value: number, fallback: number, lo: number, hi: number) =>
-      Number.isFinite(value) ? Math.min(hi, Math.max(lo, value)) : fallback
     const clamped: EtherealDitherCfg = {
       ...cfg,
-      colors: Array.isArray(cfg.colors) && cfg.colors.length ? cfg.colors : ETHEREAL_DITHER.colors,
-      block: num(cfg.block, 6, 2, 64),
-      reach: num(cfg.reach, 150, 8, 2000),
-      band: num(cfg.band, 26, 2, 400),
-      levels: num(cfg.levels, 4, 2, 16),
+      colors: boundedPalette(cfg.colors, ETHEREAL_DITHER.colors),
+      duration: finiteNumber(cfg.duration, ETHEREAL_DITHER.duration, 0.1, 600),
+      repeatDelay: finiteNumber(cfg.repeatDelay, ETHEREAL_DITHER.repeatDelay, 0, 600),
+      block: finiteNumber(cfg.block, ETHEREAL_DITHER.block, 2, 64),
+      reach: finiteNumber(cfg.reach, ETHEREAL_DITHER.reach, 8, 2000),
+      band: finiteNumber(cfg.band, ETHEREAL_DITHER.band, 2, 400),
+      levels: finiteNumber(cfg.levels, ETHEREAL_DITHER.levels, 2, 16),
       bleed: bleedOf(cfg),
-      corner: num(cfg.corner, 0.3, 0.05, 1.5),
-      duration: num(cfg.duration, 6, 0.1, 600),
-      strength: num(cfg.strength, 1, 0, 4),
-      wander: num(cfg.wander, 0, 0, 2),
-      flicker: num(cfg.flicker, 0, 0, 2),
-      pulseMin: num(cfg.pulseMin, 0.9, 0.2, 3),
-      pulseMax: num(cfg.pulseMax, 1.15, 0.2, 3),
-      saturation: num(cfg.saturation, 1, 0, 3),
-      brightness: num(cfg.brightness, 1, 0.2, 3),
-      hueRange: num(cfg.hueRange, 0, 0, 360),
-      hotspots: num(cfg.hotspots, 1, 1, 8),
-      hotSpread: num(cfg.hotSpread, 22, 0, 400),
-      hoverAmount: num(cfg.hoverAmount, 1, 0, 10),
+      corner: finiteNumber(cfg.corner, ETHEREAL_DITHER.corner, 0.05, 1.5),
+      strength: finiteNumber(cfg.strength, ETHEREAL_DITHER.strength, 0, 4),
+      wander: finiteNumber(cfg.wander, ETHEREAL_DITHER.wander, 0, 2),
+      flicker: finiteNumber(cfg.flicker, ETHEREAL_DITHER.flicker, 0, 2),
+      pulseMin: finiteNumber(cfg.pulseMin, ETHEREAL_DITHER.pulseMin, 0.2, 3),
+      pulseMax: finiteNumber(cfg.pulseMax, ETHEREAL_DITHER.pulseMax, 0.2, 3),
+      saturation: finiteNumber(cfg.saturation, ETHEREAL_DITHER.saturation, 0, 3),
+      brightness: finiteNumber(cfg.brightness, ETHEREAL_DITHER.brightness, 0.2, 3),
+      hueRange: finiteNumber(cfg.hueRange, ETHEREAL_DITHER.hueRange, 0, 360),
+      hotspots: finiteNumber(cfg.hotspots, ETHEREAL_DITHER.hotspots, 1, 8),
+      hotSpread: finiteNumber(cfg.hotSpread, ETHEREAL_DITHER.hotSpread, 0, 400),
+      hoverAmount: finiteNumber(cfg.hoverAmount, ETHEREAL_DITHER.hoverAmount, 0, 10),
     }
     checkHost(host, 'EtherealDither')
     const unclaim = claimHost(host, 'EtherealDither')
@@ -300,8 +314,9 @@ export function EtherealDither({
     // at every resize. The budget bounds a hostile band/block/bleed combo —
     // or just a huge host — to a few MB and a few million loop iterations by
     // coarsening the block size instead of allocating whatever the config
-    // implies. 500k cells ≈ 7× a full-screen host at the default block.
-    const MAX_CELLS = 500_000
+    // implies. Keep the synchronous CPU budget comfortably below a frame on
+    // large displays; canvas upload/paint still comes after this JS work.
+    const MAX_CELLS = 100_000
     let blockPx = clamped.block
     const resize = () => {
       hostW = Math.max(1, host.offsetWidth)
@@ -350,9 +365,9 @@ export function EtherealDither({
     // change starts from an empty canvas and the first repaint lands on the
     // next tick. Fading the element in over `transitionMs` from there is the
     // same contract Ethereal gives its rebuilt layers.
-    if (transitionMs > 0 && !reducedMotion) {
+    if (safeTransitionMs > 0 && !reducedMotion) {
       canvas.style.opacity = '0'
-      canvas.style.transition = `opacity ${transitionMs}ms ease`
+      canvas.style.transition = `opacity ${safeTransitionMs}ms ease`
       // force a style flush so the 0 is committed before the 1 — otherwise
       // the two writes coalesce and no transition ever runs
       void canvas.offsetWidth
@@ -361,43 +376,21 @@ export function EtherealDither({
       canvas.style.opacity = '1'
       canvas.style.transition = ''
     }
-    const ro = new ResizeObserver(resize)
-    ro.observe(host)
-
     let visible = true
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) visible = entry.isIntersecting
-      },
-      { rootMargin: '160px' },
-    )
-    io.observe(host)
+    const driver = driverRef.current!
+    const phase = driver.phase
 
-    let hovT = 0
-    let hovC = 0
-    const enter = () => {
-      hovT = 1
-    }
-    const leave = () => {
-      hovT = 0
-    }
-    host.addEventListener('pointerenter', enter)
-    host.addEventListener('pointerleave', leave)
-
-    const phase = nextPhase()
-
-    const headPx = (travel: number): [number, number] => {
+    const headPx = (travel: number, mirrorBottom = false): [number, number] => {
       if (clamped.path === 'bottom') {
-        const sweep = travel < 0.5 ? travel * 2 : (1 - travel) * 2
-        return [(0.06 + 0.88 * sweep) * hostW, hostH]
+        return [(0.06 + 0.88 * bottomSweepPosition(travel, mirrorBottom)) * hostW, hostH]
       }
       const point = walkSmooth(travel, clamped.corner, aspect)
       return [point.x * hostW, point.y * hostH]
     }
 
     const draw = (time: number, dt: number) => {
-      hovC += (hovT - hovC) * Math.min(1, dt * 8)
-      const boost = clamped.hover === 'boost' ? 1 + 0.7 * clamped.hoverAmount * hovC : 1
+      driver.hovC += (driver.hovT - driver.hovC) * Math.min(1, dt * 8)
+      const boost = clamped.hover === 'boost' ? 1 + 0.7 * clamped.hoverAmount * driver.hovC : 1
       const duration = clamped.duration
       const repeatDelay = Math.max(0, clamped.repeatDelay)
       const cycleTime = duration + repeatDelay
@@ -413,15 +406,23 @@ export function EtherealDither({
           hsl2rgb([hue + shift, Math.min(1, sat * clamped.saturation), Math.min(1, light * clamped.brightness)]),
         )
       }
-      const baseTravels = [travel]
-      if (clamped.heads === 2) baseTravels.push(clamped.spin === 'counter' ? 1 - travel : (travel + 0.5) % 1)
+      const baseTravels: [number, boolean][] = [[travel, false]]
+      if (clamped.heads === 2)
+        baseTravels.push([
+          clamped.path === 'bottom' && clamped.spin === 'counter'
+            ? travel
+            : clamped.spin === 'counter'
+              ? 1 - travel
+              : (travel + 0.5) % 1,
+          clamped.path === 'bottom' && clamped.spin === 'counter',
+        ])
       // cores carry their own flicker weight + wander drift — a cluster
       // shimmers and strays as individuals, not one welded object
       const heads: [number, number, number, number][] = []
       const coreCount = Math.max(1, Math.round(clamped.hotspots))
       const perimeterPx = clamped.path === 'around' ? pathPx(clamped.corner, aspect, hostH) : 2 * (hostW + hostH)
       const flickerAmp = clamped.flicker > 0 ? clamped.flicker : coreCount > 1 ? 0.35 : 0
-      for (const baseTravel of baseTravels)
+      for (const [baseTravel, mirrorBottom] of baseTravels)
         for (let core = 0; core < coreCount; core++) {
           const wobble =
             coreCount > 1 || clamped.wander > 0
@@ -436,7 +437,7 @@ export function EtherealDither({
                 Math.sin(time * (8.3 + 1.1 * core) + core * 5.1) *
                 Math.sin(time * (4.7 + 0.6 * core) + core * 2.3))
           const headTravel = (((baseTravel + off / perimeterPx) % 1) + 1) % 1
-          const [hx, hy] = headPx(headTravel)
+          const [hx, hy] = headPx(headTravel, mirrorBottom)
           heads.push([hx, hy, coreFlicker, headTravel])
         }
 
@@ -528,43 +529,48 @@ export function EtherealDither({
       ctx.putImageData(img, 0, 0)
     }
 
-    if (reducedMotion) {
-      draw(clamped.duration * 0.13, 0)
-      // resizing reassigns canvas.width (which clears it) — repaint the
-      // static frame or any layout change blanks the effect forever
-      const roStatic = new ResizeObserver(() => draw(clamped.duration * 0.13, 0))
-      roStatic.observe(host)
+    const frameTime = () => (reducedMotion ? clamped.duration * 0.13 : driver.clock)
+    const repaint = () => draw(frameTime(), 0)
+    repaint()
+    // Resizing clears a canvas by specification. Repaint synchronously even
+    // while the package ticker is paused or the instance is between ticks.
+    const ro = new ResizeObserver(() => {
+      resize()
+      repaint()
+    })
+    ro.observe(host)
+
+    if (reducedMotion)
       return () => {
-        roStatic.disconnect()
         unclaim()
         ro.disconnect()
-        io.disconnect()
-        host.removeEventListener('pointerenter', enter)
-        host.removeEventListener('pointerleave', leave)
       }
-    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) visible = entry.isIntersecting
+      },
+      { rootMargin: '160px' },
+    )
+    io.observe(host)
 
     // per-instance clock integrated from dt, exactly like the CSS renderers:
     // wall-clock `now` would keep the comet orbiting and the palette drifting
     // through a paused frame (the ticker pauses by sending dt = 0, not by
     // stopping), and would teleport the animation forward on resume
-    // starts at 0: draw() applies this instance's `phase` stagger itself
-    let clock = 0
     const unsub = subscribe((_now, dt) => {
       if (!visible || dt <= 0) return
-      clock += dt
-      draw(clock, dt)
+      driver.clock += dt
+      draw(driver.clock, dt)
     })
     return () => {
       unsub()
       unclaim()
       ro.disconnect()
       io.disconnect()
-      host.removeEventListener('pointerenter', enter)
-      host.removeEventListener('pointerleave', leave)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(cfg), transitionMs, reducedMotion])
+  }, [cfgSignature, safeTransitionMs, reducedMotion])
 
   return (
     <canvas
@@ -598,10 +604,10 @@ export function EtherealDitherWrap({
     <span
       className={className}
       style={{
+        ...style,
         position: 'relative',
         isolation: 'isolate',
         display: 'inline-block',
-        ...style,
       }}
     >
       <span style={{ position: 'relative', zIndex: 10, display: 'block' }}>{children}</span>

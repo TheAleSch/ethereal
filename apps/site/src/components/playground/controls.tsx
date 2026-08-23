@@ -14,7 +14,11 @@ import {
 } from "@/components/ui/accordion"
 import type { ControlDef } from "./presets"
 import { Label } from "@/components/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import {
@@ -49,7 +53,9 @@ export function RowLabel({
 }) {
   return (
     <span className={cn("flex min-w-0 items-center", className)}>
-      <Label className="truncate font-mono text-xs text-muted-foreground">{label}</Label>
+      <Label className="truncate font-mono text-xs text-muted-foreground">
+        {label}
+      </Label>
       {marker}
       {hint && (
         <Popover>
@@ -61,7 +67,9 @@ export function RowLabel({
           </PopoverTrigger>
           <PopoverContent side="right" align="start" className="w-60 p-3">
             <p className="font-mono text-[11px] text-foreground/70">{label}</p>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{hint}</p>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              {hint}
+            </p>
           </PopoverContent>
         </Popover>
       )}
@@ -91,7 +99,8 @@ export function SliderRow({
 }) {
   // editable readout: type a value, Enter/blur commits (clamped)
   const [draft, setDraft] = useState<string | null>(null)
-  const shown = draft ?? (Number.isInteger(step) ? String(value) : value.toFixed(2))
+  const shown =
+    draft ?? (Number.isInteger(step) ? String(value) : value.toFixed(2))
   const commit = () => {
     if (draft === null) return
     const n = parseFloat(draft)
@@ -99,7 +108,7 @@ export function SliderRow({
     setDraft(null)
   }
   return (
-    <div className="grid grid-cols-[4.25rem_1fr_2.75rem] sm:grid-cols-[5.5rem_1fr_3.25rem] items-center gap-3">
+    <div className="grid grid-cols-[4.25rem_1fr_2.75rem] items-center gap-3 sm:grid-cols-[5.5rem_1fr_3.25rem]">
       <RowLabel label={label} marker={marker} hint={hint} />
       {/* click anywhere on the rail to jump there (Base UI only drags) */}
       <div
@@ -108,7 +117,10 @@ export function SliderRow({
           const frac = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width))
           const raw = min + frac * (max - min)
           // min-anchored so steps land on the same grid the slider uses
-          const snapped = Math.min(max, Math.max(min, min + Math.round((raw - min) / step) * step))
+          const snapped = Math.min(
+            max,
+            Math.max(min, min + Math.round((raw - min) / step) * step)
+          )
           onChange(Number(snapped.toFixed(4)))
         }}
       >
@@ -131,7 +143,7 @@ export function SliderRow({
           if (e.key === "Enter") commit()
           if (e.key === "Escape") setDraft(null)
         }}
-        className="w-full rounded border border-transparent bg-transparent px-1 py-0.5 text-right font-mono text-xs tabular-nums text-foreground/80 focus:border-white/15 focus:bg-black/30 focus:outline-none"
+        className="w-full rounded border border-transparent bg-transparent px-1 py-0.5 text-right font-mono text-xs text-foreground/80 tabular-nums focus:border-white/15 focus:bg-black/30 focus:outline-none"
       />
     </div>
   )
@@ -154,9 +166,12 @@ export function SelectRow({
   hint?: string
 }) {
   return (
-    <div className="grid grid-cols-[4.25rem_1fr] sm:grid-cols-[5.5rem_1fr] items-center gap-3">
+    <div className="grid grid-cols-[4.25rem_1fr] items-center gap-3 sm:grid-cols-[5.5rem_1fr]">
       <RowLabel label={label} marker={marker} hint={hint} />
-      <Select value={value} onValueChange={(v) => v != null && onChange(String(v))}>
+      <Select
+        value={value}
+        onValueChange={(v) => v != null && onChange(String(v))}
+      >
         <SelectTrigger className="h-8 w-full">
           <SelectValue />
         </SelectTrigger>
@@ -187,14 +202,20 @@ export function SwitchRow({
   hint?: string
 }) {
   return (
-    <div className="grid grid-cols-[4.25rem_1fr] sm:grid-cols-[5.5rem_1fr] items-center gap-3">
+    <div className="grid grid-cols-[4.25rem_1fr] items-center gap-3 sm:grid-cols-[5.5rem_1fr]">
       <RowLabel label={label} marker={marker} hint={hint} />
       <Switch className="hit-44" checked={checked} onCheckedChange={onChange} />
     </div>
   )
 }
 
-export function CopyButton({ value, className }: { value: string; className?: string }) {
+export function CopyButton({
+  value,
+  className,
+}: {
+  value: string
+  className?: string
+}) {
   const { copied, copy } = useCopy()
 
   return (
@@ -207,7 +228,11 @@ export function CopyButton({ value, className }: { value: string; className?: st
         className
       )}
     >
-      {copied ? <Check className="size-4 text-emerald-400" /> : <Copy className="size-4" />}
+      {copied ? (
+        <Check className="size-4 text-emerald-400" />
+      ) : (
+        <Copy className="size-4" />
+      )}
     </button>
   )
 }
@@ -230,7 +255,7 @@ export function ColorsRow({
   hint?: string
 }) {
   return (
-    <div className="grid grid-cols-[4.25rem_1fr] sm:grid-cols-[5.5rem_1fr] items-start gap-3">
+    <div className="grid grid-cols-[4.25rem_1fr] items-start gap-3 sm:grid-cols-[5.5rem_1fr]">
       <RowLabel label={label} marker={marker} hint={hint} className="mt-1" />
       <div className="flex flex-wrap items-center gap-1.5">
         {colors.map((c, i) => (
@@ -243,7 +268,10 @@ export function ColorsRow({
                 {/* backgroundColor, never the `background` shorthand — the
                     shorthand accepts url(...) images, which would turn a
                     hostile shared palette into cross-origin requests */}
-                <span className="block h-full w-full rounded" style={{ backgroundColor: c }} />
+                <span
+                  className="block h-full w-full rounded"
+                  style={{ backgroundColor: c }}
+                />
               </PopoverTrigger>
               {/* the popover is a POSITIONER only — ColorPicker.Root paints its
                   own bordered, padded, shadowed panel, so leaving PopoverContent's
@@ -263,7 +291,9 @@ export function ColorsRow({
                 >
                   <ColorPickerPanel
                     value={c}
-                    onHexChange={(hex) => onChange(colors.map((x, j) => (j === i ? hex : x)))}
+                    onHexChange={(hex) =>
+                      onChange(colors.map((x, j) => (j === i ? hex : x)))
+                    }
                   />
                 </Suspense>
               </PopoverContent>
@@ -284,7 +314,9 @@ export function ColorsRow({
           <button
             type="button"
             aria-label="add color"
-            onClick={() => onChange([...colors, colors[colors.length - 1] ?? "#ffffff"])}
+            onClick={() =>
+              onChange([...colors, colors[colors.length - 1] ?? "#ffffff"])
+            }
             className="hit-44-gap flex size-7 items-center justify-center rounded-md border border-dashed border-white/20 text-sm text-muted-foreground transition-colors hover:border-white/40 hover:text-foreground"
           >
             +
@@ -391,14 +423,20 @@ export function ControlSections({
             value: open.map((t) => idPrefix + t),
             onValueChange: (v: unknown[]) =>
               onOpenChange?.(
-                v.filter((x): x is string => typeof x === "string").map((x) => x.slice(idPrefix.length))
+                v
+                  .filter((x): x is string => typeof x === "string")
+                  .map((x) => x.slice(idPrefix.length))
               ),
           }
         : { defaultValue: [idPrefix + (sections[0]?.title ?? "")] })}
       className="rounded-lg border border-white/10"
     >
       {sections.map((sec) => (
-        <AccordionItem key={sec.title} value={idPrefix + sec.title} className="border-white/5 px-2 sm:px-3">
+        <AccordionItem
+          key={sec.title}
+          value={idPrefix + sec.title}
+          className="border-white/5 px-2 sm:px-3"
+        >
           <AccordionTrigger className="py-2.5 text-[11px] font-semibold tracking-wide text-zinc-300 uppercase">
             {sec.title}
           </AccordionTrigger>

@@ -35,18 +35,29 @@ const shadcnSnippet = `npx shadcn@latest add https://ethereal.ale.design/r/ether
 //     --external:react/jsx-runtime | gzip -9 | wc -c
 const BUNDLE_SIZE = "16.6 kB min+gzip"
 
-const SUNSET = ['rgb(255,100,60)', 'rgb(255,180,50)', 'rgb(255,140,70)', 'rgb(255,80,80)', 'rgb(255,200,60)']
-const EMBER = ['#ffb46b', '#ff8a3d', '#b58cff']
+const SUNSET = [
+  "rgb(255,100,60)",
+  "rgb(255,180,50)",
+  "rgb(255,140,70)",
+  "rgb(255,80,80)",
+  "rgb(255,200,60)",
+]
+const EMBER = ["#ffb46b", "#ff8a3d", "#b58cff"]
 // install-box border: a cyan/violet sweep, so the light reads as passing over
 // the terminal rather than outlining it
-const INSTALL_GLOW = ['rgb(40,180,220)', 'rgb(100,70,255)', 'rgb(40,140,255)', 'rgb(30,185,170)']
+const INSTALL_GLOW = [
+  "rgb(40,180,220)",
+  "rgb(100,70,255)",
+  "rgb(40,140,255)",
+  "rgb(30,185,170)",
+]
 
 const SPECS = [
-  'Zero dependencies',
-  'One shared loop, 60fps default',
-  'Pauses off-screen',
-  'Respects reduced motion',
-  'ESM + CJS + types',
+  "Zero dependencies",
+  "One shared loop, 60fps default",
+  "Pauses off-screen",
+  "Respects reduced motion",
+  "ESM + CJS + types",
 ]
 
 function Home() {
@@ -129,7 +140,11 @@ function Home() {
             )}
 
             <div className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-3 sm:w-auto sm:justify-start">
-              <Switch id="dither-mode" checked={dither} onCheckedChange={setDither} />
+              <Switch
+                id="dither-mode"
+                checked={dither}
+                onCheckedChange={setDither}
+              />
               <Label
                 htmlFor="dither-mode"
                 className="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground"
@@ -144,15 +159,30 @@ function Home() {
         <div className="flex justify-center lg:justify-end">
           <div className="relative isolate flex aspect-square w-full max-w-[17rem] flex-col items-center justify-center gap-3 rounded-full border border-white/10 bg-black/40 p-8 text-center sm:max-w-sm sm:p-14">
             {dither ? (
-              <EtherealDither colors={EMBER} duration={14} corner={1} block={4} reach={130} band={14} />
+              <EtherealDither
+                colors={EMBER}
+                duration={14}
+                corner={1}
+                block={4}
+                reach={130}
+                band={14}
+              />
             ) : (
-              <EventHorizon {...EVENT_HORIZON_PRESETS["Ember disk"]} duration={14} corner={1} />
+              <EventHorizon
+                {...EVENT_HORIZON_PRESETS["Ember disk"]}
+                duration={14}
+                corner={1}
+              />
             )}
             {/* the label follows what actually renders — dither mode swaps in
                 EtherealDither, and captioning that <EventHorizon/> sent people
                 to copy a component that looks nothing like what they saw */}
             <span className="relative z-10 text-lg font-medium text-foreground">
-              {dither ? <>&lt;EtherealDither /&gt;</> : <>&lt;EventHorizon /&gt;</>}
+              {dither ? (
+                <>&lt;EtherealDither /&gt;</>
+              ) : (
+                <>&lt;EventHorizon /&gt;</>
+              )}
             </span>
           </div>
         </div>
@@ -162,7 +192,7 @@ function Home() {
       <section className="container mx-auto px-4 pt-0 pb-16">
         {/* min-w-0: a non-wrapping <pre>'s min-content would otherwise force
             the column wider than small viewports and clip */}
-        <div className="mx-auto min-w-0 max-w-2xl space-y-4">
+        <div className="mx-auto max-w-2xl min-w-0 space-y-4">
           <Tabs defaultValue="npm">
             <TabsList className="mb-3 h-9">
               <TabsTrigger value="npm" className="px-4">
@@ -184,7 +214,11 @@ function Home() {
             </TabsContent>
             <TabsContent value="shadcn">
               <InstallBorder dither={dither}>
-                <CodeBlock label="terminal" meta={BUNDLE_SIZE} code={shadcnSnippet} />
+                <CodeBlock
+                  label="terminal"
+                  meta={BUNDLE_SIZE}
+                  code={shadcnSnippet}
+                />
               </InstallBorder>
             </TabsContent>
           </Tabs>
@@ -194,19 +228,28 @@ function Home() {
           <ul className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 pt-2 text-center font-mono text-xs text-muted-foreground">
             {SPECS.map((s, i) => (
               <li key={s} className="flex items-center gap-3">
-                {i > 0 && <span aria-hidden className="text-white/20">·</span>}
+                {i > 0 && (
+                  <span aria-hidden className="text-white/20">
+                    ·
+                  </span>
+                )}
                 {s}
               </li>
             ))}
           </ul>
         </div>
       </section>
-
     </main>
   )
 }
 
-function InstallBorder({ dither, children }: { dither: boolean; children: React.ReactNode }) {
+function InstallBorder({
+  dither,
+  children,
+}: {
+  dither: boolean
+  children: React.ReactNode
+}) {
   return dither ? (
     // the blocky twin of the tuned config below — same palette, lap and
     // hotspot fan, translated to the props Dither actually has. block stays

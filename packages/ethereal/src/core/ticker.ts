@@ -46,27 +46,26 @@ let paused = false
 let raf = 0
 let last = 0
 let prevNow = 0
+let lastRafNow = 0
 
 function loop(now: number) {
   raf = requestAnimationFrame(loop)
+  const frameGap = lastRafNow ? now - lastRafNow : 0
+  lastRafNow = now
   if (now - last < minInterval) return
-  // Paused holds every clock still rather than stopping the loop: subscribers
-  // integrate against dt, so simply not calling them would freeze the frame
-  // AND make the next unpaused frame jump by the whole paused duration. Ticking
-  // with dt = 0 keeps `now` advancing while no clock moves, so resuming is
-  // seamless. Cheap enough that gating the rAF too would not pay for itself.
+  // Paused holds every clock still without asking renderers to recompute and
+  // rewrite the same frame. Advancing both timestamps prevents a resume jump.
   if (paused) {
     prevNow = now
     last = now
-    // iterate a snapshot — a subscriber unsubscribing (itself or a peer)
-    // mid-frame splices the live array and would shift the next entry onto
-    // the index just visited, skipping it for this frame
-    for (const sub of [...subs]) sub.fn(now / 1000, 0)
     return
   }
-  // dt clamped: after a background-tab pause rAF resumes with a huge gap —
-  // an unclamped dt would teleport every animation clock forward
-  const dt = prevNow ? Math.min(0.1, (now - prevNow) / 1000) : 0
+  // Deliberately gated frames must deliver the full accumulated elapsed time,
+  // including target rates below 10fps. A genuine rAF suspension is detected
+  // independently from the target interval and remains capped on resume.
+  const suspendThreshold = Math.max(250, (rate > 0 ? 1000 / rate : 1000 / 60) * 2.5)
+  const elapsed = prevNow ? (now - prevNow) / 1000 : 0
+  const dt = frameGap > suspendThreshold ? Math.min(0.1, elapsed) : elapsed
   prevNow = now
   last = now
   // snapshot for the same reason as the paused branch above
@@ -92,6 +91,7 @@ export function subscribe(fn: TickFn, priority = 0): () => void {
   if (subs.length === 1) {
     prevNow = 0
     last = 0
+    lastRafNow = 0
     raf = requestAnimationFrame(loop)
   }
   return () => {

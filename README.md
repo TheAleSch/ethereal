@@ -1,13 +1,13 @@
 <h1 align="center">Ethereal</h1>
 
 <p align="center">
-  Travelling-light and black-hole glow effects for React. Layered <code>radial-gradient</code>s behind moving spotlight masks — no canvas, no WebGL — and one shared ~60fps loop animating CSS custom properties for every instance on the page.
+  Travelling-light, black-hole and dithered glow effects for React. Two CSS renderers and one pixelated-canvas renderer share a single ~60fps animation loop.
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/renderer-pure_CSS-000?labelColor=000" alt="pure CSS renderer" />
+  <img src="https://img.shields.io/badge/renderers-CSS_+_canvas-000?labelColor=000" alt="CSS and canvas renderers" />
   <img src="https://img.shields.io/badge/loop-one_shared_rAF-000?labelColor=000" alt="one shared rAF loop" />
-  <img src="https://img.shields.io/badge/size-16.6_kB_min%2Bgzip-000?labelColor=000" alt="16.6 kB min+gzip" />
+  <img src="https://img.shields.io/badge/size-18.0_kB_min%2Bgzip-000?labelColor=000" alt="18.0 kB min+gzip" />
   <img src="https://img.shields.io/badge/install-npm_+_shadcn_CLI-000?labelColor=000" alt="installs via npm or the shadcn CLI" />
   <img src="https://img.shields.io/badge/types-included-000?labelColor=000" alt="types included" />
   <a href="./packages/ethereal/LICENSE"><img src="https://img.shields.io/badge/license-MIT-000?labelColor=000" alt="license" /></a>
@@ -22,13 +22,13 @@
 
 ---
 
-Most glow libraries either spin up a canvas per element or hand you a single
-hardcoded border beam. This one paints entirely in CSS — a comet head travels a
-constant-speed superellipse path behind a spotlight mask, lighting a stretch of
-border ring, an interior wash, thin needles and a white-hot core. Mount fifty of
-them and there is still exactly **one** `requestAnimationFrame` loop, one theme
-observer, and one `ResizeObserver` cache; per frame the only work is writing
-custom properties.
+The two CSS renderers paint with gradients and masks; EtherealDither deliberately
+uses a pixelated canvas. A comet head travels a constant-speed superellipse path
+behind a spotlight mask, lighting a stretch of border ring, an interior wash,
+thin needles and a white-hot core. Every mounted effect shares one
+`requestAnimationFrame` loop and one theme observer. Each instance has its own
+size and visibility observers, which cache geometry so animation frames do not
+read layout.
 
 The design rule everything follows: anything elongated is a **composition of
 round pieces individually following the border path** — never a stretched

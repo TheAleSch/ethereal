@@ -12,15 +12,26 @@
 // tightened clamp there would silently drop a preset's values.
 import { describe, expect, it } from "vitest"
 
-import { THEME_VARIANTS, INTERACTION_VARIANTS, deriveEtherealState } from "@theale/ethereal"
+import {
+  THEME_VARIANTS,
+  INTERACTION_VARIANTS,
+  deriveEtherealState,
+} from "@theale/ethereal"
 import type { EtherealCfg, StateConfig } from "@theale/ethereal"
 
-import { ETHEREAL, ETHEREAL_PRESETS, parseOverrides, presetStateEntry } from "./presets"
+import {
+  ETHEREAL,
+  ETHEREAL_PRESETS,
+  parseOverrides,
+  presetStateEntry,
+} from "./presets"
 import { withoutState } from "./states-editor"
 
 /** the playground's `?st=` hydration, in miniature — same two enumerations,
  *  same per-slot guard, so this test fails if either drifts */
-const roundTrip = (entry: StateConfig<EtherealCfg>): StateConfig<EtherealCfg> => {
+const roundTrip = (
+  entry: StateConfig<EtherealCfg>
+): StateConfig<EtherealCfg> => {
   const wire = JSON.parse(JSON.stringify(entry)) as Record<
     string,
     Record<string, unknown> | undefined
@@ -31,7 +42,10 @@ const roundTrip = (entry: StateConfig<EtherealCfg>): StateConfig<EtherealCfg> =>
     if (!themePart) continue
     const slots: Record<string, Partial<EtherealCfg>> = {}
     for (const slot of INTERACTION_VARIANTS) {
-      const clean = parseOverrides(themePart[slot] as Record<string, unknown>, ETHEREAL)
+      const clean = parseOverrides(
+        themePart[slot] as Record<string, unknown>,
+        ETHEREAL
+      )
       if (Object.keys(clean).length) slots[slot] = clean
     }
     if (Object.keys(slots).length) out[themeVariant] = slots
@@ -50,7 +64,9 @@ describe("presetStateEntry", () => {
     const written = entry.light?.base ?? {}
     expect(Object.keys(written).length).toBeGreaterThan(0)
     // the proof the diff is real: not a snapshot of the whole config
-    expect(Object.keys(written).length).toBeLessThan(Object.keys(ETHEREAL).length)
+    expect(Object.keys(written).length).toBeLessThan(
+      Object.keys(ETHEREAL).length
+    )
     for (const [key, value] of Object.entries(written)) {
       expect(value).not.toEqual(base[key as keyof EtherealCfg])
     }
@@ -81,11 +97,14 @@ describe("presetStateEntry", () => {
     const base: EtherealCfg = { ...ETHEREAL }
     const dark = preset.themes?.dark ?? {}
     const darkKey = Object.keys(dark)[0] as keyof EtherealCfg | undefined
-    if (!darkKey) throw new Error("Ocean lost its dark branch — update this test's fixture")
+    if (!darkKey)
+      throw new Error("Ocean lost its dark branch — update this test's fixture")
     // hand the editor a base whose dark branch ALREADY equals the preset's:
     // that key now agrees and must drop out of the dark entry while the light
     // entry, which inherits no such branch, still carries it
-    const entry = presetStateEntry(preset, ETHEREAL, base, { [darkKey]: dark[darkKey] })
+    const entry = presetStateEntry(preset, ETHEREAL, base, {
+      [darkKey]: dark[darkKey],
+    })
     expect(entry.dark?.base?.[darkKey]).toBeUndefined()
     expect(entry.light?.base).toHaveProperty(darkKey)
   })
@@ -124,7 +143,10 @@ describe("presetStateEntry", () => {
     const agreeing = { ...preset, duration: base.duration }
     const entry = presetStateEntry(agreeing, ETHEREAL, base)
     expect(entry.light?.base?.duration).toBeUndefined()
-    const derived = deriveEtherealState({ ...base, ...entry.light?.base }, "thinking")
+    const derived = deriveEtherealState(
+      { ...base, ...entry.light?.base },
+      "thinking"
+    )
     expect(derived.duration).toBeDefined()
     expect(derived.duration).not.toBe(base.duration)
   })

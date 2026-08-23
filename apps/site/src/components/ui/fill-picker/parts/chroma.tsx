@@ -1,101 +1,103 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { useColorPickerContext } from "../context";
-import { formatColor } from "../lib/color";
-import { cn } from "@/lib/utils";
+import * as React from "react"
+import { useColorPickerContext } from "../context"
+import { formatColor } from "../lib/color"
+import { cn } from "@/lib/utils"
 
 /**
  * OKLCH chroma is unbounded in principle but practically maxes out
  * around ~0.4 for the wide hues; gamut-clamping handles anything
  * higher. Matches the slider/typed range in `lib/channels.ts`.
  */
-const CHROMA_MAX = 0.4;
+const CHROMA_MAX = 0.4
 
-export interface ChromaProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onKeyDown"> {
-  orientation?: "horizontal" | "vertical";
+export interface ChromaProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onKeyDown"
+> {
+  orientation?: "horizontal" | "vertical"
 }
 
 export const Chroma = React.forwardRef<HTMLDivElement, ChromaProps>(
   function Chroma({ orientation = "horizontal", className, ...rest }, ref) {
-    const { color, setComponent } = useColorPickerContext();
-    const trackRef = React.useRef<HTMLDivElement | null>(null);
-    React.useImperativeHandle(ref, () => trackRef.current as HTMLDivElement);
+    const { color, setComponent } = useColorPickerContext()
+    const trackRef = React.useRef<HTMLDivElement | null>(null)
+    React.useImperativeHandle(ref, () => trackRef.current as HTMLDivElement)
 
     const moveTo = (clientCoord: number) => {
-      const el = trackRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
+      const el = trackRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
       const ratio =
         orientation === "horizontal"
           ? (clientCoord - rect.left) / rect.width
-          : (clientCoord - rect.top) / rect.height;
-      const clamped = Math.max(0, Math.min(1, ratio));
-      setComponent("c", clamped * CHROMA_MAX);
-    };
+          : (clientCoord - rect.top) / rect.height
+      const clamped = Math.max(0, Math.min(1, ratio))
+      setComponent("c", clamped * CHROMA_MAX)
+    }
 
     const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-      (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
-      moveTo(orientation === "horizontal" ? e.clientX : e.clientY);
-    };
+      ;(e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId)
+      moveTo(orientation === "horizontal" ? e.clientX : e.clientY)
+    }
     const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-      if (e.buttons !== 1) return;
-      moveTo(orientation === "horizontal" ? e.clientX : e.clientY);
-    };
+      if (e.buttons !== 1) return
+      moveTo(orientation === "horizontal" ? e.clientX : e.clientY)
+    }
     const releaseCapture = (e: React.PointerEvent<HTMLDivElement>) => {
-      const el = e.currentTarget as HTMLDivElement;
+      const el = e.currentTarget as HTMLDivElement
       if (el.hasPointerCapture(e.pointerId))
-        el.releasePointerCapture(e.pointerId);
-    };
+        el.releasePointerCapture(e.pointerId)
+    }
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-      const big = e.shiftKey ? 0.05 : 0.005;
-      let next = color.c;
+      const big = e.shiftKey ? 0.05 : 0.005
+      let next = color.c
       switch (e.key) {
         case "ArrowLeft":
         case "ArrowDown":
-          next -= big;
-          break;
+          next -= big
+          break
         case "ArrowRight":
         case "ArrowUp":
-          next += big;
-          break;
+          next += big
+          break
         case "Home":
-          next = 0;
-          break;
+          next = 0
+          break
         case "End":
-          next = CHROMA_MAX;
-          break;
+          next = CHROMA_MAX
+          break
         case "PageUp":
-          next += 0.05;
-          break;
+          next += 0.05
+          break
         case "PageDown":
-          next -= 0.05;
-          break;
+          next -= 0.05
+          break
         default:
-          return;
+          return
       }
-      e.preventDefault();
-      setComponent("c", Math.max(0, Math.min(CHROMA_MAX, next)));
-    };
+      e.preventDefault()
+      setComponent("c", Math.max(0, Math.min(CHROMA_MAX, next)))
+    }
 
-    const isVertical = orientation === "vertical";
+    const isVertical = orientation === "vertical"
     // Build the gradient at the current hue & lightness so the ramp shows
     // how chroma changes _their_ color, not a generic gray→vivid ramp.
     // Fields are spelled out rather than spread so the ramp only re-derives
     // on the two channels it actually reads.
     const stops = React.useMemo(() => {
-      const samples = 8;
-      const arr: string[] = [];
+      const samples = 8
+      const arr: string[] = []
       for (let i = 0; i <= samples; i++) {
-        const c = (i / samples) * CHROMA_MAX;
-        arr.push(formatColor({ l: color.l, c, h: color.h, alpha: 1 }, "oklch"));
+        const c = (i / samples) * CHROMA_MAX
+        arr.push(formatColor({ l: color.l, c, h: color.h, alpha: 1 }, "oklch"))
       }
-      return arr.join(", ");
-    }, [color.h, color.l]);
+      return arr.join(", ")
+    }, [color.h, color.l])
 
-    const ratio = Math.max(0, Math.min(1, color.c / CHROMA_MAX));
+    const ratio = Math.max(0, Math.min(1, color.c / CHROMA_MAX))
 
     return (
       <div
@@ -115,10 +117,10 @@ export const Chroma = React.forwardRef<HTMLDivElement, ChromaProps>(
         onPointerCancel={releaseCapture}
         onKeyDown={onKeyDown}
         className={cn(
-          "relative cursor-pointer rounded-full outline-none touch-none",
+          "relative cursor-pointer touch-none rounded-full outline-none",
           isVertical ? "h-32 w-3" : "h-3 w-full",
           "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-popover",
-          className,
+          className
         )}
         style={{
           background: isVertical
@@ -144,6 +146,6 @@ export const Chroma = React.forwardRef<HTMLDivElement, ChromaProps>(
           }
         />
       </div>
-    );
-  },
-);
+    )
+  }
+)

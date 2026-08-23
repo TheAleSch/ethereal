@@ -174,14 +174,28 @@ export const devWarn = (message: string): void => {
 
 // both effects drive the SAME CSS variables (--bx/--bs1../--hov …) on their
 // host — two effects on one host silently corrupt each other, so warn
-const claimedHosts = new WeakMap<HTMLElement, string>()
+type HostClaims = { count: number; names: Map<string, number> }
+const claimedHosts = new WeakMap<HTMLElement, HostClaims>()
 export function claimHost(host: HTMLElement, name: string) {
-  const prev = claimedHosts.get(host)
-  if (prev && prev !== name)
-    devWarn(`[@theale/ethereal] host already has <${prev}/> — <${name}/> on the same element will fight over CSS variables`)
-  claimedHosts.set(host, name)
+  const claims = claimedHosts.get(host) ?? { count: 0, names: new Map<string, number>() }
+  if (claims.count > 0) {
+    const previous = [...claims.names.keys()].join('/> and <')
+    devWarn(`[@theale/ethereal] host already has <${previous}/> — <${name}/> on the same element will fight over CSS variables`)
+  }
+  claims.count++
+  claims.names.set(name, (claims.names.get(name) ?? 0) + 1)
+  claimedHosts.set(host, claims)
+  let released = false
   return () => {
-    if (claimedHosts.get(host) === name) claimedHosts.delete(host)
+    if (released) return
+    released = true
+    const current = claimedHosts.get(host)
+    if (!current) return
+    const named = (current.names.get(name) ?? 1) - 1
+    if (named > 0) current.names.set(name, named)
+    else current.names.delete(name)
+    current.count--
+    if (current.count <= 0) claimedHosts.delete(host)
   }
 }
 

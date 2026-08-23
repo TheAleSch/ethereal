@@ -12,7 +12,7 @@
 // previous value in place.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { p3t, radiusPx, trip } from './util'
+import { claimHost, p3t, radiusPx, trip } from './util'
 
 const NAMED: Record<string, string> = {
   white: '#ffffff',
@@ -120,6 +120,31 @@ describe('trip', () => {
   it('feeds p3t a valid triple for an invalid input', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {})
     expect(p3t('nonsense')).toBe('1.000 1.000 1.000')
+  })
+})
+
+describe('claimHost', () => {
+  it('warns when a second effect of the same type claims one host', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const target = document.createElement('div')
+    const releaseFirst = claimHost(target, 'Ethereal')
+    const releaseSecond = claimHost(target, 'Ethereal')
+    expect(warn).toHaveBeenCalledOnce()
+    expect(warn.mock.calls[0]![0]).toContain('will fight over CSS variables')
+    releaseFirst()
+    releaseSecond()
+  })
+
+  it('keeps remaining claims tracked after out-of-order cleanup', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const target = document.createElement('div')
+    const releaseFirst = claimHost(target, 'Ethereal')
+    const releaseSecond = claimHost(target, 'EventHorizon')
+    releaseFirst()
+    const releaseThird = claimHost(target, 'EtherealDither')
+    expect(warn).toHaveBeenCalledTimes(2)
+    releaseSecond()
+    releaseThird()
   })
 })
 

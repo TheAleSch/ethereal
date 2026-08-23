@@ -37,7 +37,8 @@ function TooltipTrigger({
   // `asChild` means "be this element instead of rendering your own" — Base UI
   // expresses that as `render`. Only honour it when the child really is a
   // single element; `asChild` over text would silently drop the text.
-  const asRender = asChild && isValidElement(children) ? (children as ReactElement) : undefined
+  const asRender =
+    asChild && isValidElement(children) ? (children as ReactElement) : undefined
   return (
     <TooltipPrimitive.Trigger
       data-slot="tooltip-trigger"

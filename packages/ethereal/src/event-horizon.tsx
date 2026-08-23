@@ -7,6 +7,7 @@
 import { useEffect, useRef } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { THINKING, lift, scale, scaleDuration } from './core/derive'
+import { boundedPalette, finiteNumber, runtimeConfigSignature } from './core/normalize'
 import { pathPx, quantAspect, walkSmooth } from './core/path'
 import { mergeConfig, useInteraction, type StateConfig, type ThemeConfig } from './core/state'
 import { subscribe } from './core/ticker'
@@ -175,6 +176,7 @@ type HostRec = {
   hPx: number
   visible: boolean
 }
+type DriverState = Pick<HostRec, 'phase' | 'hovT' | 'hovC' | 'clk'>
 const hostsSet = new Set<HostRec>()
 let unsub: (() => void) | null = null
 
@@ -278,6 +280,15 @@ export function EventHorizon({
   const theme = useTheme(ref, explicitTheme, themeDetector)
   const reducedMotion = useReducedMotion()
   const interaction = useInteraction(ref)
+  const driverRef = useRef<DriverState | null>(null)
+  const activeRecRef = useRef<HostRec | null>(null)
+  if (!driverRef.current) driverRef.current = { phase: nextPhase(), hovT: 0, hovC: 0, clk: 0 }
+  driverRef.current.hovT = interaction.hovered ? 1 : 0
+  const safeTransitionMs = finiteNumber(transitionMs, 320, 0, 10_000)
+
+  useEffect(() => {
+    if (activeRecRef.current) activeRecRef.current.hovT = interaction.hovered ? 1 : 0
+  }, [interaction.hovered])
 
   const cfg = mergeConfig<EventHorizonCfg>({
     defaults: EVENT_HORIZON,
@@ -293,6 +304,7 @@ export function EventHorizon({
     whilePressed,
     componentName: 'event-horizon',
   })
+  const cfgSignature = runtimeConfigSignature(cfg, boundedPalette(cfg.colors, EVENT_HORIZON.colors))
   useEffect(() => {
     const fx = ref.current,
       host = fx?.parentElement as HTMLElement | null
@@ -301,33 +313,32 @@ export function EventHorizon({
     // palette crashes trip() at layer-build time; NaN duration poisons the
     // orbit clock; an absurd tail/nodes/blur builds monster gradient strings
     // or layer boxes — configs can arrive from untrusted URL-shared links
-    const num = (value: number, fallback: number, lo: number, hi: number) =>
-      Number.isFinite(value) ? Math.min(hi, Math.max(lo, value)) : fallback
     const clamped: EventHorizonCfg = {
       ...cfg,
-      colors: Array.isArray(cfg.colors) && cfg.colors.length ? cfg.colors : EVENT_HORIZON.colors,
-      duration: num(cfg.duration, EVENT_HORIZON.duration, 0.5, 600),
-      ring: num(cfg.ring, EVENT_HORIZON.ring, 0, 100),
-      tail: num(cfg.tail, EVENT_HORIZON.tail, 0.1, 10),
-      nodes: num(cfg.nodes, EVENT_HORIZON.nodes, 2, 16),
-      node: num(cfg.node, EVENT_HORIZON.node, 0.1, 5),
-      shimmer: num(cfg.shimmer, EVENT_HORIZON.shimmer, 0, 2),
-      blur: num(cfg.blur, EVENT_HORIZON.blur, 0, 120),
-      halo: num(cfg.halo, EVENT_HORIZON.halo, 0, 4),
-      dist: num(cfg.dist, EVENT_HORIZON.dist, 0, 400),
-      corner: num(cfg.corner, EVENT_HORIZON.corner, 0.05, 1.5),
-      shadow: num(cfg.shadow, EVENT_HORIZON.shadow, 0, 1),
-      lens: num(cfg.lens, EVENT_HORIZON.lens, 0, 60),
-      hoverAmount: num(cfg.hoverAmount, EVENT_HORIZON.hoverAmount, 0, 10),
-      hoverEase: num(cfg.hoverEase, EVENT_HORIZON.hoverEase, 0.1, 100),
+      colors: boundedPalette(cfg.colors, EVENT_HORIZON.colors),
+      duration: finiteNumber(cfg.duration, EVENT_HORIZON.duration, 0.5, 600),
+      repeatDelay: finiteNumber(cfg.repeatDelay, EVENT_HORIZON.repeatDelay, 0, 600),
+      ring: finiteNumber(cfg.ring, EVENT_HORIZON.ring, 0, 100),
+      tail: finiteNumber(cfg.tail, EVENT_HORIZON.tail, 0.1, 10),
+      nodes: finiteNumber(cfg.nodes, EVENT_HORIZON.nodes, 2, 16),
+      node: finiteNumber(cfg.node, EVENT_HORIZON.node, 0.1, 5),
+      shimmer: finiteNumber(cfg.shimmer, EVENT_HORIZON.shimmer, 0, 2),
+      blur: finiteNumber(cfg.blur, EVENT_HORIZON.blur, 0, 120),
+      halo: finiteNumber(cfg.halo, EVENT_HORIZON.halo, 0, 4),
+      dist: finiteNumber(cfg.dist, EVENT_HORIZON.dist, 0, 400),
+      corner: finiteNumber(cfg.corner, EVENT_HORIZON.corner, 0.05, 1.5),
+      shadow: finiteNumber(cfg.shadow, EVENT_HORIZON.shadow, 0, 1),
+      lens: finiteNumber(cfg.lens, EVENT_HORIZON.lens, 0, 60),
+      hoverAmount: finiteNumber(cfg.hoverAmount, EVENT_HORIZON.hoverAmount, 0, 10),
+      hoverEase: finiteNumber(cfg.hoverEase, EVENT_HORIZON.hoverEase, 0.1, 100),
     }
     checkHost(host, 'EventHorizon')
     const unclaim = claimHost(host, 'EventHorizon')
     fx.replaceChildren()
     // rebuilt layers fade in over `transitionMs` (same contract as Ethereal)
-    if (transitionMs > 0 && !reducedMotion) {
+    if (safeTransitionMs > 0 && !reducedMotion) {
       fx.style.opacity = '0'
-      fx.style.transition = `opacity ${transitionMs}ms ease`
+      fx.style.transition = `opacity ${safeTransitionMs}ms ease`
       // force a style flush so the 0 is actually committed — a single rAF
       // fires before style recalc and the transition would never run
       void fx.offsetWidth
@@ -556,10 +567,10 @@ export function EventHorizon({
     const rec: HostRec = {
       el: host,
       cfg: clamped,
-      phase: nextPhase(),
-      hovT: 0,
-      hovC: 0,
-      clk: 0,
+      phase: driverRef.current!.phase,
+      hovT: driverRef.current!.hovT,
+      hovC: driverRef.current!.hovC,
+      clk: driverRef.current!.clk,
       aspect: quantAspect(host.offsetWidth, host.offsetHeight),
       hPx: Math.max(1, host.offsetHeight),
       visible: true,
@@ -576,26 +587,20 @@ export function EventHorizon({
       { rootMargin: '160px' }
     )
     io.observe(host)
-    const enter = () => {
-      rec.hovT = 1
-    }
-    const leave = () => {
-      rec.hovT = 0
-    }
-    host.addEventListener('pointerenter', enter)
-    host.addEventListener('pointerleave', leave)
+    activeRecRef.current = rec
     addHost(rec)
     return () => {
+      driverRef.current!.clk = rec.clk
+      driverRef.current!.hovC = rec.hovC
+      if (activeRecRef.current === rec) activeRecRef.current = null
       unclaim()
       lensRO?.disconnect()
       metricsRO.disconnect()
       io.disconnect()
-      host.removeEventListener('pointerenter', enter)
-      host.removeEventListener('pointerleave', leave)
       removeHost(rec)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(cfg), transitionMs, reducedMotion])
+  }, [cfgSignature, safeTransitionMs, reducedMotion])
   return (
     <span
       ref={ref}
@@ -626,10 +631,10 @@ export function EventHorizonWrap({
     <span
       className={className}
       style={{
+        ...style,
         position: 'relative',
         isolation: 'isolate',
         display: 'inline-block',
-        ...style,
       }}
     >
       <span style={{ position: 'relative', zIndex: 10, display: 'block' }}>{children}</span>

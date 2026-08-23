@@ -53,7 +53,8 @@ function useJank(windowMs = 1000) {
     if (!PerformanceObserver.supportedEntryTypes?.includes("longtask")) return
     let entries: { end: number; dur: number }[] = []
     const obs = new PerformanceObserver((list) => {
-      for (const e of list.getEntries()) entries.push({ end: e.startTime + e.duration, dur: e.duration })
+      for (const e of list.getEntries())
+        entries.push({ end: e.startTime + e.duration, dur: e.duration })
     })
     obs.observe({ entryTypes: ["longtask"] })
     const id = setInterval(() => {
@@ -90,12 +91,18 @@ export function PerfHud({ className }: { className?: string }) {
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
 
   const fpsTone =
-    fps === null ? "text-muted-foreground" : fps >= 55 ? "text-emerald-400" : fps >= 30 ? "text-amber-300" : "text-red-400"
+    fps === null
+      ? "text-muted-foreground"
+      : fps >= 55
+        ? "text-emerald-400"
+        : fps >= 30
+          ? "text-amber-300"
+          : "text-red-400"
 
   return (
     <div
       className={cn(
-        "pointer-events-none absolute bottom-3 right-3 z-20 flex flex-col gap-0.5 rounded-lg border border-white/10 bg-black/60 px-2.5 py-1.5 text-right font-mono text-[10px] leading-tight text-muted-foreground backdrop-blur-sm",
+        "pointer-events-none absolute right-3 bottom-3 z-20 flex flex-col gap-0.5 rounded-lg border border-white/10 bg-black/60 px-2.5 py-1.5 text-right font-mono text-[10px] leading-tight text-muted-foreground backdrop-blur-sm",
         className
       )}
     >
@@ -104,7 +111,12 @@ export function PerfHud({ className }: { className?: string }) {
         tick {tick === 0 ? "native" : `${tick ?? "—"}`}
       </span>
       {blocked !== null && (
-        <span className={cn("tabular-nums", blocked > 100 ? "text-amber-300" : undefined)}>
+        <span
+          className={cn(
+            "tabular-nums",
+            blocked > 100 ? "text-amber-300" : undefined
+          )}
+        >
           blocked {blocked}ms/s
         </span>
       )}

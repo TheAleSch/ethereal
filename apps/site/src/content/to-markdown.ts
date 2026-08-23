@@ -28,18 +28,25 @@ import type { PropGroup, PropRow } from "@/components/docs/prop-table"
 const cell = (s: string) => s.replace(/\n/g, " ").replace(/\|/g, "\\|").trim()
 
 function rowsToTable(rows: PropRow[]): string {
-  const head = "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |"
+  const head =
+    "| Prop | Type | Default | Description |\n| --- | --- | --- | --- |"
   const body = rows
-    .map((r) => `| \`${cell(r.name)}\` | \`${cell(r.type)}\` | \`${cell(r.default)}\` | ${cell(r.description)} |`)
+    .map(
+      (r) =>
+        `| \`${cell(r.name)}\` | \`${cell(r.type)}\` | \`${cell(r.default)}\` | ${cell(r.description)} |`
+    )
     .join("\n")
   return `${head}\n${body}`
 }
 
 function groupsToMarkdown(groups: PropGroup[]): string {
-  return groups.map((g) => `#### ${g.title}\n\n${rowsToTable(g.rows)}`).join("\n\n")
+  return groups
+    .map((g) => `#### ${g.title}\n\n${rowsToTable(g.rows)}`)
+    .join("\n\n")
 }
 
-const fence = (code: string, lang = "tsx") => "```" + lang + "\n" + code + "\n```"
+const fence = (code: string, lang = "tsx") =>
+  "```" + lang + "\n" + code + "\n```"
 
 /* --------------------------------------------------------------- llms.txt */
 
@@ -51,13 +58,15 @@ export function llmsTxt(): string {
   const docLinks = NAV.map(
     (n) => `- [${n.label}](${abs("/docs.md")}#${n.id})`
   ).join("\n")
-  const pageLinks = ROUTES.map((r) => `- [${r.title}](${abs(r.path)}): ${r.description}`).join("\n")
+  const pageLinks = ROUTES.map(
+    (r) => `- [${r.title}](${abs(r.path)}): ${r.description}`
+  ).join("\n")
 
   return `# ${SITE.pkg}
 
 > ${SITE.tagline}
 
-Two effects ship in one package. **Ethereal** is a travelling-light comet: a lit
+Three effects ship in one package. **Ethereal** is a travelling-light comet: a lit
 stretch of border ring, an interior color wash, thin light needles and a
 white-hot core, all following a constant-speed superellipse path around your
 element. **Event Horizon** is a black-hole accretion disk. **EtherealDither**
