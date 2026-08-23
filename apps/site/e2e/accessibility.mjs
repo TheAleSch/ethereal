@@ -236,9 +236,14 @@ let browser
     page.getByRole("button", { name: "add color" }),
     "Add color"
   )
-  await minimumEffectiveTarget(
-    page.getByRole("button", { name: "Send" }),
-    "Send"
+  ok(
+    (await page.getByRole("textbox", { name: "Chat composer preview" }).count()) ===
+      0,
+    "Visual chat preview does not expose a fake textbox"
+  )
+  ok(
+    (await page.getByRole("button", { name: "Send" }).count()) === 0,
+    "Visual chat preview does not expose a fake Send action"
   )
 
   const colorSwatches = page.getByRole("button", { name: /^color \d+$/ })

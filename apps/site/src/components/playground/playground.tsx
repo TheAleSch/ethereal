@@ -908,23 +908,20 @@ function PreviewHost({
   if (host === "chat") {
     return (
       <div data-fx-host="" className={cn(HOST_CLASS.chat, surface)}>
-        {/* a real input: the glow's host is still this div, so the effect
-            stays a child — an <input> is a replaced element and could never
-            contain it (that's what EtherealWrap exists for) */}
-        <input
-          type="text"
-          aria-label="Chat composer preview"
-          placeholder="Ask anything…"
-          autoComplete="off"
-          className="relative z-10 min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-        />
-        <button
-          type="button"
-          aria-label="Send"
-          className="hit-44 relative z-10 flex size-7 shrink-0 items-center justify-center rounded-lg bg-white/10 text-xs text-foreground transition-colors hover:bg-white/20"
+        {/* This is only a visual host preview, not a working chat composer.
+            Keep its decorative controls out of the accessibility tree. */}
+        <span
+          aria-hidden="true"
+          className="relative z-10 min-w-0 flex-1 text-sm text-muted-foreground"
+        >
+          Ask anything…
+        </span>
+        <span
+          aria-hidden="true"
+          className="relative z-10 flex size-7 shrink-0 items-center justify-center rounded-lg bg-white/10 text-xs text-foreground"
         >
           ↑
-        </button>
+        </span>
         {preview}
       </div>
     )
