@@ -121,6 +121,16 @@ describe('trip', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {})
     expect(p3t('nonsense')).toBe('1.000 1.000 1.000')
   })
+
+  it('evicts old parsed colors instead of retaining streamed palettes forever', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const first = 'cache-lru-first'
+    expect(trip(first)).toBe('255,255,255')
+    for (let index = 0; index <= 256; index++) trip(`cache-lru-${index}`)
+    const before = warn.mock.calls.length
+    expect(trip(first)).toBe('255,255,255')
+    expect(warn).toHaveBeenCalledTimes(before + 1)
+  })
 })
 
 describe('claimHost', () => {

@@ -42,11 +42,18 @@ export const EASE: Record<TravelEase, (progress: number) => number> = {
 // gradient invalidates the whole background/mask longhand (a dropped MASK
 // silently floods the element with unmasked paint), so this must never emit
 // NaN — unparseable inputs fall back to white with a one-time warning.
+const TRIP_CACHE_LIMIT = 256
 const tripCache = new Map<string, string>()
 let normCtx: CanvasRenderingContext2D | null | undefined
 export const trip = (color: string): string => {
   const cached = tripCache.get(color)
-  if (cached) return cached
+  if (cached) {
+    // Refresh insertion order so streamed palettes cannot keep old entries
+    // resident while evicting colors that are still in active use.
+    tripCache.delete(color)
+    tripCache.set(color, cached)
+    return cached
+  }
   let out: string | null = null
   let hex = color.startsWith('#') ? color.slice(1) : null
   // expand #rgb/#rgba shorthand before slicing
@@ -96,6 +103,7 @@ export const trip = (color: string): string => {
     devWarn(`[@theale/ethereal] could not parse color "${color}" — using white`)
   }
   tripCache.set(color, out)
+  if (tripCache.size > TRIP_CACHE_LIMIT) tripCache.delete(tripCache.keys().next().value!)
   return out
 }
 
