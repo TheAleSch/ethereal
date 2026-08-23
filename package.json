@@ -14,7 +14,9 @@
     "format:check": "npm run check -w site",
     "registry:build": "shadcn build registry.json -o apps/site/public/r",
     "verify:package": "node scripts/verify-package.mjs",
-    "verify:registry": "node scripts/verify-registry.mjs",
-    "verify": "npm run format:check && npm run typecheck && npm run test && npm run verify:package && npm run verify:registry && npm run lint -w site && npm run site:build && npm run test:e2e -w site"
+    "verify:registry:local": "node scripts/verify-registry-local.mjs",
+    "verify:registry:published": "node scripts/verify-registry-published.mjs",
+    "verify:release": "npm run verify:package && npm run verify:registry:published",
+    "verify": "npm run format:check && npm run typecheck && npm run test && npm run verify:package && npm run verify:registry:local && npm run lint -w site && npm run site:build && npm run test:e2e -w site"
   }
 }

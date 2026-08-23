@@ -1,9 +1,12 @@
 // Smooth constant-speed perimeter path — superellipse + arc-length LUT, so
 // position and tangent never snap at the corners.
 export const PATH_N = 512
-export const PATH_CACHE_LIMIT = 64
+// Large enough for a dense component gallery without the pathological N+1
+// LRU scan where every active path misses every frame. Mounted renderers also
+// retain their own LUT, so the shared cache remains a bounded warm-start pool.
+export const PATH_CACHE_LIMIT = 128
 
-type LUT = { pts: [number, number][]; cum: number[]; total: number }
+export type LUT = { pts: [number, number][]; cum: number[]; total: number }
 
 // LUTs keyed by corner exponent + aspect (host w/h, quantized): arc-length s
 // stays truly proportional to on-screen px, so px offsets (chain spacing,
@@ -55,12 +58,12 @@ export function getLUT(corner: number, aspect: number): LUT {
 
 // full perimeter length in px for a host of height hostPx (LUT space is
 // height-normalized), used to convert px offsets into path fractions
-export const pathPx = (corner: number, aspect: number, hostPx: number) => hostPx * getLUT(corner, aspect).total
+export const pathPx = (corner: number, aspect: number, hostPx: number, lut = getLUT(corner, aspect)) => hostPx * lut.total
 
 /** Arc-length fraction of the superellipse nearest `(x, y)`. This inverse is
  * needed by canvas pixels: two points can be close in straight-line distance
  * while living on opposite sides of a pill. */
-export function pathFractionAt(x: number, y: number, corner = 0.3, aspect = 3) {
+export function pathFractionAt(x: number, y: number, corner = 0.3, aspect = 3, retainedLUT?: LUT) {
   const exponent = normalizedCorner(corner)
   const safeAspect = normalizedAspect(aspect)
   const inverse = 1 / exponent
@@ -72,7 +75,7 @@ export function pathFractionAt(x: number, y: number, corner = 0.3, aspect = 3) {
   if (angle < 0) angle += 2 * Math.PI
 
   const approximate = Math.round((angle / (2 * Math.PI)) * PATH_N) % PATH_N
-  const { pts, cum, total } = getLUT(exponent, safeAspect)
+  const { pts, cum, total } = retainedLUT ?? getLUT(exponent, safeAspect)
   let bestSquared = Number.POSITIVE_INFINITY
   let bestDistance = 0
   // LUT interpolation cuts slightly inside the mathematical superellipse at
@@ -102,9 +105,9 @@ export function pathFractionAt(x: number, y: number, corner = 0.3, aspect = 3) {
 export const quantAspect = (width: number, height: number) =>
   normalizedAspect(width / Math.max(1, height))
 
-export function walkSmooth(fraction: number, corner = 0.3, aspect = 3) {
+export function walkSmooth(fraction: number, corner = 0.3, aspect = 3, retainedLUT?: LUT) {
   const along = ((fraction % 1) + 1) % 1
-  const { pts, cum, total } = getLUT(corner, aspect)
+  const { pts, cum, total } = retainedLUT ?? getLUT(corner, aspect)
   const target = along * total
   let lo = 1,
     hi = PATH_N

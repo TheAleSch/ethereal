@@ -194,4 +194,25 @@ describe('setTickRate', () => {
     expect(seen[seen.length - 1]).toBeCloseTo(step / 1000, 3)
     ticker.setTickRate(60)
   })
+
+  it.each([1, 5])('maintains paused timestamps before the %i fps rate gate', (fps) => {
+    const seen: number[] = []
+    ticker.setTickRate(fps)
+    ticker.subscribe((_now, dt) => seen.push(dt))
+    const step = 1000 / fps
+    raf.frame(step)
+    ticker.setPaused(true)
+    // This paused callback arrives before the next eligible delivery. It must
+    // still reset the elapsed-time origin instead of being dropped by the
+    // low-fps gate.
+    const pauseEnd = step * 1.4
+    raf.frame(pauseEnd)
+    ticker.setPaused(false)
+    raf.frame(step * 2)
+    expect(seen).toEqual([0])
+    raf.frame(pauseEnd + step)
+    expect(seen).toHaveLength(2)
+    expect(seen[1]).toBeCloseTo(step / 1000, 3)
+    ticker.setTickRate(60)
+  })
 })

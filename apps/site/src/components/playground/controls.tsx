@@ -143,7 +143,7 @@ export function SliderRow({
           if (e.key === "Enter") commit()
           if (e.key === "Escape") setDraft(null)
         }}
-        className="w-full rounded border border-transparent bg-transparent px-1 py-0.5 text-right font-mono text-xs text-foreground/80 tabular-nums focus:border-white/15 focus:bg-black/30 focus:outline-none"
+        className="min-h-11 w-full min-w-11 rounded border border-transparent bg-transparent px-1 py-0.5 text-right font-mono text-xs text-foreground/80 tabular-nums focus:border-white/15 focus:bg-black/30 focus:outline-none"
       />
     </div>
   )
@@ -172,7 +172,7 @@ export function SelectRow({
         value={value}
         onValueChange={(v) => v != null && onChange(String(v))}
       >
-        <SelectTrigger className="h-8 w-full">
+        <SelectTrigger className="min-h-11 w-full">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -254,16 +254,21 @@ export function ColorsRow({
   marker?: React.ReactNode
   hint?: string
 }) {
+  const [openColor, setOpenColor] = useState<number | null>(null)
+
   return (
     <div className="grid grid-cols-[4.25rem_1fr] items-start gap-3 sm:grid-cols-[5.5rem_1fr]">
       <RowLabel label={label} marker={marker} hint={hint} className="mt-1" />
       <div className="flex flex-wrap items-center gap-1.5">
         {colors.map((c, i) => (
-          <span key={i} className="group/swatch relative">
-            <Popover>
+          <span key={i} className="relative">
+            <Popover
+              open={openColor === i}
+              onOpenChange={(open) => setOpenColor(open ? i : null)}
+            >
               <PopoverTrigger
                 aria-label={`color ${i + 1}`}
-                className="hit-44-gap block size-7 cursor-pointer rounded-md border border-white/15 p-0.5"
+                className="block size-11 cursor-pointer rounded-md border border-white/15 p-2"
               >
                 {/* backgroundColor, never the `background` shorthand — the
                     shorthand accepts url(...) images, which would turn a
@@ -281,33 +286,38 @@ export function ColorsRow({
                 align="start"
                 className="w-auto border-0 bg-transparent p-0 shadow-none"
               >
-                <Suspense
-                  fallback={
-                    <div
-                      aria-hidden
-                      className="h-[13.5rem] w-[17.5rem] rounded-lg border border-border bg-popover shadow-sm"
-                    />
-                  }
-                >
-                  <ColorPickerPanel
-                    value={c}
-                    onHexChange={(hex) =>
-                      onChange(colors.map((x, j) => (j === i ? hex : x)))
+                <div className="flex w-[17.5rem] flex-col gap-2">
+                  <Suspense
+                    fallback={
+                      <div
+                        aria-hidden
+                        className="h-[13.5rem] w-[17.5rem] rounded-lg border border-border bg-popover shadow-sm"
+                      />
                     }
-                  />
-                </Suspense>
+                  >
+                    <ColorPickerPanel
+                      value={c}
+                      onHexChange={(hex) =>
+                        onChange(colors.map((x, j) => (j === i ? hex : x)))
+                      }
+                    />
+                  </Suspense>
+                  {colors.length > min && (
+                    <button
+                      type="button"
+                      aria-label={`remove color ${i + 1}`}
+                      onClick={() => {
+                        setOpenColor(null)
+                        onChange(colors.filter((_, j) => j !== i))
+                      }}
+                      className="inline-flex h-11 min-w-11 shrink-0 items-center justify-center rounded-md border border-white/10 bg-popover px-3 text-xs text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
+                    >
+                      Remove color
+                    </button>
+                  )}
+                </div>
               </PopoverContent>
             </Popover>
-            {colors.length > min && (
-              <button
-                type="button"
-                aria-label={`remove color ${i + 1}`}
-                onClick={() => onChange(colors.filter((_, j) => j !== i))}
-                className="absolute -top-1.5 -right-1.5 hidden size-3.5 items-center justify-center rounded-full border border-white/20 bg-black text-[9px] leading-none text-muted-foreground group-hover/swatch:flex hover:text-foreground"
-              >
-                ×
-              </button>
-            )}
           </span>
         ))}
         {colors.length < max && (
@@ -317,7 +327,7 @@ export function ColorsRow({
             onClick={() =>
               onChange([...colors, colors[colors.length - 1] ?? "#ffffff"])
             }
-            className="hit-44-gap flex size-7 items-center justify-center rounded-md border border-dashed border-white/20 text-sm text-muted-foreground transition-colors hover:border-white/40 hover:text-foreground"
+            className="flex size-11 items-center justify-center rounded-md border border-dashed border-white/20 text-sm text-muted-foreground transition-colors hover:border-white/40 hover:text-foreground"
           >
             +
           </button>

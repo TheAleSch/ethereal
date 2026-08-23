@@ -667,6 +667,7 @@ function EffectSection({
                 type="button"
                 onClick={() => setHost(h)}
                 aria-pressed={host === h}
+                aria-label={`${h} preview host`}
                 className={cn(
                   "hit-44-tight rounded-md px-2 py-1 text-[10px] font-medium capitalize transition-colors sm:px-2.5 sm:text-[11px]",
                   host === h

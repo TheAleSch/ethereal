@@ -16,7 +16,12 @@ let browser
   await warmRoutes(browser, server.baseURL, ["/", "/docs", "/playground"])
 
   const errors = []
-  const page = await browser.newPage({ viewport: { width: 390, height: 844 } })
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+  })
+  const page = await context.newPage()
   page.on("pageerror", (error) => errors.push(error.message))
   page.on("console", (message) => {
     if (message.type() === "error") errors.push(message.text())
@@ -43,6 +48,37 @@ let browser
     )
   }
 
+  const minimumTargets = async (locator, label) => {
+    const targets = await locator.all()
+    ok(targets.length > 0, `${label} targets are present`)
+    for (const [index, target] of targets.entries()) {
+      await minimumTarget(target, `${label} ${index + 1}`)
+    }
+  }
+
+  const minimumEffectiveTarget = async (locator, label) => {
+    const hitArea = await locator.evaluate((element) => {
+      const box = element.getBoundingClientRect()
+      const pseudoSize = (pseudo) => {
+        const style = getComputedStyle(element, pseudo)
+        return {
+          width: Number.parseFloat(style.width) || 0,
+          height: Number.parseFloat(style.height) || 0,
+        }
+      }
+      const before = pseudoSize("::before")
+      const after = pseudoSize("::after")
+      return {
+        width: Math.max(box.width, before.width, after.width),
+        height: Math.max(box.height, before.height, after.height),
+      }
+    })
+    ok(
+      hitArea.width >= 44 && hitArea.height >= 44,
+      `${label} effective hit area is at least 44x44 (${hitArea.width.toFixed(1)}x${hitArea.height.toFixed(1)})`
+    )
+  }
+
   const nav = page.locator("nav.fixed").first()
   await minimumTarget(nav.getByRole("link", { name: "Home" }), "Home nav")
   await minimumTarget(
@@ -53,6 +89,10 @@ let browser
   await minimumTarget(
     nav.getByRole("link", { name: "View on GitHub" }),
     "GitHub nav"
+  )
+  await minimumTarget(
+    page.getByRole("button", { name: "Dismiss hint: try the Konami code" }),
+    "Konami hint"
   )
 
   const home = nav.getByRole("link", { name: "Home" })
@@ -157,19 +197,72 @@ let browser
     page.getByRole("button", { name: /Copy this configuration as a prompt/ }),
     "Copy for AI"
   )
-  const sendHitArea = await page
-    .getByRole("button", { name: "Send" })
-    .evaluate((element) => {
-      const box = element.getBoundingClientRect()
-      const pseudo = getComputedStyle(element, "::after")
-      return {
-        width: Math.max(box.width, Number.parseFloat(pseudo.width)),
-        height: Math.max(box.height, Number.parseFloat(pseudo.height)),
-      }
-    })
+  await minimumTargets(
+    page.getByRole("button", { name: /^(dark|light) backdrop$/ }),
+    "Backdrop selector"
+  )
+  await minimumTargets(
+    page.getByRole("button", {
+      name: /^(button|chat|card|pill) preview host$/,
+    }),
+    "Preview host selector"
+  )
+  await minimumTargets(
+    page.locator('[data-slot="accordion-trigger"]:visible'),
+    "Visible accordion trigger"
+  )
+  await minimumTargets(
+    page.locator('[data-slot="select-trigger"]:visible'),
+    "Visible select trigger"
+  )
+  await minimumTargets(
+    page.locator('input[aria-label$=" value"]:visible'),
+    "Visible numeric input"
+  )
+  await minimumTargets(
+    page.locator('[data-slot="slider-control"]:visible'),
+    "Visible slider control"
+  )
+  const thumbs = await page.locator('[data-slot="slider-thumb"]:visible').all()
+  ok(thumbs.length > 0, "Visible slider thumbs are present")
+  for (const [index, thumb] of thumbs.entries()) {
+    await minimumEffectiveTarget(thumb, `Visible slider thumb ${index + 1}`)
+  }
+  await minimumTargets(
+    page.getByRole("button", { name: /^color \d+$/ }),
+    "Visible color swatch"
+  )
+  await minimumTarget(
+    page.getByRole("button", { name: "add color" }),
+    "Add color"
+  )
+  await minimumEffectiveTarget(
+    page.getByRole("button", { name: "Send" }),
+    "Send"
+  )
+
+  const colorSwatches = page.getByRole("button", { name: /^color \d+$/ })
+  const colorCount = await colorSwatches.count()
+  await colorSwatches.first().focus()
+  await page.keyboard.press("Enter")
+  const removeColor = page.getByRole("button", { name: "remove color 1" })
+  await removeColor.waitFor()
+  await page.waitForTimeout(150)
+  await minimumTarget(removeColor, "Remove color")
+  await removeColor.focus()
   ok(
-    sendHitArea.width >= 44 && sendHitArea.height >= 44,
-    `Send effective hit area is at least 44x44 (${sendHitArea.width.toFixed(1)}x${sendHitArea.height.toFixed(1)})`
+    await removeColor.evaluate((element) => document.activeElement === element),
+    "Remove color is keyboard focusable"
+  )
+  await removeColor.tap()
+  await page.waitForFunction(
+    (expected) =>
+      document.querySelectorAll('[aria-label^="color "]').length === expected,
+    colorCount - 1
+  )
+  ok(
+    (await colorSwatches.count()) === colorCount - 1,
+    "Remove color works from a touch interaction"
   )
 
   ok(errors.length === 0, `no browser errors (${errors.join(" | ") || "none"})`)

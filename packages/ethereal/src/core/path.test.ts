@@ -38,6 +38,13 @@ describe('getLUT', () => {
     expect(getLUT(0.3, 2)).not.toBe(getLUT(0.3, 2.5))
   })
 
+  it('keeps a 65-key active working set hot across repeated passes', () => {
+    const corners = Array.from({ length: 65 }, (_, index) => 0.05 + index / 400)
+    const active = corners.map((corner) => getLUT(corner, 3))
+    for (let pass = 0; pass < 3; pass++)
+      corners.forEach((corner, index) => expect(getLUT(corner, 3)).toBe(active[index]))
+  })
+
   it('quantizes keys and evicts old LUTs at the fixed cache bound', () => {
     expect(getLUT(0.3001, 2.01)).toBe(getLUT(0.3002, 2.02))
     const old = getLUT(0.0525, 7.75)

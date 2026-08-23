@@ -95,12 +95,20 @@ variant for hosts you can't put children inside.
 
 ## What's in this repo
 
-| Path                                       | What                                                                                                                                            |
-| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`packages/ethereal`](./packages/ethereal) | **`@theale/ethereal`** — the React components, the shared ticker, and state/theme resolution. This is what consumers install.                   |
-| [`apps/site`](./apps/site)                 | The [ethereal.ale.design](https://ethereal.ale.design) site — landing demo, docs, and playground (TanStack Start). Not shipped to consumers.    |
-| [`registry`](./registry)                   | The shadcn registry item — an `EtherealButton` wrapper that depends on the npm package rather than vendoring it.                                |
-| [`registry.json`](./registry.json)         | Source of truth for what the shadcn CLI installs.                                                                                               |
+| Path                                       | What                                                                                                                                         |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`packages/ethereal`](./packages/ethereal) | **`@theale/ethereal`** — the React components, the shared ticker, and state/theme resolution. This is what consumers install.                |
+| [`apps/site`](./apps/site)                 | The [ethereal.ale.design](https://ethereal.ale.design) site — landing demo, docs, and playground (TanStack Start). Not shipped to consumers. |
+| [`registry`](./registry)                   | The shadcn registry item — an `EtherealButton` wrapper that depends on the npm package rather than vendoring it.                             |
+| [`registry.json`](./registry.json)         | Source of truth for what the shadcn CLI installs.                                                                                            |
+
+## Release order
+
+Publish the exact `@theale/ethereal` version to npm first. Then run
+`npm run verify:registry:published`, which requires that version to be the npm
+`latest` release and installs the unmodified shadcn item. Deploy the site and
+registry only after that passes. Ordinary `npm run verify` uses a clearly
+separate local-tarball smoke so pre-publication CI does not depend on npm.
 
 ## Why
 

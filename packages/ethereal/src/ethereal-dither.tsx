@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { THINKING, lift, scaleDuration, tightenPulse } from './core/derive'
 import { boundedPalette, finiteNumber, runtimeConfigSignature } from './core/normalize'
-import { pathFractionAt, pathPx, walkSmooth } from './core/path'
+import { getLUT, pathFractionAt, pathPx, walkSmooth, type LUT } from './core/path'
 import { mergeConfig, useInteraction, type StateConfig, type ThemeConfig } from './core/state'
 import { subscribe } from './core/ticker'
 import { useReducedMotion, useTheme, type Theme } from './core/theme'
@@ -300,6 +300,7 @@ export function EtherealDither({
     let hostW = 1
     let hostH = 1
     let aspect = 3
+    let lut: LUT = getLUT(clamped.corner, aspect)
     let radius = 0
     let edgeWeights = new Float32Array(1)
     let edgeDistances = new Float32Array(1)
@@ -325,6 +326,7 @@ export function EtherealDither({
       // '50%' pills) and clamp to the capsule limit
       radius = Math.min(radiusPx(getComputedStyle(host).borderTopLeftRadius, host), Math.min(hostW, hostH) / 2)
       aspect = Math.max(0.5, Math.min(8, Math.round((hostW / hostH) * 4) / 4))
+      lut = getLUT(clamped.corner, aspect)
       const gridW = hostW + 2 * clamped.bleed
       const gridH = hostH + 2 * clamped.bleed
       blockPx = Math.max(clamped.block, Math.ceil(Math.sqrt((gridW * gridH) / MAX_CELLS)))
@@ -356,7 +358,7 @@ export function EtherealDither({
           edgeDistances[cell] = dEdge
           edgeWeights[cell] = allowed ? Math.exp(-((dEdge / clamped.band) ** 2)) : 0
           if (clamped.path === 'around')
-            perimeterPositions[cell] = pathFractionAt(px / hostW, py / hostH, clamped.corner, aspect)
+            perimeterPositions[cell] = pathFractionAt(px / hostW, py / hostH, clamped.corner, aspect, lut)
         }
       }
     }
@@ -384,7 +386,7 @@ export function EtherealDither({
       if (clamped.path === 'bottom') {
         return [(0.06 + 0.88 * bottomSweepPosition(travel, mirrorBottom)) * hostW, hostH]
       }
-      const point = walkSmooth(travel, clamped.corner, aspect)
+      const point = walkSmooth(travel, clamped.corner, aspect, lut)
       return [point.x * hostW, point.y * hostH]
     }
 
@@ -420,7 +422,7 @@ export function EtherealDither({
       // shimmers and strays as individuals, not one welded object
       const heads: [number, number, number, number][] = []
       const coreCount = Math.max(1, Math.round(clamped.hotspots))
-      const perimeterPx = clamped.path === 'around' ? pathPx(clamped.corner, aspect, hostH) : 2 * (hostW + hostH)
+      const perimeterPx = clamped.path === 'around' ? pathPx(clamped.corner, aspect, hostH, lut) : 2 * (hostW + hostH)
       const flickerAmp = clamped.flicker > 0 ? clamped.flicker : coreCount > 1 ? 0.35 : 0
       for (const [baseTravel, mirrorBottom] of baseTravels)
         for (let core = 0; core < coreCount; core++) {

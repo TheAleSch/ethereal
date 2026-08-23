@@ -139,8 +139,21 @@ describe("useCopy on the happy path", () => {
   })
 
   it("awaits an async text producer before writing", async () => {
-    active = mountCopyButton()
-    await runCopy(active, async () => "fetched at click")
+    // This assertion is about awaiting the producer, not the flash timer.
+    // Real timers keep React's async `act` scheduling independent from the
+    // fake clock used by the timer-specific tests above.
+    vi.useRealTimers()
+    active = mountCopyButton(60_000)
+    let resolveText!: (text: string) => void
+    const text = new Promise<string>((resolve) => {
+      resolveText = resolve
+    })
+    const pending = active.copy(() => text)
+    expect(writeText).not.toHaveBeenCalled()
+    await act(async () => {
+      resolveText("fetched at click")
+      await pending
+    })
     expect(writeText).toHaveBeenCalledWith("fetched at click")
     expect(active.rendered.at(-1)).toBe("copied")
   })
@@ -169,7 +182,8 @@ describe("useCopy never claims success it did not have", () => {
   })
 
   it("shows error when an async text producer rejects", async () => {
-    active = mountCopyButton()
+    vi.useRealTimers()
+    active = mountCopyButton(60_000)
     await runCopy(active, async () => {
       throw new Error("fetch failed")
     })

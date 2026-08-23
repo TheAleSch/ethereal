@@ -263,6 +263,22 @@ describe('Ethereal drives its host every frame', () => {
     run(20)
     expect(['--bx', '--by'].map(read)).toEqual(still)
   })
+
+  it('recomputes responsive masks under prefers-reduced-motion', () => {
+    reduceMotion = true
+    measuredW = 200
+    measuredH = 200
+    render(createElement(EtherealSubject, { place: 'internal' }))
+    const masks = () =>
+      Array.from(host.querySelectorAll<HTMLElement>('span span'))
+        .map((element) => element.style.mask)
+        .join(' ')
+    expect(masks()).toContain('28px')
+    measuredH = 40
+    for (const observer of ControlledResizeObserver.instances) observer.trigger()
+    expect(masks()).toContain('16px')
+    expect(masks()).not.toContain('transparent 28px')
+  })
 })
 
 describe('EventHorizon drives its host every frame', () => {
@@ -330,6 +346,22 @@ describe('EventHorizon drives its host every frame', () => {
     const backward = sample(30, 100).map((point) => point.bx)
     expect(backward).not.toEqual(forward)
   })
+
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, '1', '-1', 0])(
+    'keeps every animated coordinate finite for a hostile dir %s',
+    (dir) => {
+      render(
+        createElement(HorizonSubject, {
+          duration: 2,
+          nodes: 5,
+          dir: dir as EventHorizonProps['dir'],
+        }),
+      )
+      run(3)
+      for (const name of ['--bx', '--by', '--dx', '--dy', '--adx', '--ady', '--tx1', '--ty1'])
+        expect(Number.isFinite(Number(read(name))), name).toBe(true)
+    },
+  )
 
   it('holds still while paused', () => {
     render(createElement(HorizonSubject, { duration: 2 }))

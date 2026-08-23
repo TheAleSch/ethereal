@@ -6,7 +6,7 @@
 import { useEffect, useRef } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { THINKING, lift, scaleDuration, tightenPulse } from './core/derive'
-import { pathPx, quantAspect, rand, randEdgePos, walkRect, walkSmooth } from './core/path'
+import { getLUT, pathPx, quantAspect, rand, randEdgePos, walkRect, walkSmooth, type LUT } from './core/path'
 import { boundedPalette, finiteNumber, runtimeConfigSignature } from './core/normalize'
 import { mergeConfig, useInteraction, type StateConfig, type ThemeConfig } from './core/state'
 import { subscribe } from './core/ticker'
@@ -233,6 +233,7 @@ type HostRec = {
   hPx: number
   // IntersectionObserver flag: off-screen hosts skip all per-frame work
   visible: boolean
+  lut: LUT
   needleLayers?: { el: HTMLElement; inset: number }[]
   needleCyc?: number
   needleBG?: (inset: number, seed?: number) => string
@@ -310,8 +311,11 @@ function tickAll(nowSec: number, dt: number) {
       edgeRamp = bottomSweepEnvelope(travel)
     } else if (cfg.path === 'around') {
       const aspect = rec.aspect
-      head1 = walkSmooth(travel, 0.3, aspect)
-      head2 = cfg.spin === 'counter' ? walkSmooth(1 - travel, 0.3, aspect) : walkSmooth(travel + 0.5, 0.3, aspect)
+      head1 = walkSmooth(travel, 0.3, aspect, rec.lut)
+      head2 =
+        cfg.spin === 'counter'
+          ? walkSmooth(1 - travel, 0.3, aspect, rec.lut)
+          : walkSmooth(travel + 0.5, 0.3, aspect, rec.lut)
       // (-dy, dx) of the walk's own tangent is outward; grab it before the
       // counter-spin reversal below flips the tangent
       normal1 = { x: -head1.dy, y: head1.dx }
@@ -322,18 +326,19 @@ function tickAll(nowSec: number, dt: number) {
       // per-blob path positions: the cluster follows the border around
       // corners as a chain instead of hanging straight off the tangent.
       // pathPx (aspect-true) keeps px offsets physically even on every edge.
-      const perimeterPx = pathPx(0.3, aspect, Math.max(1, rec.hPx))
+      const perimeterPx = pathPx(0.3, aspect, Math.max(1, rec.hPx), rec.lut)
       const blobCount = Math.min(cfg.colors.length + 4, 9)
       for (let i = 1; i < blobCount; i++) {
         const off = Math.ceil(i / 2) * 18 * (i % 2 ? 1 : -1)
-        const blob1 = walkSmooth(travel + off / perimeterPx, 0.3, aspect)
+        const blob1 = walkSmooth(travel + off / perimeterPx, 0.3, aspect, rec.lut)
         el.style.setProperty(`--p1x${i}`, blob1.x.toFixed(4))
         el.style.setProperty(`--p1y${i}`, blob1.y.toFixed(4))
         if (cfg.heads === 2) {
           const blob2 = walkSmooth(
             cfg.spin === 'counter' ? 1 - travel - off / perimeterPx : travel + 0.5 + off / perimeterPx,
             0.3,
-            aspect
+            aspect,
+            rec.lut
           )
           el.style.setProperty(`--p2x${i}`, blob2.x.toFixed(4))
           el.style.setProperty(`--p2y${i}`, blob2.y.toFixed(4))
@@ -349,11 +354,16 @@ function tickAll(nowSec: number, dt: number) {
           offs.forEach((offsetPx, circle) => {
             const sway = 6 * Math.sin((2 * Math.PI * time) / (duration * (0.8 + 0.17 * circle)) + circle * 2.1)
             const lag = (offsetPx + sway) / perimeterPx
-            const circle1 = walkSmooth(travel + lag, 0.3, aspect)
+            const circle1 = walkSmooth(travel + lag, 0.3, aspect, rec.lut)
             el.style.setProperty(`--sc1x${circle}`, circle1.x.toFixed(4))
             el.style.setProperty(`--sc1y${circle}`, circle1.y.toFixed(4))
             if (cfg.heads === 2) {
-              const circle2 = walkSmooth(cfg.spin === 'counter' ? 1 - travel - lag : travel + 0.5 + lag, 0.3, aspect)
+              const circle2 = walkSmooth(
+                cfg.spin === 'counter' ? 1 - travel - lag : travel + 0.5 + lag,
+                0.3,
+                aspect,
+                rec.lut
+              )
               el.style.setProperty(`--sc2x${circle}`, circle2.x.toFixed(4))
               el.style.setProperty(`--sc2y${circle}`, circle2.y.toFixed(4))
             }
@@ -369,11 +379,16 @@ function tickAll(nowSec: number, dt: number) {
           const sway =
             (4 + 36 * cfg.wander) * Math.sin((2 * Math.PI * time) / (duration * (0.7 + 0.19 * core)) + core * 1.7)
           const lag = (off + sway) / perimeterPx
-          const core1 = walkSmooth(travel + lag, 0.3, aspect)
+          const core1 = walkSmooth(travel + lag, 0.3, aspect, rec.lut)
           el.style.setProperty(`--hp1x${core}`, core1.x.toFixed(4))
           el.style.setProperty(`--hp1y${core}`, core1.y.toFixed(4))
           if (cfg.heads === 2) {
-            const core2 = walkSmooth(cfg.spin === 'counter' ? 1 - travel - lag : travel + 0.5 + lag, 0.3, aspect)
+            const core2 = walkSmooth(
+              cfg.spin === 'counter' ? 1 - travel - lag : travel + 0.5 + lag,
+              0.3,
+              aspect,
+              rec.lut
+            )
             el.style.setProperty(`--hp2x${core}`, core2.x.toFixed(4))
             el.style.setProperty(`--hp2y${core}`, core2.y.toFixed(4))
           }
@@ -1286,8 +1301,14 @@ export function Ethereal({
       // reveal initializes --hov to 0 expecting pointer events + ticker to
       // raise it — neither runs here, so force it visible too
       host.style.setProperty('--hov', '1')
-      return cleanupStatic
+      const metricsRO = new ResizeObserver(updateResponsiveMasks)
+      metricsRO.observe(host)
+      return () => {
+        metricsRO.disconnect()
+        cleanupStatic()
+      }
     }
+    const initialAspect = quantAspect(host.offsetWidth, host.offsetHeight)
     const rec: HostRec = {
       el: host,
       cfg: clamped,
@@ -1295,7 +1316,8 @@ export function Ethereal({
       hovT: driverRef.current!.hovT,
       hovC: driverRef.current!.hovC,
       clk: driverRef.current!.clk,
-      aspect: quantAspect(host.offsetWidth, host.offsetHeight),
+      aspect: initialAspect,
+      lut: getLUT(0.3, initialAspect),
       hPx: Math.max(1, host.offsetHeight),
       visible: true,
       needleLayers,
@@ -1305,6 +1327,7 @@ export function Ethereal({
     // itself never reads offsetWidth/offsetHeight
     const metricsRO = new ResizeObserver(() => {
       rec.aspect = quantAspect(host.offsetWidth, host.offsetHeight)
+      rec.lut = getLUT(0.3, rec.aspect)
       rec.hPx = Math.max(1, host.offsetHeight)
       updateResponsiveMasks()
     })

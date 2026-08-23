@@ -8,7 +8,7 @@ import { useEffect, useRef } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { THINKING, lift, scale, scaleDuration } from './core/derive'
 import { boundedPalette, finiteNumber, runtimeConfigSignature } from './core/normalize'
-import { pathPx, quantAspect, walkSmooth } from './core/path'
+import { getLUT, pathPx, quantAspect, walkSmooth, type LUT } from './core/path'
 import { mergeConfig, useInteraction, type StateConfig, type ThemeConfig } from './core/state'
 import { subscribe } from './core/ticker'
 import { useReducedMotion, useTheme, type Theme } from './core/theme'
@@ -175,6 +175,7 @@ type HostRec = {
   aspect: number
   hPx: number
   visible: boolean
+  lut: LUT
 }
 type DriverState = Pick<HostRec, 'phase' | 'hovT' | 'hovC' | 'clk'>
 const hostsSet = new Set<HostRec>()
@@ -196,7 +197,7 @@ function tickAll(nowSec: number, dt: number) {
     const corner = cfg.corner
     const aspect = rec.aspect
     const uHead = cfg.dir === -1 ? 1 - ttr : ttr
-    let head = walkSmooth(uHead, corner, aspect)
+    let head = walkSmooth(uHead, corner, aspect, rec.lut)
     if (cfg.dir === -1) head = { ...head, dx: -head.dx, dy: -head.dy }
     const style = el.style
     const tangentSum = Math.abs(head.dx) + Math.abs(head.dy) || 1
@@ -221,12 +222,12 @@ function tickAll(nowSec: number, dt: number) {
     // independent tail: each micro-spot of the stream walks the SAME path at
     // its own lag (px converted to arc fraction via this host's perimeter),
     // so the whole smear bends around corners
-    const perimeterPx = pathPx(corner, aspect, Math.max(1, rec.hPx))
+    const perimeterPx = pathPx(corner, aspect, Math.max(1, rec.hPx), rec.lut)
     const nodeCount = Math.min(32, Math.max(2, Math.round(cfg.nodes)) * 2)
     for (let i = 1; i < nodeCount; i++) {
       const surge = 1 + 0.3 * shimmer * osc[i % 4]!
       const lag = ((6 + i * 7) * cfg.tail * surge) / perimeterPx
-      const node = walkSmooth(uHead - cfg.dir * lag, corner, aspect)
+      const node = walkSmooth(uHead - cfg.dir * lag, corner, aspect, rec.lut)
       style.setProperty(`--tx${i}`, node.x.toFixed(4))
       style.setProperty(`--ty${i}`, node.y.toFixed(4))
     }
@@ -331,6 +332,7 @@ export function EventHorizon({
       lens: finiteNumber(cfg.lens, EVENT_HORIZON.lens, 0, 60),
       hoverAmount: finiteNumber(cfg.hoverAmount, EVENT_HORIZON.hoverAmount, 0, 10),
       hoverEase: finiteNumber(cfg.hoverEase, EVENT_HORIZON.hoverEase, 0.1, 100),
+      dir: cfg.dir === -1 ? -1 : EVENT_HORIZON.dir,
     }
     checkHost(host, 'EventHorizon')
     const unclaim = claimHost(host, 'EventHorizon')
@@ -564,6 +566,7 @@ export function EventHorizon({
         lensRO?.disconnect()
       }
     }
+    const initialAspect = quantAspect(host.offsetWidth, host.offsetHeight)
     const rec: HostRec = {
       el: host,
       cfg: clamped,
@@ -571,13 +574,15 @@ export function EventHorizon({
       hovT: driverRef.current!.hovT,
       hovC: driverRef.current!.hovC,
       clk: driverRef.current!.clk,
-      aspect: quantAspect(host.offsetWidth, host.offsetHeight),
+      aspect: initialAspect,
       hPx: Math.max(1, host.offsetHeight),
       visible: true,
+      lut: getLUT(clamped.corner, initialAspect),
     }
     const metricsRO = new ResizeObserver(() => {
       rec.aspect = quantAspect(host.offsetWidth, host.offsetHeight)
       rec.hPx = Math.max(1, host.offsetHeight)
+      rec.lut = getLUT(clamped.corner, rec.aspect)
     })
     metricsRO.observe(host)
     const io = new IntersectionObserver(

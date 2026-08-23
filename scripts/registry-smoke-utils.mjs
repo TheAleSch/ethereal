@@ -1,21 +1,26 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawn } from "node:child_process";
 import { createServer } from "node:http";
-import {
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const temp = mkdtempSync(join(tmpdir(), "ethereal-registry-smoke-"));
+export const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-function run(command, args, cwd = root) {
+export function makeTemp(prefix) {
+  return mkdtempSync(join(tmpdir(), prefix));
+}
+
+export function commandOutput(command, args, cwd = root) {
+  return execFileSync(command, args, {
+    cwd,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  }).trim();
+}
+
+export function run(command, args, cwd = root) {
   return new Promise((resolveRun, reject) => {
     const child = spawn(command, args, { cwd, stdio: "inherit" });
     child.once("error", reject);
@@ -38,11 +43,8 @@ function canonical(value) {
   return value;
 }
 
-const generatedDir = join(temp, "generated");
-const fixture = join(temp, "consumer");
-let server;
-
-try {
+export async function buildAndVerifyRegistry(temp) {
+  const generatedDir = join(temp, "generated");
   await run("npx", [
     "--no-install",
     "shadcn",
@@ -51,15 +53,18 @@ try {
     "-o",
     generatedDir,
   ]);
+
   const generatedPath = join(generatedDir, "ethereal.json");
-  const trackedPath = join(root, "apps/site/public/r/ethereal.json");
   const generated = JSON.parse(readFileSync(generatedPath, "utf8"));
-  const tracked = JSON.parse(readFileSync(trackedPath, "utf8"));
+  const tracked = JSON.parse(
+    readFileSync(join(root, "apps/site/public/r/ethereal.json"), "utf8"),
+  );
   assert.deepEqual(
     canonical(tracked),
     canonical(generated),
     "apps/site/public/r/ethereal.json is stale; run `npm run registry:build`",
   );
+
   const generatedIndex = JSON.parse(
     readFileSync(join(generatedDir, "registry.json"), "utf8"),
   );
@@ -72,30 +77,12 @@ try {
     "apps/site/public/r/registry.json is stale; run `npm run registry:build`",
   );
 
-  await run("npm", ["run", "build", "-w", "@theale/ethereal"]);
-  const packed = JSON.parse(
-    execFileSync(
-      "npm",
-      [
-        "pack",
-        "-w",
-        "@theale/ethereal",
-        "--ignore-scripts",
-        "--json",
-        "--pack-destination",
-        temp,
-      ],
-      { cwd: root, encoding: "utf8" },
-    ),
-  );
-  assert.equal(packed.length, 1, "npm pack should create exactly one tarball");
-  const tarball = join(temp, packed[0].filename);
-  const smokeItem = JSON.stringify({
-    ...generated,
-    dependencies: [`file:${tarball}`],
-  });
+  return generated;
+}
 
-  mkdirSync(fixture);
+export async function createConsumerFixture(temp) {
+  const fixture = join(temp, "consumer");
+  mkdirSync(join(fixture, "src/lib"), { recursive: true });
   writeFileSync(
     join(fixture, "package.json"),
     JSON.stringify(
@@ -167,7 +154,6 @@ try {
       2,
     ),
   );
-  mkdirSync(join(fixture, "src/lib"), { recursive: true });
   writeFileSync(
     join(fixture, "src/lib/utils.ts"),
     `import { clsx, type ClassValue } from "clsx"
@@ -187,34 +173,41 @@ export const example = <EtherealButton glow={{ state: "thinking" }}>Go</Ethereal
     ["install", "--ignore-scripts", "--no-audit", "--no-fund"],
     fixture,
   );
+  return fixture;
+}
 
-  server = createServer((request, response) => {
+export async function installAndCompileRegistryItem(fixture, item) {
+  const body = JSON.stringify(item);
+  const server = createServer((request, response) => {
     if (request.url !== "/r/ethereal.json") {
       response.writeHead(404).end();
       return;
     }
     response.writeHead(200, { "content-type": "application/json" });
-    response.end(smokeItem);
+    response.end(body);
   });
-  await new Promise((resolveListen, reject) => {
-    server.once("error", reject);
-    server.listen(0, "127.0.0.1", resolveListen);
-  });
-  const address = server.address();
-  assert(address && typeof address === "object");
-  await run("npx", [
-    "--no-install",
-    "shadcn",
-    "add",
-    `http://127.0.0.1:${address.port}/r/ethereal.json`,
-    "--yes",
-    "--overwrite",
-    "--cwd",
-    fixture,
-  ]);
-  await run("npx", ["--no-install", "tsc", "--noEmit"], fixture);
-  console.log("Registry generation, install, and compile smoke passed.");
-} finally {
-  if (server) await new Promise((resolveClose) => server.close(resolveClose));
-  rmSync(temp, { recursive: true, force: true });
+
+  try {
+    await new Promise((resolveListen, reject) => {
+      server.once("error", reject);
+      server.listen(0, "127.0.0.1", resolveListen);
+    });
+    const address = server.address();
+    assert(address && typeof address === "object");
+    await run("npx", [
+      "--no-install",
+      "shadcn",
+      "add",
+      `http://127.0.0.1:${address.port}/r/ethereal.json`,
+      "--yes",
+      "--overwrite",
+      "--cwd",
+      fixture,
+    ]);
+    await run("npx", ["--no-install", "tsc", "--noEmit"], fixture);
+  } finally {
+    if (server.listening) {
+      await new Promise((resolveClose) => server.close(resolveClose));
+    }
+  }
 }

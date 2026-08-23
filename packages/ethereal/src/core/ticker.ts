@@ -52,14 +52,15 @@ function loop(now: number) {
   raf = requestAnimationFrame(loop)
   const frameGap = lastRafNow ? now - lastRafNow : 0
   lastRafNow = now
-  if (now - last < minInterval) return
   // Paused holds every clock still without asking renderers to recompute and
-  // rewrite the same frame. Advancing both timestamps prevents a resume jump.
+  // rewrite the same frame. This must run BEFORE rate gating: a short pause
+  // between two low-fps deliveries still has to be excluded from elapsed dt.
   if (paused) {
     prevNow = now
     last = now
     return
   }
+  if (now - last < minInterval) return
   // Deliberately gated frames must deliver the full accumulated elapsed time,
   // including target rates below 10fps. A genuine rAF suspension is detected
   // independently from the target interval and remains capped on resume.
