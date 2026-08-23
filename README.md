@@ -104,11 +104,15 @@ variant for hosts you can't put children inside.
 
 ## Release order
 
-Publish the exact `@theale/ethereal` version to npm first. Then run
-`npm run verify:registry:published`, which requires that version to be the npm
-`latest` release and installs the unmodified shadcn item. Deploy the site and
-registry only after that passes. Ordinary `npm run verify` uses a clearly
-separate local-tarball smoke so pre-publication CI does not depend on npm.
+Run `npm run verify`, then publish the exact `@theale/ethereal` version to npm.
+The package's `prepublishOnly` hook repeats its typecheck, source tests, build,
+and packed React 18 consumer smoke so publication fails before a broken
+artifact becomes immutable. After publishing, run
+`npm run verify:registry:published`; it requires that exact version to be the
+npm `latest` release and installs the unmodified shadcn item. Deploy the site
+and registry only after that passes. Ordinary `npm run verify` uses a clearly
+separate local-tarball registry smoke so pre-publication CI does not depend on
+npm.
 
 ## Why
 
