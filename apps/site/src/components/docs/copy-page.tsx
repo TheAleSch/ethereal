@@ -38,14 +38,14 @@ export function CopyPage() {
     })
 
   const btn =
-    "inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 border border-white/10 px-2.5 text-xs text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground"
+    "inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 px-2.5 text-xs text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground focus-visible:bg-white/5 focus-visible:outline-none"
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center overflow-hidden rounded-lg border border-white/10">
       <button
         type="button"
         onClick={copyPage}
-        className={cn(btn, "rounded-l-md border-r-0")}
+        className={cn(btn, "border-r border-white/10")}
       >
         {state === "copied" ? (
           <Check className="size-3.5 text-emerald-400" />
@@ -61,7 +61,7 @@ export function CopyPage() {
       <Popover>
         <PopoverTrigger
           aria-label="More formats for AI tools"
-          className={cn(btn, "rounded-r-md px-1.5")}
+          className={cn(btn, "px-1.5")}
         >
           <ChevronDown className="size-3.5" />
         </PopoverTrigger>

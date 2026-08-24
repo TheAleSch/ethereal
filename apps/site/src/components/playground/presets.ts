@@ -151,9 +151,8 @@ const themed = (
   )
 
 const ETHEREAL_PRESETS_RAW: Record<string, EtherealOverrides> = {
-  // These are ambient product effects, not progress indicators. Full laps
-  // deliberately live on a slower clock; hover/state derivations can still
-  // add urgency without making the resting surface feel busy.
+  // These are ambient product effects, not progress indicators. Keep their
+  // motion calm without making the primary presets feel stalled.
   "Line (original)": { duration: 5.4 },
   "Dual sweep": {
     duration: 5.4,
@@ -164,12 +163,18 @@ const ETHEREAL_PRESETS_RAW: Record<string, EtherealOverrides> = {
   },
   Orbit: {
     path: "around",
-    duration: 14,
+    place: "both",
+    duration: 8,
+    spotW: 120,
+    spotH: 72,
+    spotBlur: 3,
+    glowBlur: 14,
     needles: 10,
     hotspots: 2,
     hotSpread: 28,
     trail: 1.5,
     trailFade: 0.55,
+    wander: 0.12,
     hover: "boost-speed",
   },
   "Dual orbit": {
@@ -218,7 +223,12 @@ const ETHEREAL_PRESETS_RAW: Record<string, EtherealOverrides> = {
   },
   "Pulse (breathe)": {
     path: "breathe",
-    duration: 7.9,
+    place: "both",
+    duration: 5.2,
+    spotW: 140,
+    spotH: 84,
+    spotBlur: 4,
+    glowBlur: 16,
     needles: 9,
     breatheAmp: 0.35,
     // breathe has no travelling head sweeping brightness past you, so the

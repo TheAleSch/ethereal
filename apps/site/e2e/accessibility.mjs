@@ -20,6 +20,7 @@ let browser
     viewport: { width: 390, height: 844 },
     hasTouch: true,
     isMobile: true,
+    permissions: ["clipboard-read", "clipboard-write"],
   })
   const page = await context.newPage()
   page.on("pageerror", (error) => errors.push(error.message))
@@ -197,10 +198,52 @@ let browser
     page.getByRole("button", { name: "More formats for AI tools" }),
     "More formats"
   )
+  const getStarted = page.getByRole("link", { name: "Get started" })
+  await minimumTarget(getStarted, "Get started")
   ok(
-    (await page.getByRole("button", { name: "Get started" }).count()) === 0 &&
-      (await page.getByText("Get started", { exact: true }).count()) > 0,
-    "the visual Get started demo is not an actionable tab stop"
+    (await getStarted.getAttribute("href")) === "/playground",
+    "Get started links to the Playground"
+  )
+  const docsCopy = page.locator('[data-slot="docs-code-copy"]').first()
+  const docsBlock = page.locator('[data-slot="docs-code-block"]').first()
+  await minimumTarget(docsCopy, "Docs code copy")
+  const copyBox = await docsCopy.boundingBox()
+  const blockBox = await docsBlock.boundingBox()
+  ok(
+    copyBox !== null &&
+      blockBox !== null &&
+      copyBox.x >= blockBox.x &&
+      copyBox.y >= blockBox.y &&
+      copyBox.x + copyBox.width <= blockBox.x + blockBox.width &&
+      copyBox.y + copyBox.height <= blockBox.y + blockBox.height,
+    "Docs code copy stays inside the upper-right of its code block"
+  )
+  await page.evaluate(() => navigator.clipboard.writeText(""))
+  await docsCopy.tap()
+  await page.waitForFunction(() =>
+    navigator.clipboard
+      .readText()
+      .then((text) => text === "npm i @theale/ethereal")
+  )
+  ok(
+    (await page.evaluate(() => navigator.clipboard.readText())) ===
+      "npm i @theale/ethereal",
+    "Docs code copy writes the displayed command"
+  )
+  const docsControlRadii = await Promise.all(
+    [
+      getStarted,
+      page.getByRole("button", { name: "Copy as Markdown" }).locator(".."),
+      docsCopy,
+    ].map((locator) =>
+      locator.evaluate(
+        (element) => getComputedStyle(element).borderTopLeftRadius
+      )
+    )
+  )
+  ok(
+    new Set(docsControlRadii).size === 1 && docsControlRadii[0] !== "0px",
+    `Docs controls use one radius (${docsControlRadii.join(", ")})`
   )
 
   // Reduced motion is already verified above. The playground's unrelated
@@ -255,8 +298,95 @@ let browser
     page.locator('[data-slot="slider-control"]:visible'),
     "Visible slider control"
   )
+  const tapSlider = async (label, fraction) => {
+    const valueInput = page.getByLabel(`${label} value`, { exact: true })
+    const control = page
+      .locator('[data-slot="slider-control"]:visible')
+      .filter({ has: page.getByLabel(label, { exact: true }) })
+      .first()
+    const before = await valueInput.inputValue()
+    await control.scrollIntoViewIfNeeded()
+    const box = await control.boundingBox()
+    if (box) {
+      await page.touchscreen.tap(
+        box.x + box.width * fraction,
+        box.y + box.height / 2
+      )
+    }
+    await page.waitForFunction(
+      ({ ariaLabel, previous }) => {
+        const input = document.querySelector(`input[aria-label="${ariaLabel}"]`)
+        return input instanceof HTMLInputElement && input.value !== previous
+      },
+      { ariaLabel: `${label} value`, previous: before }
+    )
+    ok(
+      (await valueInput.inputValue()) !== before,
+      `${label} changes from a touch rail press`
+    )
+  }
+  await tapSlider("sat", 0.2)
+
+  const motionSection = page
+    .locator('[data-slot="accordion-trigger"]')
+    .filter({ hasText: "motion" })
+    .first()
+  if ((await motionSection.getAttribute("aria-expanded")) !== "true") {
+    await motionSection.tap()
+  }
+  await tapSlider("duration", 0.18)
+
+  const shapeSection = page
+    .locator('[data-slot="accordion-trigger"]')
+    .filter({ hasText: "shape" })
+    .first()
+  if ((await shapeSection.getAttribute("aria-expanded")) !== "true") {
+    await shapeSection.tap()
+  }
+  const switches = await page.locator('[data-slot="switch"]:visible').all()
+  ok(switches.length > 0, "Visible switches are present")
+  for (const [index, switchControl] of switches.entries()) {
+    const box = await switchControl.boundingBox()
+    ok(
+      box !== null && box.width <= 32 && box.height <= 19,
+      `Visible switch ${index + 1} keeps the shadcn track geometry (${box ? `${box.width.toFixed(1)}x${box.height.toFixed(1)}` : "missing"})`
+    )
+    await minimumEffectiveTarget(switchControl, `Visible switch ${index + 1}`)
+  }
+  const firstSwitch = switches[0]
+  if (firstSwitch) {
+    const before = await firstSwitch.getAttribute("data-checked")
+    await firstSwitch.tap()
+    ok(
+      (await firstSwitch.getAttribute("data-checked")) !== before,
+      "Visible switch changes state from touch"
+    )
+  }
+  await page.getByLabel("main preset").tap()
+  await page.getByRole("option", { name: "Pulse (breathe)", exact: true }).tap()
+  ok(
+    (await page.getByLabel("breathe width value").count()) === 1,
+    "Breathe exposes a dedicated width control"
+  )
+  await tapSlider("breathe width", 0.75)
+
+  const glowSection = page
+    .locator('[data-slot="accordion-trigger"]')
+    .filter({ hasText: "glow" })
+    .first()
+  if ((await glowSection.getAttribute("aria-expanded")) !== "true") {
+    await glowSection.tap()
+  }
+  await tapSlider("glow blur", 0.8)
+
+  const visibleSliderCount = await page
+    .locator('[data-slot="slider-control"]:visible')
+    .count()
   const thumbs = await page.locator('[data-slot="slider-thumb"]:visible').all()
-  ok(thumbs.length > 0, "Visible slider thumbs are present")
+  ok(
+    thumbs.length === visibleSliderCount && thumbs.length > 0,
+    `Each visible scalar slider has one thumb (${thumbs.length}/${visibleSliderCount})`
+  )
   for (const [index, thumb] of thumbs.entries()) {
     await minimumEffectiveTarget(thumb, `Visible slider thumb ${index + 1}`)
   }
@@ -269,8 +399,9 @@ let browser
     "Add color"
   )
   ok(
-    (await page.getByRole("textbox", { name: "Chat composer preview" }).count()) ===
-      0,
+    (await page
+      .getByRole("textbox", { name: "Chat composer preview" })
+      .count()) === 0,
     "Visual chat preview does not expose a fake textbox"
   )
   ok(

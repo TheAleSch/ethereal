@@ -553,7 +553,24 @@ function EffectSection({
     }
     onReset()
   }
-  const sections = useMemo(() => splitSections(controls), [controls])
+  // `spotW` is the width of the stationary pulse when the breathe path is
+  // active. Name it for what it visibly controls in that mode instead of
+  // making people guess that the generic spotlight width is the same value.
+  const editorControls = useMemo(
+    () =>
+      cfg.path === "breathe"
+        ? controls.map((control) =>
+            control.key === "spotW"
+              ? { ...control, label: "breathe width" }
+              : control
+          )
+        : controls,
+    [cfg.path, controls]
+  )
+  const sections = useMemo(
+    () => splitSections(editorControls),
+    [editorControls]
+  )
   // which control section is expanded, owned HERE rather than by each cell:
   // switching theme, slot or state swaps the rendered editor, and a per-cell
   // accordion would snap back to `color` every time — you lose your place
@@ -776,7 +793,7 @@ function EffectSection({
               onValueChange={(v) => v && v !== "Custom" && onPreset(String(v))}
             >
               <SelectTrigger
-                className="min-h-11 w-full"
+                className="min-h-11 w-full border-violet-300/20 bg-violet-400/10 text-foreground hover:bg-violet-400/15 dark:bg-violet-400/10 dark:hover:bg-violet-400/15"
                 aria-label="main preset"
               >
                 <SelectValue />
@@ -829,7 +846,7 @@ function EffectSection({
 
         {stateOptions && onState && statesMap && onStatesChange ? (
           <StatesEditor
-            controls={controls as never}
+            controls={editorControls as never}
             baseSlot={
               <ControlSections
                 sections={sections}

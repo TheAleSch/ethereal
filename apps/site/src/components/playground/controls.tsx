@@ -112,7 +112,9 @@ export function SliderRow({
       <RowLabel label={label} marker={marker} hint={hint} />
       {/* click anywhere on the rail to jump there (Base UI only drags) */}
       <div
-        onPointerDown={(e) => {
+        // Capture before the thumb's 44px pseudo hit area handles the event;
+        // otherwise nearby rail presses are swallowed and appear inert.
+        onPointerDownCapture={(e) => {
           const r = e.currentTarget.getBoundingClientRect()
           const frac = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width))
           const raw = min + frac * (max - min)
@@ -204,7 +206,7 @@ export function SwitchRow({
   return (
     <div className="grid grid-cols-[7rem_1fr] items-center gap-3 sm:grid-cols-[9rem_1fr]">
       <RowLabel label={label} marker={marker} hint={hint} />
-      <Switch className="hit-44" checked={checked} onCheckedChange={onChange} />
+      <Switch checked={checked} onCheckedChange={onChange} />
     </div>
   )
 }
@@ -428,6 +430,7 @@ export function ControlSections({
   const controlled = open !== undefined
   return (
     <Accordion
+      multiple
       {...(controlled
         ? {
             value: open.map((t) => idPrefix + t),

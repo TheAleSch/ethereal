@@ -11,11 +11,19 @@ function Slider({
   ariaLabel,
   ...props
 }: SliderPrimitive.Root.Props & { ariaLabel?: string }) {
+  // Base UI accepts either a scalar (one thumb) or an array (range). Keep the
+  // rendered Thumb count in lockstep with that shape. Falling back to
+  // `[min, max]` made every scalar playground slider mount two overlapping
+  // thumbs at index 0, so pointer drags fought over the same value.
   const _values = Array.isArray(value)
     ? value
-    : Array.isArray(defaultValue)
-      ? defaultValue
-      : [min, max]
+    : value !== undefined
+      ? [value]
+      : Array.isArray(defaultValue)
+        ? defaultValue
+        : defaultValue !== undefined
+          ? [defaultValue]
+          : [min]
 
   return (
     <SliderPrimitive.Root
