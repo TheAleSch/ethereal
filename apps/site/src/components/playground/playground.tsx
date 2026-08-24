@@ -599,7 +599,7 @@ function EffectSection({
       : preview
 
   return (
-    <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-[1fr_22rem]">
+    <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-[minmax(0,1fr)_26rem]">
       {/* preview + code — its own scroll container at lg+, so a long code
           block scrolls without moving the controls beside it */}
       {/* min-w-0: a grid item's default min-width is min-content, and the
@@ -766,7 +766,7 @@ function EffectSection({
       {/* controls — the long column, and the one that actually needs to
           scroll independently */}
       <div className="flex min-h-0 flex-col gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-3 sm:p-4 lg:overflow-y-auto">
-        <div className="grid grid-cols-[4.25rem_1fr] items-center gap-3 sm:grid-cols-[5.5rem_1fr]">
+        <div className="grid grid-cols-[7rem_1fr] items-center gap-3 sm:grid-cols-[9rem_1fr]">
           <span className="font-mono text-xs text-muted-foreground">
             preset
           </span>

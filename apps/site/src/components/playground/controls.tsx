@@ -108,7 +108,7 @@ export function SliderRow({
     setDraft(null)
   }
   return (
-    <div className="grid grid-cols-[4.25rem_1fr_2.75rem] items-center gap-3 sm:grid-cols-[5.5rem_1fr_3.25rem]">
+    <div className="grid grid-cols-[7rem_1fr_2.75rem] items-center gap-3 sm:grid-cols-[9rem_1fr_3.25rem]">
       <RowLabel label={label} marker={marker} hint={hint} />
       {/* click anywhere on the rail to jump there (Base UI only drags) */}
       <div
@@ -166,7 +166,7 @@ export function SelectRow({
   hint?: string
 }) {
   return (
-    <div className="grid grid-cols-[4.25rem_1fr] items-center gap-3 sm:grid-cols-[5.5rem_1fr]">
+    <div className="grid grid-cols-[7rem_1fr] items-center gap-3 sm:grid-cols-[9rem_1fr]">
       <RowLabel label={label} marker={marker} hint={hint} />
       <Select
         value={value}
@@ -202,7 +202,7 @@ export function SwitchRow({
   hint?: string
 }) {
   return (
-    <div className="grid grid-cols-[4.25rem_1fr] items-center gap-3 sm:grid-cols-[5.5rem_1fr]">
+    <div className="grid grid-cols-[7rem_1fr] items-center gap-3 sm:grid-cols-[9rem_1fr]">
       <RowLabel label={label} marker={marker} hint={hint} />
       <Switch className="hit-44" checked={checked} onCheckedChange={onChange} />
     </div>
@@ -257,7 +257,7 @@ export function ColorsRow({
   const [openColor, setOpenColor] = useState<number | null>(null)
 
   return (
-    <div className="grid grid-cols-[4.25rem_1fr] items-start gap-3 sm:grid-cols-[5.5rem_1fr]">
+    <div className="grid grid-cols-[7rem_1fr] items-start gap-3 sm:grid-cols-[9rem_1fr]">
       <RowLabel label={label} marker={marker} hint={hint} className="mt-1" />
       <div className="flex flex-wrap items-center gap-1.5">
         {colors.map((c, i) => (
