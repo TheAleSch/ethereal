@@ -599,7 +599,7 @@ function EffectSection({
       : preview
 
   return (
-    <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-[minmax(0,1fr)_26rem]">
+    <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-[minmax(0,1fr)_28rem]">
       {/* preview + code — its own scroll container at lg+, so a long code
           block scrolls without moving the controls beside it */}
       {/* min-w-0: a grid item's default min-width is min-content, and the
