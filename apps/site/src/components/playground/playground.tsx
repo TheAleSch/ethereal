@@ -341,14 +341,26 @@ export function Playground() {
           onValueChange={(v) => setTab(v as Tab)}
           className="flex min-h-0 flex-1 flex-col"
         >
-          <TabsList className="mb-6 h-9 shrink-0 lg:mb-4">
-            <TabsTrigger value="ethereal" className="px-3 sm:px-4">
+          <TabsList
+            variant="line"
+            className="mb-6 w-full shrink-0 justify-start gap-4 border-b border-white/10 lg:mb-4"
+          >
+            <TabsTrigger
+              value="ethereal"
+              className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
+            >
               Ethereal
             </TabsTrigger>
-            <TabsTrigger value="eh" className="px-3 sm:px-4">
+            <TabsTrigger
+              value="eh"
+              className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
+            >
               Event Horizon
             </TabsTrigger>
-            <TabsTrigger value="dither" className="px-3 sm:px-4">
+            <TabsTrigger
+              value="dither"
+              className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
+            >
               Dither
             </TabsTrigger>
           </TabsList>
