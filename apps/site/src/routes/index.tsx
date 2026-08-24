@@ -194,7 +194,7 @@ function Home() {
             the column wider than small viewports and clip */}
         <div className="mx-auto max-w-2xl min-w-0 space-y-4">
           <Tabs defaultValue="npm">
-            <TabsList className="mb-3 h-9">
+            <TabsList className="mb-3">
               <TabsTrigger value="npm" className="px-4">
                 npm
               </TabsTrigger>

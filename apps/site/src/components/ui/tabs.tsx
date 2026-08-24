@@ -23,12 +23,14 @@ function Tabs({
 }
 
 const tabsListVariants = cva(
-  "group/tabs-list inline-flex min-h-11 w-fit items-center justify-center rounded-lg p-[3px] text-muted-foreground group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col data-[variant=line]:rounded-none",
+  "group/tabs-list inline-flex w-fit items-center justify-center text-muted-foreground group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col",
   {
     variants: {
       variant: {
-        default: "bg-muted",
-        line: "gap-1 bg-transparent",
+        // 44px tab + 3px inset on each side. Keeping the padding inside a
+        // 44px list made the active tab overflow its rounded container.
+        default: "min-h-[50px] rounded-lg bg-muted p-[3px]",
+        line: "min-h-11 gap-1 bg-transparent",
       },
     },
     defaultVariants: {

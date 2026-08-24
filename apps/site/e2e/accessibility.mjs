@@ -94,6 +94,27 @@ let browser
     page.getByRole("button", { name: "Dismiss hint: try the Konami code" }),
     "Konami hint"
   )
+  const installTabs = page.locator('[data-slot="tabs-list"]').first()
+  const installTabBox = await installTabs.boundingBox()
+  const installTriggers = await installTabs
+    .locator('[data-slot="tabs-trigger"]')
+    .all()
+  ok(installTabBox !== null, "Install tab list is visible")
+  for (const [index, trigger] of installTriggers.entries()) {
+    await minimumTarget(trigger, `Install tab ${index + 1}`)
+    const triggerBox = await trigger.boundingBox()
+    ok(
+      installTabBox !== null &&
+        triggerBox !== null &&
+        triggerBox.x >= installTabBox.x &&
+        triggerBox.y >= installTabBox.y &&
+        triggerBox.x + triggerBox.width <=
+          installTabBox.x + installTabBox.width &&
+        triggerBox.y + triggerBox.height <=
+          installTabBox.y + installTabBox.height,
+      `Install tab ${index + 1} stays inside its rounded list`
+    )
+  }
 
   const home = nav.getByRole("link", { name: "Home" })
   await home.focus()
