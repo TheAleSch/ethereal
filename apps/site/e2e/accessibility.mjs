@@ -115,6 +115,17 @@ let browser
       `Install tab ${index + 1} stays inside its rounded list`
     )
   }
+  const installRootBox = await installTabs
+    .locator("..")
+    .evaluate((element) => element.getBoundingClientRect().width)
+  const installCodeBox = await page
+    .locator('[data-slot="code-block"]')
+    .first()
+    .evaluate((element) => element.getBoundingClientRect().width)
+  ok(
+    Math.abs(installCodeBox - installRootBox) < 1,
+    `Install code block fills its max-width column (${installCodeBox.toFixed(1)}px)`
+  )
 
   const home = nav.getByRole("link", { name: "Home" })
   await home.focus()

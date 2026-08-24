@@ -19,6 +19,7 @@ export function CodeBlock({
 }) {
   return (
     <div
+      data-slot="code-block"
       className={cn(
         "group relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.02]",
         className

@@ -194,11 +194,20 @@ function Home() {
             the column wider than small viewports and clip */}
         <div className="mx-auto max-w-2xl min-w-0 space-y-4">
           <Tabs defaultValue="npm">
-            <TabsList className="mb-3">
-              <TabsTrigger value="npm" className="px-4">
+            <TabsList
+              variant="line"
+              className="mb-3 w-full justify-start gap-4 border-b border-white/10"
+            >
+              <TabsTrigger
+                value="npm"
+                className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
+              >
                 npm
               </TabsTrigger>
-              <TabsTrigger value="shadcn" className="px-4">
+              <TabsTrigger
+                value="shadcn"
+                className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
+              >
                 shadcn/ui
               </TabsTrigger>
             </TabsList>
@@ -256,6 +265,7 @@ function InstallBorder({
     // off the default 2, which is too fine to read as dithering on a box
     // this wide and just looks like a soft glow.
     <EtherealDitherWrap
+      className="w-full"
       colors={INSTALL_GLOW}
       path="around"
       heads={2}
@@ -282,6 +292,7 @@ function InstallBorder({
     // to the handful that are theme-independent means a future light variant
     // is a second branch, not a rewrite.
     <EtherealWrap
+      className="w-full"
       heads={2}
       hover="boost"
       trail={1.2}
