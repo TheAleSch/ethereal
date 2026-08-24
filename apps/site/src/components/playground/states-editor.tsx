@@ -593,17 +593,6 @@ export function StatesEditor({
                     ))}
               </SelectContent>
             </Select>
-            {/* which of the two modes this state is in, in the editor's own
-                vocabulary: "carries overrides" (amber markers, green dots)
-                versus "inherits" — here the thing inherited is the package's
-                derived variation rather than the base config. */}
-            <p className="text-[10px] leading-relaxed text-muted-foreground">
-              {customized(name)
-                ? `explicit — the keys marked amber below are this state's own, and they override the ${derives(name) ? "derived " : ""}variation. Revert them, or reset the state, to hand them back.`
-                : derives(name)
-                  ? `derived — empty, so ${name} is the package's variation of the config above it. Sliders show the derived values; a preset (or any edit) makes them explicit.`
-                  : `empty — renders exactly like Base. A preset, or any edit, gives it a look of its own.`}
-            </p>
           </div>
         )}
         {isBaseConfig && baseTarget === "base" ? (
