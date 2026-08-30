@@ -277,7 +277,7 @@ export function ColorsRow({
             >
               <PopoverTrigger
                 aria-label={`color ${i + 1}`}
-                className="block size-11 cursor-pointer rounded-md border border-white/15 p-2"
+                className="block size-11 cursor-pointer rounded-xl bg-input/50 p-2 transition-colors hover:bg-input/70"
               >
                 {/* backgroundColor, never the `background` shorthand — the
                     shorthand accepts url(...) images, which would turn a
@@ -336,7 +336,7 @@ export function ColorsRow({
             onClick={() =>
               onChange([...colors, colors[colors.length - 1] ?? "#ffffff"])
             }
-            className="flex size-11 items-center justify-center rounded-md border border-dashed border-white/20 text-sm text-muted-foreground transition-colors hover:border-white/40 hover:text-foreground"
+            className="flex size-11 items-center justify-center rounded-xl bg-input/30 text-sm text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
           >
             +
           </button>

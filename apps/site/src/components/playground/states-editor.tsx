@@ -497,7 +497,7 @@ export function StatesEditor({
                   : (previewTheme ?? "light") === t.key
               }
               className={cn(
-                "hit-44-tight flex min-w-11 flex-1 items-center justify-center gap-1 truncate rounded px-1 py-1 text-[11px] font-medium capitalize transition-colors sm:px-1.5",
+                "hit-44-tight flex min-w-11 flex-1 items-center justify-center gap-1 truncate rounded-lg px-1 py-1 text-[11px] font-medium capitalize transition-colors sm:px-1.5",
                 (
                   isBaseConfig
                     ? baseTarget === (t.key === "light" ? "base" : "dark")
@@ -528,7 +528,7 @@ export function StatesEditor({
               onClick={() => setActiveSlot(s.key)}
               aria-pressed={activeSlot === s.key}
               className={cn(
-                "hit-44-tight flex min-w-11 flex-1 items-center justify-center gap-1 truncate rounded px-1 py-1 text-[11px] font-medium capitalize transition-colors sm:px-1.5",
+                "hit-44-tight flex min-w-11 flex-1 items-center justify-center gap-1 truncate rounded-lg px-1 py-1 text-[11px] font-medium capitalize transition-colors sm:px-1.5",
                 activeSlot === s.key
                   ? "bg-white/10 text-foreground"
                   : "text-muted-foreground hover:text-foreground"
