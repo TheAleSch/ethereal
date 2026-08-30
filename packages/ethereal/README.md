@@ -1,5 +1,9 @@
 # ethereal-glow
 
+**[Playground](https://ethereal.ale.design/playground)** ·
+**[Docs](https://ethereal.ale.design/docs)** ·
+**[ethereal.ale.design](https://ethereal.ale.design)**
+
 Travelling-light, black-hole and dithered glow effects for React. Two renderers
 use CSS gradients and masks; the dithered renderer uses a pixelated canvas. All
 three are driven by **one shared ~60fps loop** for every mounted instance.
