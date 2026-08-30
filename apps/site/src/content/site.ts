@@ -9,10 +9,10 @@ export const SITE = {
   author: "Alexandre Schrammel",
   authorUrl: "https://ale.design",
   license: "MIT",
-  title: "Ethereal — travelling-light glow components for React",
+  title: "Ethereal — glow effects for React",
   /** one sentence; used as the meta description and the llms.txt blockquote */
   tagline:
-    "Travelling-light borders and black-hole accretion glows as React components — pure CSS gradients and masks by default, with a dithered-canvas renderer alongside, all driven by one shared 60fps loop for every mounted instance.",
+    "React components for animated glow borders and black-hole light effects. Pure CSS, zero dependencies, SSR-safe, one shared 60fps loop. Install from npm or the shadcn registry.",
 } as const
 
 export type RouteMeta = {
