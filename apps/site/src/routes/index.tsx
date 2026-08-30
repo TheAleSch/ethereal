@@ -79,10 +79,10 @@ function Home() {
       <section className="container mx-auto grid items-center gap-10 px-4 pt-16 pb-10 sm:gap-14 sm:pt-20 sm:pb-12 lg:grid-cols-[1.05fr_0.95fr] lg:pt-28 lg:pb-12">
         <div className="max-w-xl">
           <h1 className="text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
-            Travelling light,
+            Organic glow
             <br />
             <span className="bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-              rendered in pure CSS.
+              borders, in pure CSS.
             </span>
           </h1>
 
