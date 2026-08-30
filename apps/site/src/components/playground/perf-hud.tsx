@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { getTickRate } from "@theale/ethereal"
+import { getTickRate } from "ethereal-glow"
 
 import { cn } from "@/lib/utils"
 

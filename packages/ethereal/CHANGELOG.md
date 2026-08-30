@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `@theale/ethereal` are documented here.
+All notable changes to `ethereal-glow` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and the project adheres to [Semantic Versioning](https://semver.org/).
 
@@ -21,6 +21,6 @@ Initial release.
   state stays recognisably the preset you tuned.
 - One shared `requestAnimationFrame` loop for every mounted effect
   (`setTickRate`, `setPaused` exported from the root).
-- `@theale/ethereal/core` subpath exposing the shared ticker, theme observer,
+- `ethereal-glow/core` subpath exposing the shared ticker, theme observer,
   path walker and merge primitives for sibling renderers.
 - ESM-only build with `'use client'` banners for React Server Components.

@@ -15,12 +15,12 @@ const temp = makeTemp("ethereal-registry-local-smoke-");
 
 try {
   const generated = await buildAndVerifyRegistry(temp);
-  await run("npm", ["run", "build", "-w", "@theale/ethereal"]);
+  await run("npm", ["run", "build", "-w", "ethereal-glow"]);
   const packed = JSON.parse(
     commandOutput("npm", [
       "pack",
       "-w",
-      "@theale/ethereal",
+      "ethereal-glow",
       "--ignore-scripts",
       "--json",
       "--pack-destination",

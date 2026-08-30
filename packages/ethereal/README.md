@@ -1,4 +1,4 @@
-# @theale/ethereal
+# ethereal-glow
 
 Travelling-light, black-hole and dithered glow effects for React. Two renderers
 use CSS gradients and masks; the dithered renderer uses a pixelated canvas. All
@@ -18,7 +18,7 @@ Three effects:
 ## Install
 
 ```sh
-npm i @theale/ethereal
+npm i ethereal-glow
 ```
 
 React ≥18 is a peer dependency. All three components are client components
@@ -30,7 +30,7 @@ Drop the effect inside any element that has `position: relative` and
 `isolation: isolate`:
 
 ```tsx
-import { Ethereal, EventHorizon } from '@theale/ethereal'
+import { Ethereal, EventHorizon } from 'ethereal-glow'
 
 <button className="relative isolate ...">
   <span className="relative z-10">Get started</span>
@@ -51,7 +51,7 @@ import {
   EtherealWrap,
   EventHorizonWrap,
   EtherealDitherWrap,
-} from "@theale/ethereal";
+} from "ethereal-glow";
 
 <EtherealWrap path="static">
   <SearchInput />
@@ -69,7 +69,7 @@ ready-to-spread props object:
 Event Horizon ships presets:
 
 ```tsx
-import { EVENT_HORIZON_PRESETS } from "@theale/ethereal";
+import { EVENT_HORIZON_PRESETS } from "ethereal-glow";
 <EventHorizon {...EVENT_HORIZON_PRESETS["Violet quasar"]} />;
 ```
 
@@ -81,7 +81,7 @@ through a Bayer 4×4 matrix. Retro-terminal cousin of `<Ethereal/>`, same
 host contract and shared ticker:
 
 ```tsx
-import { EtherealDither, EtherealDitherWrap } from "@theale/ethereal";
+import { EtherealDither, EtherealDitherWrap } from "ethereal-glow";
 
 <EtherealDitherWrap
   colors={["#00ff66", "#00cc44", "#66ffaa"]}
@@ -293,7 +293,7 @@ changes.
   wall-clock `dt` rather than counting frames.
 
   ```ts
-  import { setTickRate, getTickRate } from "@theale/ethereal";
+  import { setTickRate, getTickRate } from "ethereal-glow";
   setTickRate(30); // large effect, tight budget
   ```
 

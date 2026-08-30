@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 
 import { pageHead } from "@/lib/head"
-import { EVENT_HORIZON_PRESETS } from "@theale/ethereal"
+import { EVENT_HORIZON_PRESETS } from "ethereal-glow"
 import { CodeBlock } from "@/components/docs/code-block"
 import { CopyPage } from "@/components/docs/copy-page"
 import { LiveDemo } from "@/components/docs/live-demo"
@@ -130,7 +130,7 @@ function DocsPage() {
       <div className="mx-auto max-w-6xl">
         <header className="mb-10">
           <p className="mb-2 font-mono text-xs tracking-wide text-muted-foreground">
-            @theale/ethereal
+            ethereal-glow
           </p>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <h1 className="text-3xl font-semibold tracking-tight text-foreground">
@@ -183,8 +183,8 @@ function DocsPage() {
                 Or, if you use <Code>shadcn/ui</Code>, take the registry path
                 instead — it drops an <Code>EtherealButton</Code> into{" "}
                 <Code>components/ui/</Code> that you own and can restyle, with{" "}
-                <Code>@theale/ethereal</Code> added as a dependency so fixes
-                still arrive over npm rather than being stranded in your tree.
+                <Code>ethereal-glow</Code> added as a dependency so fixes still
+                arrive over npm rather than being stranded in your tree.
               </Prose>
               <CodeBlock code={INSTALL_SHADCN} lang="sh" />
               <Prose>

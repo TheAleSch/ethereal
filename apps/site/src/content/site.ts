@@ -5,7 +5,7 @@
 export const SITE = {
   url: "https://ethereal.ale.design",
   repo: "https://github.com/TheAleSch/ethereal",
-  pkg: "@theale/ethereal",
+  pkg: "ethereal-glow",
   author: "Alexandre Schrammel",
   authorUrl: "https://ale.design",
   license: "MIT",
@@ -32,14 +32,14 @@ export const ROUTES: RouteMeta[] = [
   },
   {
     path: "/docs",
-    title: "Documentation — @theale/ethereal",
+    title: "Documentation — ethereal-glow",
     description:
       "Full API reference for <Ethereal>, <EventHorizon> and <EtherealDither>: every prop, the named-state and per-theme config system, theme resolution, and the host contract.",
     priority: 0.9,
   },
   {
     path: "/playground",
-    title: "Playground — @theale/ethereal",
+    title: "Playground — ethereal-glow",
     description:
       "Tune Ethereal and Event Horizon glow effects live, copy the exact JSX, and share the configuration by URL.",
     priority: 0.8,

@@ -18,7 +18,7 @@ const MD_PATH = "/docs.md"
 // markdown endpoint beats pasting 23kB into a query string (and beats the URL
 // length limits that would truncate it).
 const PROMPT = encodeURIComponent(
-  `Read ${abs(MD_PATH)} and help me use @theale/ethereal in my React app.`
+  `Read ${abs(MD_PATH)} and help me use ethereal-glow in my React app.`
 )
 const ASK = [
   { label: "Open in Claude", href: `https://claude.ai/new?q=${PROMPT}` },

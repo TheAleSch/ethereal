@@ -6,11 +6,11 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build -w @theale/ethereal",
-    "typecheck": "npm run typecheck -w @theale/ethereal && npm run typecheck -w site",
+    "build": "npm run build -w ethereal-glow",
+    "typecheck": "npm run typecheck -w ethereal-glow && npm run typecheck -w site",
     "site:dev": "npm run dev -w site",
     "site:build": "npm run build && npm run build -w site",
-    "test": "npm run build -w @theale/ethereal && npm run test -w @theale/ethereal && npm run test -w site",
+    "test": "npm run build -w ethereal-glow && npm run test -w ethereal-glow && npm run test -w site",
     "format:check": "npm run check -w site",
     "registry:build": "shadcn build registry.json -o apps/site/public/r",
     "verify:package": "node scripts/verify-package.mjs",

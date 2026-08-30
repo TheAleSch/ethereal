@@ -19,7 +19,7 @@ import type {
   InteractionSlot,
   StateConfig,
   ThemeConfig,
-} from "@theale/ethereal"
+} from "ethereal-glow"
 
 export type PinnedStateInput = {
   /** which slot is pinned; `base` means nothing is pinned */

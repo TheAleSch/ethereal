@@ -1,5 +1,5 @@
 {
-  "name": "@theale/ethereal",
+  "name": "ethereal-glow",
   "version": "0.1.0",
   "description": "Ambient light effects for React: a travelling comet glow, a black-hole accretion disk, and a Bayer-dithered canvas variant \u2014 every instance driven by one shared 60fps loop. Zero dependencies, pure ESM, tree-shakeable, SSR-safe.",
   "keywords": [

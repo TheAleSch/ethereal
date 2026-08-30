@@ -13,13 +13,13 @@ import {
   ETHEREAL_DITHER,
   EVENT_HORIZON,
   EVENT_HORIZON_PRESETS,
-} from "@theale/ethereal"
+} from "ethereal-glow"
 import type {
   EtherealCfg,
   EtherealDitherCfg,
   EventHorizonCfg,
   StateConfig,
-} from "@theale/ethereal"
+} from "ethereal-glow"
 
 /** A preset is an override set for the FLAT config, optionally plus a `dark`
  *  branch. That asymmetry is the playground's editing model, not an accident:
@@ -1270,7 +1270,7 @@ export function genCode(
   overrides: Record<string, unknown>
 ): string {
   const entries = Object.entries(overrides)
-  const importLine = `import { ${component} } from '@theale/ethereal'`
+  const importLine = `import { ${component} } from 'ethereal-glow'`
   const jsx =
     entries.length === 0
       ? `<button className="relative isolate">\n  <span className="relative z-10">…</span>\n  <${component} />\n</button>`

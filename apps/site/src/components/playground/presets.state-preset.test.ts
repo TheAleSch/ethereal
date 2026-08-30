@@ -16,8 +16,8 @@ import {
   THEME_VARIANTS,
   INTERACTION_VARIANTS,
   deriveEtherealState,
-} from "@theale/ethereal"
-import type { EtherealCfg, StateConfig } from "@theale/ethereal"
+} from "ethereal-glow"
+import type { EtherealCfg, StateConfig } from "ethereal-glow"
 
 import {
   ETHEREAL,

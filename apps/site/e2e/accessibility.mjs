@@ -223,11 +223,11 @@ let browser
   await page.waitForFunction(() =>
     navigator.clipboard
       .readText()
-      .then((text) => text === "npm i @theale/ethereal")
+      .then((text) => text === "npm i ethereal-glow")
   )
   ok(
     (await page.evaluate(() => navigator.clipboard.readText())) ===
-      "npm i @theale/ethereal",
+      "npm i ethereal-glow",
     "Docs code copy writes the displayed command"
   )
   const docsControlRadii = await Promise.all(

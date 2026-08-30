@@ -9,7 +9,7 @@
 // in three gets ignored, which costs exactly as much as being wrong.
 //
 // Owning the server also fixes an ordering problem for free: the site resolves
-// @theale/ethereal through the workspace symlink to its `dist`, so the e2e
+// ethereal-glow through the workspace symlink to its `dist`, so the e2e
 // must build before the server starts or it proves things about an old build.
 // `test:e2e` builds first, and the server we start here picks that build up.
 //

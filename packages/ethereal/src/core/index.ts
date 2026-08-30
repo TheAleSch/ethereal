@@ -1,4 +1,4 @@
-// Internal primitives, exposed as `@theale/ethereal/core` so the sibling
+// Internal primitives, exposed as `ethereal-glow/core` so the sibling
 // renderer packages share one ticker, one theme observer and one merge
 // implementation rather than each shipping their own. Not part of the root
 // export: application code should never need these.

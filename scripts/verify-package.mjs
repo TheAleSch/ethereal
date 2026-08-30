@@ -33,7 +33,7 @@ function run(command, args, options = {}) {
 }
 
 try {
-  run("npm", ["run", "build", "-w", "@theale/ethereal"]);
+  run("npm", ["run", "build", "-w", "ethereal-glow"]);
 
   const packed = JSON.parse(
     execFileSync(
@@ -41,7 +41,7 @@ try {
       [
         "pack",
         "-w",
-        "@theale/ethereal",
+        "ethereal-glow",
         "--ignore-scripts",
         "--json",
         "--pack-destination",
@@ -62,7 +62,7 @@ try {
         private: true,
         type: "module",
         dependencies: {
-          "@theale/ethereal": `file:${tarball}`,
+          "ethereal-glow": `file:${tarball}`,
           react: "18.3.1",
           "react-dom": "18.3.1",
         },
@@ -105,8 +105,8 @@ try {
   EtherealDither,
   EtherealDitherWrap,
   type EtherealProps,
-} from "@theale/ethereal"
-import { mergeConfig, subscribe, type Theme } from "@theale/ethereal/core"
+} from "ethereal-glow"
+import { mergeConfig, subscribe, type Theme } from "ethereal-glow/core"
 
 const props: EtherealProps = { path: "around", state: "thinking" }
 const theme: Theme = "dark"
@@ -129,8 +129,8 @@ export const effects = [
 import { readFileSync } from "node:fs"
 import { createElement } from "react"
 import { renderToString } from "react-dom/server"
-import * as root from "@theale/ethereal"
-import * as core from "@theale/ethereal/core"
+import * as root from "ethereal-glow"
+import * as core from "ethereal-glow/core"
 
 assert.equal(root.setTickRate, core.setTickRate, "root and core must share the ticker exports")
 assert.equal(root.getTickRate, core.getTickRate, "root and core must share ticker state")
@@ -144,7 +144,7 @@ for (const component of [root.Ethereal, root.EventHorizon, root.EtherealDither])
 }
 
 for (const entry of ["index.js", "core.js"]) {
-  const source = readFileSync(new URL(\`./node_modules/@theale/ethereal/dist/\${entry}\`, import.meta.url), "utf8")
+  const source = readFileSync(new URL(\`./node_modules/ethereal-glow/dist/\${entry}\`, import.meta.url), "utf8")
   assert.match(source, /^['\"]use client['\"];?/, \`\${entry} must preserve the client boundary\`)
 }
 `,

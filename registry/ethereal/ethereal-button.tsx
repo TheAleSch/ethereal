@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Ethereal, type EtherealProps } from "@theale/ethereal";
+import { Ethereal, type EtherealProps } from "ethereal-glow";
 
 import { cn } from "@/lib/utils";
 

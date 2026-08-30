@@ -1,4 +1,4 @@
-import { Ethereal } from "@theale/ethereal"
+import { Ethereal } from "ethereal-glow"
 import { Link } from "@tanstack/react-router"
 
 // A single live effect instance for the top of the docs page. Ethereal renders

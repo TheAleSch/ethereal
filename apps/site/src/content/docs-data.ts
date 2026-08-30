@@ -673,11 +673,11 @@ export const ETHEREAL_DITHER_GROUPS: PropGroup[] = [
 
 /* ------------------------------------------------------------- code samples */
 
-export const INSTALL = `npm i @theale/ethereal`
+export const INSTALL = `npm i ethereal-glow`
 
 export const INSTALL_SHADCN = `npx shadcn@latest add https://ethereal.ale.design/r/ethereal.json`
 
-export const MINIMAL = `import { Ethereal, EventHorizon } from '@theale/ethereal'
+export const MINIMAL = `import { Ethereal, EventHorizon } from 'ethereal-glow'
 
 // Ethereal — a comet travels the border behind a spotlight mask
 <button className="relative isolate ...">
@@ -691,7 +691,7 @@ export const MINIMAL = `import { Ethereal, EventHorizon } from '@theale/ethereal
   <EventHorizon />
 </button>`
 
-export const WRAP = `import { EtherealWrap, EventHorizonWrap, EtherealDitherWrap } from '@theale/ethereal'
+export const WRAP = `import { EtherealWrap, EventHorizonWrap, EtherealDitherWrap } from 'ethereal-glow'
 
 // Replaced elements (inputs, textareas) can't contain the effect span —
 // wrap them instead. The wrapper span becomes the positioned, isolated host.
@@ -701,7 +701,7 @@ export const WRAP = `import { EtherealWrap, EventHorizonWrap, EtherealDitherWrap
 
 // EventHorizonWrap and EtherealDitherWrap provide the same host contract.`
 
-export const PRESETS_CODE = `import { EventHorizon, EVENT_HORIZON_PRESETS } from '@theale/ethereal'
+export const PRESETS_CODE = `import { EventHorizon, EVENT_HORIZON_PRESETS } from 'ethereal-glow'
 
 <EventHorizon {...EVENT_HORIZON_PRESETS['Violet quasar']} />`
 
@@ -711,7 +711,7 @@ export const HOST_CODE = `/* Every effect needs a positioned, isolated host. Tai
 /* Plain CSS: */
 .host { position: relative; isolation: isolate; }`
 
-export const STATES_CODE = `import { Ethereal, ETHEREAL_STATES } from '@theale/ethereal'
+export const STATES_CODE = `import { Ethereal, ETHEREAL_STATES } from 'ethereal-glow'
 
 // Switch named states — the rebuilt layers cross-fade over transitionMs.
 // Built-ins: 'idle' | 'thinking'.

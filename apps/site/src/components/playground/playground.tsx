@@ -13,12 +13,8 @@ import {
   INTERACTION_VARIANTS,
   isPaused,
   setPaused,
-} from "@theale/ethereal"
-import type {
-  EtherealCfg,
-  InteractionSlot,
-  ThemeConfig,
-} from "@theale/ethereal"
+} from "ethereal-glow"
+import type { EtherealCfg, InteractionSlot, ThemeConfig } from "ethereal-glow"
 import {
   RotateCcw,
   Link2,

@@ -8,7 +8,7 @@ import {
   EtherealWrap,
   EventHorizon,
   EVENT_HORIZON_PRESETS,
-} from "@theale/ethereal"
+} from "ethereal-glow"
 import { Grid2x2 } from "lucide-react"
 
 import { CodeBlock } from "@/components/home/code-block"
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({
 })
 
 // the shadcn path is the registry, not a copy-paste component — it drops an
-// EtherealButton you own into components/ui/ and adds @theale/ethereal as a
+// EtherealButton you own into components/ui/ and adds ethereal-glow as a
 // dependency, so both tabs are an install command
 const shadcnSnippet = `npx shadcn@latest add https://ethereal.ale.design/r/ethereal.json`
 
@@ -217,7 +217,7 @@ function Home() {
                 <CodeBlock
                   label="terminal"
                   meta={BUNDLE_SIZE}
-                  code="npm install @theale/ethereal"
+                  code="npm install ethereal-glow"
                 />
               </InstallBorder>
             </TabsContent>

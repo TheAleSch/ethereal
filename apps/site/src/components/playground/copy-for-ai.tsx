@@ -31,7 +31,7 @@ export function aiPayload(
   const [imports = "", jsx = ""] = code.split("\n\n")
   const snippet = `${imports}\n\n${hostSnippet(host, jsx.trim(), label, kind, light)}`
 
-  return `I'm using ${effect} from the \`@theale/ethereal\` React package.
+  return `I'm using ${effect} from the \`ethereal-glow\` React package.
 
 Here is the exact configuration I tuned in the playground, on the same host
 element the playground previews it on:

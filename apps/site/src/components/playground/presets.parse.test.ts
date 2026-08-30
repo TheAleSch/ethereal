@@ -17,7 +17,7 @@
 import { describe, expect, it } from "vitest"
 import * as ts from "typescript"
 
-import { ETHEREAL_DITHER } from "@theale/ethereal"
+import { ETHEREAL_DITHER } from "ethereal-glow"
 
 import {
   DITHER_CONTROLS,

@@ -40,7 +40,7 @@ procession.
 Install the package:
 
 ```sh
-npm i @theale/ethereal
+npm i ethereal-glow
 ```
 
 Or take the shadcn route — a thin `EtherealButton` wrapper over the package, so
@@ -57,7 +57,7 @@ The effect must be a **child** of a host that is `position: relative` and
 `isolation: isolate`:
 
 ```tsx
-import { Ethereal } from "@theale/ethereal";
+import { Ethereal } from "ethereal-glow";
 
 <button className="relative isolate">
   <span className="relative z-10">Get started</span>
@@ -69,7 +69,7 @@ Replaced elements (`<input>`, `<img>`) cannot contain children — wrap them
 instead:
 
 ```tsx
-import { EtherealWrap } from "@theale/ethereal";
+import { EtherealWrap } from "ethereal-glow";
 
 <EtherealWrap path="static">
   <SearchInput />
@@ -97,14 +97,14 @@ variant for hosts you can't put children inside.
 
 | Path                                       | What                                                                                                                                         |
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`packages/ethereal`](./packages/ethereal) | **`@theale/ethereal`** — the React components, the shared ticker, and state/theme resolution. This is what consumers install.                |
+| [`packages/ethereal`](./packages/ethereal) | **`ethereal-glow`** — the React components, the shared ticker, and state/theme resolution. This is what consumers install.                |
 | [`apps/site`](./apps/site)                 | The [ethereal.ale.design](https://ethereal.ale.design) site — landing demo, docs, and playground (TanStack Start). Not shipped to consumers. |
 | [`registry`](./registry)                   | The shadcn registry item — an `EtherealButton` wrapper that depends on the npm package rather than vendoring it.                             |
 | [`registry.json`](./registry.json)         | Source of truth for what the shadcn CLI installs.                                                                                            |
 
 ## Release order
 
-Run `npm run verify`, then publish the exact `@theale/ethereal` version to npm.
+Run `npm run verify`, then publish the exact `ethereal-glow` version to npm.
 The package's `prepublishOnly` hook repeats its typecheck, source tests, build,
 and packed React 18 consumer smoke so publication fails before a broken
 artifact becomes immutable. After publishing, run

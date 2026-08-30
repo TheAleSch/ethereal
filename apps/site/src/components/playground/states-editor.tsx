@@ -5,14 +5,14 @@ import {
   ETHEREAL_STATES,
   THEME_VARIANTS,
   INTERACTION_VARIANTS,
-} from "@theale/ethereal"
+} from "ethereal-glow"
 import type {
   EtherealCfg,
   StateConfig,
   ThemeVariant,
   InteractionSlot,
   ThemeConfig,
-} from "@theale/ethereal"
+} from "ethereal-glow"
 import {
   Circle,
   Moon,

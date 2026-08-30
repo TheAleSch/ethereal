@@ -1,9 +1,9 @@
 # AGENTS.md
 
-Guidance for coding agents. Two audiences: agents **using** `@theale/ethereal`
+Guidance for coding agents. Two audiences: agents **using** `ethereal-glow`
 in someone else's app, and agents **working in this repo**.
 
-## Using @theale/ethereal
+## Using ethereal-glow
 
 ### The host contract — this is the rule that gets broken
 
@@ -71,7 +71,7 @@ Full machine-readable reference: <https://ethereal.ale.design/llms-full.txt>
 ## Working in this repo
 
 ```
-packages/ethereal     @theale/ethereal — the CSS renderer, canonical
+packages/ethereal     ethereal-glow — the CSS renderer, canonical
 apps/site             docs site + playground (TanStack Start)
 registry/             shadcn/ui registry item source
 docs/                 design specs and release notes
@@ -114,7 +114,7 @@ Conventions:
   caller's `states` prop always wins. That precedence is expressed once, there.
   The built-in tables hold only the state names; anything you put back in one
   needs a comment saying which rule could not derive it.
-- `@theale/ethereal/core` is the shared-primitives subpath and is **ESM-only on
+- `ethereal-glow/core` is the shared-primitives subpath and is **ESM-only on
   purpose**: esbuild cannot code-split CJS, so a `core.cjs` would have carried a
   second private copy of the ticker.
 - Never add `Co-Authored-By` lines to commits.

@@ -484,7 +484,7 @@ describe("the share-link round trip: diffCfg → JSON → parseOverrides", () =>
 describe("genCode", () => {
   it("emits a self-contained snippet with no props when nothing is overridden", () => {
     const code = genCode("Ethereal", {})
-    expect(code).toContain("import { Ethereal } from '@theale/ethereal'")
+    expect(code).toContain("import { Ethereal } from 'ethereal-glow'")
     expect(code).toContain("<Ethereal />")
     // the host wrapper is not optional: `relative isolate` plus `z-10` on the
     // content is what keeps the glow behind the label rather than over it
@@ -494,7 +494,7 @@ describe("genCode", () => {
 
   it("names the component the visitor is actually looking at", () => {
     expect(genCode("EventHorizon", {})).toContain(
-      "import { EventHorizon } from '@theale/ethereal'"
+      "import { EventHorizon } from 'ethereal-glow'"
     )
     expect(genCode("EtherealDither", { block: 8 })).toContain("<EtherealDither")
   })

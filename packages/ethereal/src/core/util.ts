@@ -100,7 +100,7 @@ export const trip = (color: string): string => {
   }
   if (!out) {
     out = '255,255,255'
-    devWarn(`[@theale/ethereal] could not parse color "${color}" — using white`)
+    devWarn(`[ethereal-glow] could not parse color "${color}" — using white`)
   }
   tripCache.set(color, out)
   if (tripCache.size > TRIP_CACHE_LIMIT) tripCache.delete(tripCache.keys().next().value!)
@@ -188,7 +188,7 @@ export function claimHost(host: HTMLElement, name: string) {
   const claims = claimedHosts.get(host) ?? { count: 0, names: new Map<string, number>() }
   if (claims.count > 0) {
     const previous = [...claims.names.keys()].join('/> and <')
-    devWarn(`[@theale/ethereal] host already has <${previous}/> — <${name}/> on the same element will fight over CSS variables`)
+    devWarn(`[ethereal-glow] host already has <${previous}/> — <${name}/> on the same element will fight over CSS variables`)
   }
   claims.count++
   claims.names.set(name, (claims.names.get(name) ?? 0) + 1)
@@ -210,7 +210,7 @@ export function claimHost(host: HTMLElement, name: string) {
 // shared host sanity checks at mount
 export function checkHost(host: HTMLElement, name: string) {
   if (getComputedStyle(host).position === 'static')
-    devWarn(`[@theale/ethereal] <${name}/> host has position:static — the glow will anchor to the wrong ancestor. Add position:relative + isolation:isolate.`)
+    devWarn(`[ethereal-glow] <${name}/> host has position:static — the glow will anchor to the wrong ancestor. Add position:relative + isolation:isolate.`)
 }
 
 // resolve a computed border-radius (may be '50%' or elliptical '24px 12px')
