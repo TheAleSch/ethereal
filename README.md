@@ -7,7 +7,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/renderers-CSS_+_canvas-000?labelColor=000" alt="CSS and canvas renderers" />
   <img src="https://img.shields.io/badge/loop-one_shared_rAF-000?labelColor=000" alt="one shared rAF loop" />
-  <img src="https://img.shields.io/badge/size-18.0_kB_min%2Bgzip-000?labelColor=000" alt="18.0 kB min+gzip" />
+  <img src="https://img.shields.io/badge/size-16.6_kB_min%2Bgzip-000?labelColor=000" alt="16.6 kB min+gzip" />
   <img src="https://img.shields.io/badge/install-npm_+_shadcn_CLI-000?labelColor=000" alt="installs via npm or the shadcn CLI" />
   <img src="https://img.shields.io/badge/types-included-000?labelColor=000" alt="types included" />
   <a href="./packages/ethereal/LICENSE"><img src="https://img.shields.io/badge/license-MIT-000?labelColor=000" alt="license" /></a>
