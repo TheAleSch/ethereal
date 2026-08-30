@@ -762,7 +762,7 @@ function EffectSection({
               onValueChange={(v) => v && v !== "Custom" && onPreset(String(v))}
             >
               <SelectTrigger
-                className="min-h-11 w-full border-violet-300/20 bg-violet-400/10 text-foreground hover:bg-violet-400/15 dark:bg-violet-400/10 dark:hover:bg-violet-400/15"
+                className="min-h-11 w-full"
                 aria-label="main preset"
               >
                 <SelectValue />
