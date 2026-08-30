@@ -62,7 +62,21 @@ export const Route = createRootRoute({
       },
       { rel: "manifest", href: "/manifest.json" },
     ],
-    scripts: [{ type: "application/ld+json", children: softwareJsonLd }],
+    scripts: [
+      { type: "application/ld+json", children: softwareJsonLd },
+      // Google Analytics (gtag.js) — sitewide. SPA route changes are picked up
+      // by GA4's enhanced measurement (history events), so no per-route code.
+      {
+        src: "https://www.googletagmanager.com/gtag/js?id=G-J9T7KWF9P6",
+        async: true,
+      },
+      {
+        children: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-J9T7KWF9P6');`,
+      },
+    ],
   }),
   notFoundComponent: () => (
     <main className="container mx-auto p-4 pt-16">

@@ -17,22 +17,7 @@ import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    ...pageHead("/"),
-    // Google Analytics (gtag.js) — landing page only
-    scripts: [
-      {
-        src: "https://www.googletagmanager.com/gtag/js?id=G-J9T7KWF9P6",
-        async: true,
-      },
-      {
-        children: `window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-J9T7KWF9P6');`,
-      },
-    ],
-  }),
+  head: () => pageHead("/"),
   component: Home,
 })
 
