@@ -9,7 +9,7 @@ export const SITE = {
   author: "Alexandre Schrammel",
   authorUrl: "https://ale.design",
   license: "MIT",
-  title: "Ethereal — glow effects for React",
+  title: "Ethereal — organic border glow effect for React",
   /** one sentence; used as the meta description and the llms.txt blockquote */
   tagline:
     "React components for animated glow borders and black-hole light effects. Pure CSS, zero dependencies, SSR-safe, one shared 60fps loop. Install from npm or the shadcn registry.",
