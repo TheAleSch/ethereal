@@ -228,4 +228,16 @@
   .hit-44-pseudo::after {
     width: 100%;
   }
+  /* twin on ::before for elements whose ::after is already taken (the tab
+     trigger's underline indicator) — utilities beat this layer, so the
+     underline wins ::after and the hit area lives here instead */
+  .hit-44-pseudo::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
 }

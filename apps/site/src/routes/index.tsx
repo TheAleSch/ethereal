@@ -52,14 +52,6 @@ const INSTALL_GLOW = [
   "rgb(30,185,170)",
 ]
 
-const SPECS = [
-  "Zero dependencies",
-  "One shared loop, 60fps default",
-  "Pauses off-screen",
-  "Respects reduced motion",
-  "Pure ESM + types",
-]
-
 function Home() {
   // dither mode: every live effect on the page swaps to its blocky
   // EtherealDither rendering
@@ -78,7 +70,7 @@ function Home() {
           stacking into an 11rem void */}
       <section className="container mx-auto grid items-center gap-10 px-4 pt-16 pb-10 sm:gap-14 sm:pt-20 sm:pb-12 lg:grid-cols-[1.05fr_0.95fr] lg:pt-28 lg:pb-12">
         <div className="max-w-xl">
-          <h1 className="text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+          <h1 className="text-4xl leading-[1.05] font-medium tracking-tight text-balance sm:text-5xl lg:text-6xl">
             Organic glow
             <br />
             <span className="bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
@@ -222,21 +214,6 @@ function Home() {
               </InstallBorder>
             </TabsContent>
           </Tabs>
-
-          {/* trust signals sit next to the ask, not in their own section —
-              the full detail lives in /docs#behavior */}
-          <ul className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 pt-2 text-center font-mono text-xs text-muted-foreground">
-            {SPECS.map((s, i) => (
-              <li key={s} className="flex items-center gap-3">
-                {i > 0 && (
-                  <span aria-hidden className="text-white/20">
-                    ·
-                  </span>
-                )}
-                {s}
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
     </main>
