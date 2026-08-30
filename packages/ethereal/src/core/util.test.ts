@@ -85,6 +85,9 @@ describe('trip', () => {
   it('reads integer rgb()/rgba() without touching the canvas', () => {
     expect(trip('rgb(255,50,100)')).toBe('255,50,100')
     expect(trip('rgba(10, 20, 30, 0.5)')).toBe('10,20,30')
+    // browsers clamp out-of-range channels; the fast path must agree
+    expect(trip('rgb(999,0,0)')).toBe('255,0,0')
+    expect(trip('rgba(300, 256, 1000, 0.5)')).toBe('255,255,255')
   })
 
   it('normalizes named and functional colors through the canvas', () => {

@@ -71,7 +71,10 @@ export const trip = (color: string): string => {
     // integer rgb()/rgba() only — %, hsl(), named colors etc. fall through
     // to canvas normalization (digits alone would mis-read them)
     const match = /^rgba?\(\s*(\d+)\s*[,\s]\s*(\d+)\s*[,\s]\s*(\d+)/.exec(color)
-    if (match) out = `${match[1]},${match[2]},${match[3]}`
+    // browsers clamp out-of-range channels (rgb(999,0,0) → rgb(255,0,0));
+    // the fast path must agree or the canvas renderer diverges from CSS
+    if (match)
+      out = `${Math.min(255, +match[1]!)},${Math.min(255, +match[2]!)},${Math.min(255, +match[3]!)}`
   }
   if (!out && typeof document !== 'undefined') {
     // canvas normalizes any valid CSS color to #rrggbb or rgba(r,g,b,a)

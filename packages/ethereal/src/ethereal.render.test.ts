@@ -52,6 +52,9 @@ beforeAll(() => {
   }
   g.ResizeObserver = Noop
   g.IntersectionObserver = Noop
+  // jsdom has no canvas: trip()'s normalizer probe would log a noisy
+  // "Not implemented" error; a null context takes the same fallback quietly
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
 })
 
 // split on TOP-LEVEL commas only, so each radial-gradient in a stack lands on

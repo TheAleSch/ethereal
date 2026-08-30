@@ -182,7 +182,7 @@ export const ETHEREAL_GROUPS: PropGroup[] = [
         type: "number",
         default: "0.5",
         description:
-          "Softness of gradient stops across the spot and needles (~0–1.6).",
+          "Softness of gradient stops across the spot and needles (0–1).",
       },
       {
         name: "reveal",
@@ -574,7 +574,7 @@ export const ETHEREAL_DITHER_GROUPS: PropGroup[] = [
         name: "band",
         type: "number",
         default: "6",
-        description: "Thickness of the border band the glow hugs (px, 2–1000).",
+        description: "Thickness of the border band the glow hugs (px, 2–400).",
       },
       {
         name: "bleed",

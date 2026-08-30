@@ -118,12 +118,16 @@ export function useTheme(
 ): Theme {
   const [theme, setTheme] = useState<Theme>(explicit ?? 'light')
 
+  // a detector is re-read on every owning render (no dep array): the caller
+  // owns re-render timing, so a stable callback must still see fresh external
+  // state. setTheme bails on an unchanged value, so this cannot loop.
+  useIsoLayoutEffect(() => {
+    if (detector) setTheme(detector(ref.current?.parentElement ?? null))
+  })
+
   useIsoLayoutEffect(() => {
     const host = ref.current?.parentElement ?? null
-    if (detector) {
-      setTheme(detector(host))
-      return
-    }
+    if (detector) return
     if (explicit) {
       setTheme(explicit)
       return

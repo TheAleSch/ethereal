@@ -10,7 +10,6 @@ import {
   ETHEREAL_STATES,
   deriveEtherealState,
   THEME_VARIANTS,
-  INTERACTION_VARIANTS,
   isPaused,
   setPaused,
 } from "ethereal-glow"
@@ -63,6 +62,7 @@ import {
   genCode,
   matchPreset,
   parseOverrides,
+  parseSharedStates,
   splitSections,
 } from "./presets"
 import type { ControlDef } from "./presets"
@@ -166,34 +166,7 @@ export function Playground() {
         ...parseOverrides(search.d, ETHEREAL_DITHER),
       })
     if (search.st) {
-      const map: StateMap = {}
-      for (const [name, part] of Object.entries(search.st)) {
-        if (typeof name !== "string" || !/^[a-z0-9-]{1,32}$/.test(name))
-          continue
-        // built-in names never travel as CUSTOM state data: the editor can't
-        // create them, and a link carrying one would shadow the package state
-        if (name === "idle" || name in ETHEREAL_STATES) continue
-        if (!part || typeof part !== "object") continue
-        // nested shape: state → theme → interaction → partial config, both
-        // levels enumerated by the package so a new slot round-trips
-        // automatically
-        const entry: StateMap[string] = {}
-        for (const themeVariant of THEME_VARIANTS) {
-          const themePart = (part as Record<string, unknown>)[themeVariant] as
-            Record<string, unknown> | undefined
-          if (!themePart || typeof themePart !== "object") continue
-          const slots: Record<string, unknown> = {}
-          for (const slot of INTERACTION_VARIANTS) {
-            const clean = parseOverrides(
-              themePart[slot] as Record<string, unknown> | undefined,
-              ETHEREAL
-            )
-            if (Object.keys(clean).length) slots[slot] = clean
-          }
-          if (Object.keys(slots).length) entry[themeVariant] = slots
-        }
-        if (Object.keys(entry).length) map[name] = entry
-      }
+      const map = parseSharedStates(search.st)
       if (Object.keys(map).length) setEStates(map)
     }
     if (search.tm) {

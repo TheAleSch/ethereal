@@ -288,10 +288,27 @@ function tickAll(nowSec: number, dt: number) {
     const time = rec.clk + phase * duration
     const cycleTime = duration + repeatDelay
     const cycleT = time % cycleTime
-    let progress = cycleT < duration ? cycleT / duration : 1
-    // wander: a slow sine warps the head's progress — hesitates and hurries
-    if (cfg.wander)
+    const active = cycleT < duration
+    let progress = active ? cycleT / duration : 1
+    // wander: a slow sine warps the head's progress — hesitates and hurries.
+    // Only while active: during the repeatDelay gap the head is parked at the
+    // endpoint and must not keep moving.
+    if (cfg.wander && active)
       progress = (((progress + 0.1 * cfg.wander * Math.sin((2 * Math.PI * time) / (duration * 2.6))) % 1) + 1) % 1
+    // repeatDelay is a documented DEAD interval: the whole effect rests dark
+    // between cycles. Short smoothstep shoulders on both ends of the gap keep
+    // the exit/return from popping.
+    let gapRamp = 1
+    if (repeatDelay > 0 && !active) {
+      const gapT = cycleT - duration
+      const shoulder = Math.min(0.35, repeatDelay / 2)
+      gapRamp =
+        gapT < shoulder
+          ? 1 - smoothstep(gapT / shoulder)
+          : gapT > repeatDelay - shoulder
+            ? smoothstep((gapT - (repeatDelay - shoulder)) / shoulder)
+            : 0
+    }
     const travel = (EASE[cfg.travelEase] || EASE.linear)(progress)
     let head1, head2, beamW, edgeRamp
     // outward path normals, computed from the CANONICAL orientation before
@@ -564,7 +581,7 @@ function tickAll(nowSec: number, dt: number) {
       '--bn4': (pSum - bs4).toFixed(3),
       '--flk': flicker.toFixed(3),
       '--flk2': (1 + (flicker - 1) * 0.45).toFixed(3),
-      '--bedge': edgeRamp.toFixed(3),
+      '--bedge': (edgeRamp * gapRamp).toFixed(3),
       // breathe: continuous full-circle hue rotation (original pulse look)
       '--bhue':
         (cfg.hueRange === 0

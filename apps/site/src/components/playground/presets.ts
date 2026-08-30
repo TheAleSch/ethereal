@@ -13,6 +13,8 @@ import {
   ETHEREAL_DITHER,
   EVENT_HORIZON,
   EVENT_HORIZON_PRESETS,
+  INTERACTION_VARIANTS,
+  THEME_VARIANTS,
 } from "ethereal-glow"
 import type {
   EtherealCfg,
@@ -1759,4 +1761,44 @@ export function splitSections<TKey extends string>(
   }
   if (cur.items.length) out.push(cur)
   return out
+}
+
+/** The playground's editable state map: state → theme → interaction slot →
+ *  partial config. Mirrors the package's caller-`states` shape. */
+export type SharedStateMap = Record<string, StateConfig<EtherealCfg>>
+
+/** Hydrate the `?st=` payload of a shared link. Only `idle` is reserved (the
+ *  Base row IS idle); built-in names like `thinking` are legitimate key-by-key
+ *  overrides — the package merges caller `states` entries over its built-ins.
+ *  Every leaf goes through parseOverrides so a hostile link cannot smuggle
+ *  values past the control domains. */
+export function parseSharedStates(
+  raw: Record<string, unknown>
+): SharedStateMap {
+  const map: SharedStateMap = {}
+  for (const [name, part] of Object.entries(raw)) {
+    if (typeof name !== "string" || !/^[a-z0-9-]{1,32}$/.test(name)) continue
+    if (name === "idle") continue
+    if (!part || typeof part !== "object") continue
+    // nested shape: state → theme → interaction → partial config, both
+    // levels enumerated by the package so a new slot round-trips
+    // automatically
+    const entry: Record<string, Record<string, unknown>> = {}
+    for (const themeVariant of THEME_VARIANTS) {
+      const themePart = (part as Record<string, unknown>)[themeVariant] as
+        Record<string, unknown> | undefined
+      if (!themePart || typeof themePart !== "object") continue
+      const slots: Record<string, unknown> = {}
+      for (const slot of INTERACTION_VARIANTS) {
+        const clean = parseOverrides(
+          themePart[slot] as Record<string, unknown> | undefined,
+          ETHEREAL
+        )
+        if (Object.keys(clean).length) slots[slot] = clean
+      }
+      if (Object.keys(slots).length) entry[themeVariant] = slots
+    }
+    if (Object.keys(entry).length) map[name] = entry
+  }
+  return map
 }

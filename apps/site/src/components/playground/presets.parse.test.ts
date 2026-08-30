@@ -29,6 +29,7 @@ import {
   ETHEREAL_PRESETS,
   genCode,
   parseOverrides,
+  parseSharedStates,
 } from "./presets"
 import type { ControlDef } from "./presets"
 
@@ -373,5 +374,44 @@ describe("genCode emits a snippet that compiles", () => {
         (diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error
       )
     ).toEqual([])
+  })
+})
+
+describe("parseSharedStates hydrates the ?st= payload", () => {
+  it("keeps an edited override for a BUILT-IN state like `thinking`", () => {
+    // the editor writes key-by-key overrides for built-in states and URL
+    // sync serializes them; hydration must not drop them (only `idle` is
+    // reserved — the Base row IS idle)
+    const map = parseSharedStates({
+      thinking: { light: { base: { strength: 1.4 } } },
+      idle: { light: { base: { strength: 2 } } },
+    })
+    expect(map.thinking.light?.base).toEqual({ strength: 1.4 })
+    expect(map.idle).toBeUndefined()
+  })
+
+  it("still sanitizes every leaf through parseOverrides", () => {
+    const map = parseSharedStates({
+      thinking: {
+        light: {
+          base: { strength: 1e308, colors: ["url(//evil)"], nonsense: 5 },
+        },
+      },
+    })
+    const cell = map.thinking.light?.base as Record<string, unknown>
+    // the hostile color payload and the unknown key are gone; the number is
+    // clamped into the control's real range
+    expect(cell.colors).toBeUndefined()
+    expect(cell.nonsense).toBeUndefined()
+    expect(cell.strength).toBeLessThanOrEqual(2)
+  })
+
+  it("rejects malformed state names and shapes", () => {
+    expect(
+      parseSharedStates({
+        "NOT VALID!": { light: { base: { strength: 1 } } },
+        alert: "not-an-object",
+      })
+    ).toEqual({})
   })
 })

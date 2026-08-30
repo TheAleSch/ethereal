@@ -11,7 +11,7 @@ import { getLUT, pathFractionAt, pathPx, walkSmooth, type LUT } from './core/pat
 import { mergeConfig, useInteraction, type StateConfig, type ThemeConfig } from './core/state'
 import { subscribe } from './core/ticker'
 import { useReducedMotion, useTheme, type Theme } from './core/theme'
-import { EASE, TravelEase, checkHost, claimHost, nextPhase, radiusPx, trip } from './core/util'
+import { EASE, TravelEase, checkHost, claimHost, nextPhase, radiusPx, smoothstep, trip } from './core/util'
 
 export type EtherealDitherCfg = {
   colors: string[]
@@ -305,6 +305,10 @@ export function EtherealDither({
     let edgeWeights = new Float32Array(1)
     let edgeDistances = new Float32Array(1)
     let perimeterPositions = new Float32Array(1)
+    // indices of cells whose edge weight can ever light up — the draw loop
+    // walks only these instead of the full grid (interior/exterior cells are
+    // most of a large grid and can never paint)
+    let activeCells = new Int32Array(0)
     // cells are written straight into an ImageData buffer — building an
     // rgba() string + fillRect per painted cell (the old path) dominated the
     // frame at fine block sizes
@@ -361,6 +365,10 @@ export function EtherealDither({
             perimeterPositions[cell] = pathFractionAt(px / hostW, py / hostH, clamped.corner, aspect, lut)
         }
       }
+      const litCells: number[] = []
+      for (let cell = 0; cell < cols * rows; cell++)
+        if (edgeWeights[cell]! >= 0.02) litCells.push(cell)
+      activeCells = Int32Array.from(litCells)
     }
     resize()
     // resize() reassigns canvas.width, which blanks the bitmap — so a config
@@ -397,9 +405,25 @@ export function EtherealDither({
       const repeatDelay = Math.max(0, clamped.repeatDelay)
       const cycleTime = duration + repeatDelay
       const cycleT = (time + phase * duration) % cycleTime
-      let progress = cycleT < duration ? cycleT / duration : 1
-      if (clamped.wander)
+      const active = cycleT < duration
+      let progress = active ? cycleT / duration : 1
+      // wander only while active: during the repeatDelay gap the head is
+      // parked at the endpoint and must not keep moving
+      if (clamped.wander && active)
         progress = (((progress + 0.1 * clamped.wander * Math.sin((2 * Math.PI * time) / (duration * 2.6))) % 1) + 1) % 1
+      // repeatDelay is a documented DEAD interval: the canvas rests clear
+      // between cycles. Smoothstep shoulders keep the exit/return from popping.
+      let gapRamp = 1
+      if (repeatDelay > 0 && !active) {
+        const gapT = cycleT - duration
+        const shoulder = Math.min(0.35, repeatDelay / 2)
+        gapRamp =
+          gapT < shoulder
+            ? 1 - smoothstep(gapT / shoulder)
+            : gapT > repeatDelay - shoulder
+              ? smoothstep((gapT - (repeatDelay - shoulder)) / shoulder)
+              : 0
+      }
       const travel = (EASE[clamped.travelEase] || EASE.linear)(progress)
       // per-frame hue drift — rebuild the (tiny) palette from HSL
       if (clamped.hueRange > 0) {
@@ -444,6 +468,11 @@ export function EtherealDither({
         }
 
       pixels.fill(0)
+      // deep in the gap nothing is lit — skip the whole grid walk
+      if (gapRamp === 0) {
+        ctx.putImageData(img, 0, 0)
+        return
+      }
       const pMid = (clamped.pulseMin + clamped.pulseMax) / 2
       const pAmp = (clamped.pulseMax - clamped.pulseMin) / 2
       const pulse = pMid + pAmp * Math.sin(2 * Math.PI * (time / (duration * 1.33)))
@@ -459,15 +488,16 @@ export function EtherealDither({
       // stay inside the cell budget, and px math must match that grid
       const { bleed, levels, strength } = clamped
       const block = blockPx
-      for (let gy = 0; gy < rows; gy++) {
-        for (let gx = 0; gx < cols; gx++) {
+      for (let lit = 0; lit < activeCells.length; lit++) {
+        const cell = activeCells[lit]!
+        {
+          const gx = cell % cols
+          const gy = (cell - gx) / cols
           // cell center in host coords (grid is offset by the bleed)
           const px = (gx + 0.5) * block - bleed
           const py = (gy + 0.5) * block - bleed
-          const cell = gy * cols + gx
           const dEdge = edgeDistances[cell]!
           const wEdge = edgeWeights[cell]!
-          if (wEdge < 0.02) continue
           const perimeterPosition =
             clamped.path === 'around'
               ? perimeterPositions[cell]!
@@ -493,7 +523,7 @@ export function EtherealDither({
           // intensity ramps to zero over the last few cells of the grid
           const edgeCells = Math.min(gx, gy, cols - 1 - gx, rows - 1 - gy)
           const rim = Math.min(1, edgeCells / 3)
-          const intensity = gainBest * wEdge * strength * boost * flicker * rim
+          const intensity = gainBest * wEdge * strength * boost * flicker * rim * gapRamp
           if (intensity <= 0) continue
           const bay = BAYER[gy % 4]![gx % 4]!
           // Bayer-quantized alpha
@@ -535,8 +565,16 @@ export function EtherealDither({
     const repaint = () => draw(frameTime(), 0)
     repaint()
     // Resizing clears a canvas by specification. Repaint synchronously even
-    // while the package ticker is paused or the instance is between ticks.
+    // while the package ticker is paused or the instance is between ticks —
+    // but not while offscreen: a hidden canvas rebuilding its geometry and
+    // repainting the full grid is a main-thread long task nobody sees. Defer
+    // it behind a dirty flag until the instance intersects again.
+    let resizeDirty = false
     const ro = new ResizeObserver(() => {
+      if (!visible) {
+        resizeDirty = true
+        return
+      }
       resize()
       repaint()
     })
@@ -551,6 +589,11 @@ export function EtherealDither({
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) visible = entry.isIntersecting
+        if (visible && resizeDirty) {
+          resizeDirty = false
+          resize()
+          repaint()
+        }
       },
       { rootMargin: '160px' },
     )

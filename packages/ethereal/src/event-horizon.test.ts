@@ -32,6 +32,9 @@ beforeEach(() => {
   // ever needs to tick, so the rAF callback is simply parked
   globals.requestAnimationFrame = () => 1
   globals.cancelAnimationFrame = () => {}
+  // jsdom has no canvas: trip()'s normalizer probe would log a noisy
+  // "Not implemented" error; a null context takes the same fallback quietly
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
   globals.matchMedia = (media: string) => ({
     media,
     matches: false,

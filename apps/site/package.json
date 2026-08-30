@@ -13,10 +13,10 @@
     "typecheck": "tsc --noEmit",
     "icons": "node scripts/build-icons.mjs",
     "e2e:server": "vite dev",
-    "test:e2e": "npm --prefix ../.. run build && node e2e/playground-themes.mjs && node e2e/accessibility.mjs"
+    "test:e2e": "npm --prefix ../.. run site:build && node e2e/playground-themes.mjs && node e2e/accessibility.mjs"
   },
   "dependencies": {
-    "@base-ui/react": "^1.6.0",
+    "@base-ui/react": "1.6.0",
     "@fontsource-variable/geist": "^5.2.9",
     "@tailwindcss/vite": "^4",
     "@tanstack/react-devtools": "latest",
@@ -25,10 +25,10 @@
     "@tanstack/react-router-ssr-query": "latest",
     "@tanstack/react-start": "latest",
     "@tanstack/router-plugin": "latest",
-    "ethereal-glow": "^0.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "culori": "^4.0.2",
+    "ethereal-glow": "^0.1.0",
     "lucide-react": "^1.24.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

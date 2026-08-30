@@ -4,12 +4,12 @@
 // host beats its ancestors, and the OS scheme is the last resort. The ancestor
 // walk in the middle is the one nobody notices missing — it is what makes the
 // shadcn/Tailwind "theme lives on a wrapper" pattern work at all.
-import { createElement } from 'react'
+import { createElement, useRef } from 'react'
 import { createRoot } from 'react-dom/client'
 import { act } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-import { detectTheme, subscribeTheme, useReducedMotion } from './theme'
+import { detectTheme, subscribeTheme, useReducedMotion, useTheme } from './theme'
 
 let prefersDark = false
 let prefersReduced = false
@@ -156,5 +156,32 @@ describe('useReducedMotion', () => {
 
     act(() => root.unmount())
     expect(motionListeners.size).toBe(0)
+  })
+})
+
+describe('useTheme', () => {
+  it('re-reads a stable detector when the owner re-renders', () => {
+    let backing: 'light' | 'dark' = 'light'
+    const detector = () => backing
+    const seen: string[] = []
+    const Subject = () => {
+      const ref = useRef<HTMLDivElement>(null)
+      seen.push(useTheme(ref, undefined, detector))
+      return createElement('div', { ref })
+    }
+    const container = document.createElement('div')
+    document.body.appendChild(container)
+    const root = createRoot(container)
+    act(() => root.render(createElement(Subject)))
+    expect(seen[seen.length - 1]).toBe('light')
+
+    // the detector's backing store changes, then the OWNER re-renders with
+    // the same callback identity — the docs make the caller own re-render
+    // timing, so this render must observe the new value
+    backing = 'dark'
+    act(() => root.render(createElement(Subject)))
+    expect(seen[seen.length - 1]).toBe('dark')
+
+    act(() => root.unmount())
   })
 })

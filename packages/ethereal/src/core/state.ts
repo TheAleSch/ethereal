@@ -67,7 +67,7 @@ export function resolveState<C>(
     if (!warned.has(key)) {
       warned.add(key)
       devWarn(
-        `[@theale/${componentName}] unknown state "${state}" — pass it via the \`states\` prop or use one of: ${Object.keys(builtIns).join(', ')}`,
+        `[ethereal-glow] <${componentName}/> unknown state "${state}" — pass it via the \`states\` prop or use one of: ${Object.keys(builtIns).join(', ')}`,
       )
     }
     return {}

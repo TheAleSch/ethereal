@@ -69,6 +69,7 @@ try {
         devDependencies: {
           "@types/react": "18.3.12",
           "@types/react-dom": "18.3.1",
+          jsdom: "28.1.0",
           typescript: "5.9.3",
         },
       },
@@ -150,11 +151,75 @@ for (const entry of ["index.js", "core.js"]) {
 `,
   );
 
+  // The SSR smoke above never runs an effect, an observer, a ticker frame or
+  // an unmount — a React-19-only CLIENT lifecycle assumption would sail
+  // through it. Mount and unmount the packed components under React 18's
+  // real client runtime (jsdom DOM, driven rAF frames) as well.
+  writeFileSync(
+    join(fixture, "runtime-client.mjs"),
+    `import assert from "node:assert/strict"
+import { JSDOM } from "jsdom"
+
+const dom = new JSDOM('<main id="app"></main>', { url: "https://consumer.test/", pretendToBeVisual: true })
+const g = globalThis
+g.window = dom.window
+g.document = dom.window.document
+g.HTMLElement = dom.window.HTMLElement
+g.HTMLCanvasElement = dom.window.HTMLCanvasElement
+g.Element = dom.window.Element
+g.getComputedStyle = dom.window.getComputedStyle.bind(dom.window)
+g.IS_REACT_ACT_ENVIRONMENT = true
+let pendingFrame = null
+g.requestAnimationFrame = (cb) => { pendingFrame = cb; return 1 }
+g.cancelAnimationFrame = () => { pendingFrame = null }
+g.matchMedia = (media) => ({
+  media, matches: false, onchange: null,
+  addListener() {}, removeListener() {},
+  addEventListener() {}, removeEventListener() {},
+  dispatchEvent: () => false,
+})
+class Noop { observe() {} unobserve() {} disconnect() {} takeRecords() { return [] } }
+g.ResizeObserver = Noop
+g.IntersectionObserver = Noop
+g.MutationObserver = dom.window.MutationObserver
+// the package reads these off window, not the global object
+dom.window.matchMedia = g.matchMedia
+dom.window.ResizeObserver = Noop
+dom.window.IntersectionObserver = Noop
+dom.window.requestAnimationFrame = g.requestAnimationFrame
+dom.window.cancelAnimationFrame = g.cancelAnimationFrame
+dom.window.HTMLCanvasElement.prototype.getContext = () => null
+
+const { createElement, act } = await import("react")
+const { createRoot } = await import("react-dom/client")
+const pkg = await import("ethereal-glow")
+
+const host = dom.window.document.getElementById("app")
+for (const name of ["EtherealWrap", "EventHorizonWrap", "EtherealDitherWrap"]) {
+  const container = dom.window.document.createElement("div")
+  host.appendChild(container)
+  const root = createRoot(container)
+  await act(async () => {
+    root.render(createElement(pkg[name], null, createElement("button", null, name)))
+  })
+  assert.ok(
+    container.querySelectorAll("*").length > 2,
+    name + " must build its client layers on mount under React 18"
+  )
+  // drive one ticker frame through the mounted instance
+  if (pendingFrame) await act(async () => { pendingFrame(16) })
+  await act(async () => { root.unmount() })
+  assert.equal(container.childNodes.length, 0, name + " must unmount cleanly")
+}
+console.log("client runtime mounted, ticked and unmounted all wrappers")
+`,
+  );
   run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund"], {
     cwd: fixture,
   });
   run(join(fixture, "node_modules/.bin/tsc"), ["--noEmit"], { cwd: fixture });
   run("node", ["runtime.mjs"], { cwd: fixture });
+  run("node", ["runtime-client.mjs"], { cwd: fixture });
   console.log("Packed React 18 consumer smoke passed.");
 } finally {
   rmSync(temp, { recursive: true, force: true });

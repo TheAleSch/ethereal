@@ -74,11 +74,16 @@ export async function startDevServer({ readyTimeoutMs = 90_000 } = {}) {
 
   const port = await freePort()
   const baseURL = `http://localhost:${port}`
+  // E2E_MODE=dev serves through `vite dev` for local iteration; the default
+  // serves the PRODUCTION build via `vite preview` — prerendered HTML, hashed
+  // assets and production resolution are exactly what a dev server can never
+  // fail on, so the release gate must run against the built output.
+  const serverScript = process.env.E2E_MODE === "dev" ? "e2e:server" : "preview"
   // detached so we can signal the whole group: `npm run` forks vite, and
   // killing only npm would leave the server holding the port
   const child = spawn(
     "npm",
-    ["run", "e2e:server", "--", "--port", String(port)],
+    ["run", serverScript, "--", "--port", String(port)],
     {
       cwd: SITE_DIR,
       detached: true,

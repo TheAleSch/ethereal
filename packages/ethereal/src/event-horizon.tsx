@@ -12,7 +12,7 @@ import { getLUT, pathPx, quantAspect, walkSmooth, type LUT } from './core/path'
 import { mergeConfig, useInteraction, type StateConfig, type ThemeConfig } from './core/state'
 import { subscribe } from './core/ticker'
 import { useReducedMotion, useTheme, type Theme } from './core/theme'
-import { HEADS, checkHost, claimHost, nextPhase, pos, radiusPx, trip } from './core/util'
+import { HEADS, checkHost, claimHost, nextPhase, pos, radiusPx, smoothstep, trip } from './core/util'
 
 export type EventHorizonCfg = {
   colors: string[]
@@ -193,7 +193,23 @@ function tickAll(nowSec: number, dt: number) {
     const time = rec.clk + rec.phase * duration
     const cycleTime = duration + repeatDelay
     const cycleT = time % cycleTime
-    const ttr = cycleT < duration ? cycleT / duration : 1
+    const active = cycleT < duration
+    const ttr = active ? cycleT / duration : 1
+    // repeatDelay is a documented DEAD interval: the glow layers rest dark
+    // between cycles (the lens is static distortion and stays — snapping a
+    // backdrop-filter on and off reads as a glitch, not a rest). Smoothstep
+    // shoulders keep the exit/return from popping.
+    let gapRamp = 1
+    if (repeatDelay > 0 && !active) {
+      const gapT = cycleT - duration
+      const shoulder = Math.min(0.35, repeatDelay / 2)
+      gapRamp =
+        gapT < shoulder
+          ? 1 - smoothstep(gapT / shoulder)
+          : gapT > repeatDelay - shoulder
+            ? smoothstep((gapT - (repeatDelay - shoulder)) / shoulder)
+            : 0
+    }
     const corner = cfg.corner
     const aspect = rec.aspect
     const uHead = cfg.dir === -1 ? 1 - ttr : ttr
@@ -232,7 +248,9 @@ function tickAll(nowSec: number, dt: number) {
       style.setProperty(`--ty${i}`, node.y.toFixed(4))
     }
     const hov = cfg.hover === 'reveal' ? hovC : cfg.hover === 'boost' ? 1 + 0.8 * cfg.hoverAmount * hovC : 1
-    style.setProperty('--hov', hov.toFixed(3))
+    // every glow layer's opacity multiplies var(--hov), so the gap envelope
+    // rides the same channel as hover
+    style.setProperty('--hov', (hov * gapRamp).toFixed(3))
     style.setProperty('--hovB', (cfg.hover === 'boost' ? 1 + 0.4 * cfg.hoverAmount * hovC : 1).toFixed(3))
   })
 }

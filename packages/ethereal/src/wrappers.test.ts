@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, createElement } from 'react'
 import { createRoot } from 'react-dom/client'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { EtherealWrap } from './ethereal'
 import { EtherealDitherWrap } from './ethereal-dither'
@@ -32,9 +32,22 @@ beforeEach(() => {
   }
   globals.ResizeObserver = Noop
   globals.IntersectionObserver = Noop
+  // jsdom has no canvas implementation; without this stub every
+  // EtherealDitherWrap mount logs a "Not implemented" console error
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
+    createImageData: (width: number, height: number) => ({
+      width,
+      height,
+      data: new Uint8ClampedArray(width * height * 4),
+    }),
+    putImageData() {},
+  } as unknown as CanvasRenderingContext2D)
+  vi.spyOn(console, 'error')
 })
 
 afterEach(() => {
+  expect(console.error).not.toHaveBeenCalled()
+  vi.restoreAllMocks()
   document.body.innerHTML = ''
 })
 

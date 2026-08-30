@@ -433,6 +433,96 @@ let browser
     "Remove color works from a touch interaction"
   )
 
+  // ── color picker commits a value, not just its Remove sibling ──
+  // Open the first swatch, type a deterministic hex, commit with Enter, and
+  // require the change to reach the swatch itself and the shared-link `c=`
+  // param. A picker whose onValueChange wiring is disconnected passes every
+  // earlier assertion; it cannot pass this one.
+  await colorSwatches.first().focus()
+  await page.keyboard.press("Enter")
+  const hexField = page.getByRole("textbox", { name: "Color value" })
+  await hexField.waitFor()
+  await hexField.fill("#00ff00")
+  await page.keyboard.press("Enter")
+  await page.keyboard.press("Escape")
+  await page.waitForFunction(() => {
+    const fill = document.querySelector('[aria-label="color 1"] span')
+    return (
+      fill instanceof HTMLElement &&
+      getComputedStyle(fill).backgroundColor === "rgb(0, 255, 0)"
+    )
+  })
+  ok(true, "Color picker commit reaches the swatch")
+  await page.waitForFunction(
+    () => /00ff00|0,255,0/i.test(decodeURIComponent(location.search)),
+    undefined,
+    { timeout: 5000 }
+  )
+  ok(true, "Committed color serializes into the shared link")
+
+  // ── every renderer tab drives ITS OWN integration ──
+  // The Event Horizon and Dither panels each change a renderer-specific
+  // control, must serialize under their own query key, and must survive a
+  // reload round-trip (serialize → hydrate → re-serialize). Cross-wired
+  // setters, a wrong preview, or broken `?h=`/`?d=` handling all fail here.
+  await page.getByRole("tab", { name: "Event Horizon", exact: true }).tap()
+  await page.waitForTimeout(400)
+  const ehMotion = page
+    .locator('[data-slot="accordion-trigger"]:visible')
+    .filter({ hasText: "motion" })
+    .first()
+  if ((await ehMotion.getAttribute("aria-expanded")) !== "true") {
+    await ehMotion.tap()
+  }
+  await tapSlider("shimmer", 0.85)
+  await page.waitForFunction(
+    () => decodeURIComponent(location.search).includes('"shimmer"'),
+    undefined,
+    { timeout: 5000 }
+  )
+  ok(true, "Event Horizon edit serializes under its own `h=` key")
+  await page.reload({ waitUntil: "load" })
+  await page.waitForTimeout(1200)
+  await page.waitForFunction(
+    () => decodeURIComponent(location.search).includes('"shimmer"'),
+    undefined,
+    { timeout: 5000 }
+  )
+  ok(
+    (await page
+      .getByRole("tab", { name: "Event Horizon", exact: true })
+      .getAttribute("aria-selected")) === "true",
+    "Event Horizon override survives a reload round-trip"
+  )
+
+  await page.getByRole("tab", { name: "Dither", exact: true }).tap()
+  await page.waitForTimeout(400)
+  ok(
+    (await page.locator("canvas:visible").count()) > 0,
+    "Dither preview renders its canvas"
+  )
+  await tapSlider("sat", 0.25)
+  const ditherSat = await page
+    .getByLabel("sat value", { exact: true })
+    .inputValue()
+  await page.waitForFunction(
+    () => decodeURIComponent(location.search).includes("d="),
+    undefined,
+    { timeout: 5000 }
+  )
+  ok(true, "Dither edit serializes under its own `d=` key")
+  await page.reload({ waitUntil: "load" })
+  await page.waitForTimeout(1200)
+  ok(
+    (await page.getByLabel("sat value", { exact: true }).inputValue()) ===
+      ditherSat,
+    "Dither override survives a reload round-trip"
+  )
+  ok(
+    (await page.locator("canvas:visible").count()) > 0,
+    "Dither canvas returns after reload"
+  )
+
   ok(errors.length === 0, `no browser errors (${errors.join(" | ") || "none"})`)
   if (failures) process.exitCode = 1
 })()

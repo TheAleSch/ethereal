@@ -334,6 +334,24 @@ describe('EtherealDither canvas', () => {
     expect(identical).toBe(false)
   })
 
+  it('rests the canvas clear through the repeatDelay gap instead of freezing at the endpoint', () => {
+    // duration 1s + repeatDelay 10s: the gap spans cycleT ∈ (1, 11); the
+    // stagger phase shifts time by at most one duration, so animation time
+    // ≈ 5s lands deep in the gap for ANY phase — past both smoothstep
+    // shoulders. wander is set to catch the sentinel-progress drift bug too.
+    render({
+      block: 4,
+      band: 10,
+      bleed: 16,
+      duration: 1,
+      repeatDelay: 10,
+      wander: 0.4,
+      flicker: 0,
+    })
+    run(320)
+    expect(cells(4, 16).litCells).toBe(0)
+  })
+
   it('HOLDS every clock while the ticker is paused', () => {
     render({ block: 4, band: 10, bleed: 16, duration: 2 })
     run(6)

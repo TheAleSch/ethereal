@@ -21,8 +21,8 @@ const siteSource = new URL("./src/", import.meta.url).pathname
 export default defineConfig({
   resolve: {
     alias: [
-      { find: /^@theale\/ethereal\/core$/, replacement: etherealCoreSource },
-      { find: /^@theale\/ethereal$/, replacement: etherealSource },
+      { find: /^ethereal-glow\/core$/, replacement: etherealCoreSource },
+      { find: /^ethereal-glow$/, replacement: etherealSource },
       { find: /^@\//, replacement: siteSource },
     ],
   },
