@@ -14,8 +14,22 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temp = mkdtempSync(join(tmpdir(), "ethereal-package-smoke-"));
 
+// npm run exports the caller's npm config as npm_config_* env vars; nested
+// npm treats those as CLI flags and rejects ones like allow-scripts, so
+// child processes get a scrubbed environment.
+// (npx would re-read user config and re-export it to its children, undoing
+// the scrub — so local bins are invoked directly instead of through npx.)
+const cleanEnv = Object.fromEntries(
+  Object.entries(process.env).filter(([key]) => !key.startsWith("npm_config_")),
+);
+
 function run(command, args, options = {}) {
-  execFileSync(command, args, { cwd: root, stdio: "inherit", ...options });
+  execFileSync(command, args, {
+    cwd: root,
+    stdio: "inherit",
+    env: cleanEnv,
+    ...options,
+  });
 }
 
 try {
@@ -33,7 +47,7 @@ try {
         "--pack-destination",
         temp,
       ],
-      { cwd: root, encoding: "utf8" },
+      { cwd: root, encoding: "utf8", env: cleanEnv },
     ),
   );
   assert.equal(packed.length, 1, "npm pack should create exactly one tarball");
@@ -139,7 +153,7 @@ for (const entry of ["index.js", "core.js"]) {
   run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund"], {
     cwd: fixture,
   });
-  run("npx", ["--no-install", "tsc", "--noEmit"], { cwd: fixture });
+  run(join(fixture, "node_modules/.bin/tsc"), ["--noEmit"], { cwd: fixture });
   run("node", ["runtime.mjs"], { cwd: fixture });
   console.log("Packed React 18 consumer smoke passed.");
 } finally {

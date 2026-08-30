@@ -57,7 +57,7 @@ const SPECS = [
   "One shared loop, 60fps default",
   "Pauses off-screen",
   "Respects reduced motion",
-  "ESM + CJS + types",
+  "Pure ESM + types",
 ]
 
 function Home() {

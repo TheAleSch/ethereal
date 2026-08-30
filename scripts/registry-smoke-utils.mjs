@@ -12,17 +12,29 @@ export function makeTemp(prefix) {
   return mkdtempSync(join(tmpdir(), prefix));
 }
 
+// npm run exports the caller's npm config as npm_config_* env vars; nested
+// npm treats those as CLI flags and rejects ones like allow-scripts, so
+// child processes get a scrubbed environment.
+// (npx would re-read user config and re-export it to its children, undoing
+// the scrub — so local bins are invoked directly instead of through npx.)
+const cleanEnv = Object.fromEntries(
+  Object.entries(process.env).filter(([key]) => !key.startsWith("npm_config_")),
+);
+
+const shadcnBin = join(root, "node_modules/.bin/shadcn");
+
 export function commandOutput(command, args, cwd = root) {
   return execFileSync(command, args, {
     cwd,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
+    env: cleanEnv,
   }).trim();
 }
 
 export function run(command, args, cwd = root) {
   return new Promise((resolveRun, reject) => {
-    const child = spawn(command, args, { cwd, stdio: "inherit" });
+    const child = spawn(command, args, { cwd, stdio: "inherit", env: cleanEnv });
     child.once("error", reject);
     child.once("exit", (code, signal) => {
       if (code === 0) resolveRun();
@@ -45,14 +57,7 @@ function canonical(value) {
 
 export async function buildAndVerifyRegistry(temp) {
   const generatedDir = join(temp, "generated");
-  await run("npx", [
-    "--no-install",
-    "shadcn",
-    "build",
-    "registry.json",
-    "-o",
-    generatedDir,
-  ]);
+  await run(shadcnBin, ["build", "registry.json", "-o", generatedDir]);
 
   const generatedPath = join(generatedDir, "ethereal.json");
   const generated = JSON.parse(readFileSync(generatedPath, "utf8"));
@@ -194,9 +199,7 @@ export async function installAndCompileRegistryItem(fixture, item) {
     });
     const address = server.address();
     assert(address && typeof address === "object");
-    await run("npx", [
-      "--no-install",
-      "shadcn",
+    await run(shadcnBin, [
       "add",
       `http://127.0.0.1:${address.port}/r/ethereal.json`,
       "--yes",
@@ -204,7 +207,11 @@ export async function installAndCompileRegistryItem(fixture, item) {
       "--cwd",
       fixture,
     ]);
-    await run("npx", ["--no-install", "tsc", "--noEmit"], fixture);
+    await run(
+      join(fixture, "node_modules/.bin/tsc"),
+      ["--noEmit"],
+      fixture,
+    );
   } finally {
     if (server.listening) {
       await new Promise((resolveClose) => server.close(resolveClose));
