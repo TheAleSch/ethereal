@@ -466,14 +466,18 @@ let browser
   // reload round-trip (serialize → hydrate → re-serialize). Cross-wired
   // setters, a wrong preview, or broken `?h=`/`?d=` handling all fail here.
   await page.getByRole("tab", { name: "Event Horizon", exact: true }).tap()
-  await page.waitForTimeout(400)
   const ehMotion = page
     .locator('[data-slot="accordion-trigger"]:visible')
     .filter({ hasText: "motion" })
     .first()
+  await ehMotion.waitFor()
   if ((await ehMotion.getAttribute("aria-expanded")) !== "true") {
     await ehMotion.tap()
   }
+  // wait out the accordion expand animation — a tap on a still-moving rail
+  // lands beside the slider on slow CI runners
+  await page.getByLabel("shimmer value", { exact: true }).waitFor()
+  await page.waitForTimeout(500)
   await tapSlider("shimmer", 0.85)
   await page.waitForFunction(
     () => decodeURIComponent(location.search).includes('"shimmer"'),
@@ -496,11 +500,13 @@ let browser
   )
 
   await page.getByRole("tab", { name: "Dither", exact: true }).tap()
-  await page.waitForTimeout(400)
+  await page.locator("canvas:visible").first().waitFor()
   ok(
     (await page.locator("canvas:visible").count()) > 0,
     "Dither preview renders its canvas"
   )
+  await page.getByLabel("sat value", { exact: true }).waitFor()
+  await page.waitForTimeout(500)
   await tapSlider("sat", 0.25)
   const ditherSat = await page
     .getByLabel("sat value", { exact: true })
