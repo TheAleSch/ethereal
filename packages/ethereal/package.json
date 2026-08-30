@@ -1,13 +1,17 @@
 {
   "name": "@theale/ethereal",
   "version": "0.1.0",
-  "description": "Travelling-light, black-hole and dithered glow effects for React \u2014 CSS and canvas renderers driven by one shared animation loop.",
+  "description": "Ambient light effects for React: a travelling comet glow, a black-hole accretion disk, and a Bayer-dithered canvas variant \u2014 every instance driven by one shared 60fps loop. Zero dependencies, pure ESM, tree-shakeable, SSR-safe.",
   "keywords": [
     "react",
     "glow",
     "border-beam",
     "animation",
     "css-effects",
+    "shine",
+    "dither",
+    "black-hole",
+    "microinteraction",
     "button",
     "ethereal"
   ],
