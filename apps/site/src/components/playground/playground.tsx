@@ -299,10 +299,6 @@ export function Playground() {
       <div className="container mx-auto flex min-h-0 flex-1 flex-col px-4 pt-24 pb-10 lg:pb-6">
         <header className="mb-8 lg:mb-6">
           <h1 className="text-3xl font-semibold tracking-tight">Playground</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Tune all three effects live, copy the exact JSX, and share the URL —
-            the current configuration is encoded in the link.
-          </p>
         </header>
 
         <Tabs
@@ -310,26 +306,14 @@ export function Playground() {
           onValueChange={(v) => setTab(v as Tab)}
           className="flex min-h-0 flex-1 flex-col"
         >
-          <TabsList
-            variant="line"
-            className="mb-6 w-full shrink-0 justify-start gap-4 border-b border-white/10 lg:mb-4"
-          >
-            <TabsTrigger
-              value="ethereal"
-              className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
-            >
+          <TabsList className="mb-6 w-fit shrink-0 justify-start lg:mb-4">
+            <TabsTrigger value="ethereal" className="flex-none px-4">
               Ethereal
             </TabsTrigger>
-            <TabsTrigger
-              value="eh"
-              className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
-            >
+            <TabsTrigger value="eh" className="flex-none px-4">
               Event Horizon
             </TabsTrigger>
-            <TabsTrigger
-              value="dither"
-              className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
-            >
+            <TabsTrigger value="dither" className="flex-none px-4">
               Dither
             </TabsTrigger>
           </TabsList>
@@ -625,7 +609,7 @@ function EffectSection({
             aria-pressed={frozen}
             aria-label={frozen ? "resume the animation" : "pause the animation"}
             title={frozen ? "resume" : "pause — tweak a frozen frame"}
-            className="hit-44 absolute bottom-3 left-3 z-20 flex size-7 items-center justify-center rounded-lg border border-white/10 bg-black/50 text-muted-foreground backdrop-blur-sm transition-colors hover:text-foreground"
+            className="hit-44 absolute bottom-3 left-3 z-20 flex size-7 items-center justify-center rounded-lg bg-black/50 text-muted-foreground backdrop-blur-sm transition-colors hover:text-foreground"
           >
             {frozen ? (
               <Play className="size-3.5" />
@@ -634,7 +618,7 @@ function EffectSection({
             )}
           </button>
           {/* backdrop toggle — preview the glow on a light surface */}
-          <div className="absolute top-3 right-3 z-20 flex rounded-lg border border-white/10 bg-black/50 p-0.5 backdrop-blur-sm">
+          <div className="absolute top-3 right-3 z-20 flex rounded-lg bg-black/50 p-0.5 backdrop-blur-sm">
             {(["dark", "light"] as const).map((m) => (
               <button
                 key={m}
@@ -643,7 +627,7 @@ function EffectSection({
                 aria-pressed={backdrop === m}
                 aria-label={`${m} backdrop`}
                 className={cn(
-                  "hit-44-tight flex size-6 items-center justify-center rounded-md transition-colors",
+                  "hit-44-pseudo flex size-6 items-center justify-center rounded-md transition-colors",
                   backdrop === m
                     ? "bg-white/10 text-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -658,7 +642,7 @@ function EffectSection({
             ))}
           </div>
           {/* preview host selector — try the effect on different elements */}
-          <div className="absolute top-3 left-3 z-20 flex rounded-lg border border-white/10 bg-black/50 p-0.5 backdrop-blur-sm">
+          <div className="absolute top-3 left-3 z-20 flex rounded-lg bg-black/50 p-0.5 backdrop-blur-sm">
             {(["button", "chat", "card", "pill"] as const).map((h) => (
               <button
                 key={h}
@@ -667,7 +651,7 @@ function EffectSection({
                 aria-pressed={host === h}
                 aria-label={`${h} preview host`}
                 className={cn(
-                  "hit-44-tight rounded-md px-2 py-1 text-[10px] font-medium capitalize transition-colors sm:px-2.5 sm:text-[11px]",
+                  "hit-44-pseudo rounded-md px-2 py-1 text-[10px] font-medium capitalize transition-colors sm:px-2.5 sm:text-[11px]",
                   host === h
                     ? "bg-white/10 text-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -724,7 +708,7 @@ function EffectSection({
             code panel is the thing that gives — on a short viewport its header
             (and both copy buttons) got squeezed past the bottom edge, out of
             reach, instead of the column scrolling */}
-        <div className="min-w-0 shrink-0 overflow-hidden rounded-xl border border-white/5 bg-black/40">
+        <div className="min-w-0 shrink-0 overflow-hidden rounded-xl bg-black/40">
           <div className="flex items-center justify-between border-b border-white/5 px-3 py-2">
             <span className="font-mono text-xs text-muted-foreground">JSX</span>
             <div className="flex items-center gap-1.5">
