@@ -5,6 +5,9 @@
     "packages/*",
     "apps/*"
   ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "npm run build -w ethereal-glow",
     "typecheck": "npm run build -w ethereal-glow && npm run typecheck -w ethereal-glow && npm run typecheck -w site",
