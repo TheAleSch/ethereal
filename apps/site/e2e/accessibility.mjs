@@ -133,7 +133,7 @@ let browser
     .all()
   ok(installTabBox !== null, "Install tab list is visible")
   for (const [index, trigger] of installTriggers.entries()) {
-    await minimumTarget(trigger, `Install tab ${index + 1}`)
+    await minimumEffectiveTarget(trigger, `Install tab ${index + 1}`)
     const triggerBox = await trigger.boundingBox()
     ok(
       installTabBox !== null &&
@@ -283,15 +283,15 @@ let browser
   await page.emulateMedia({ reducedMotion: "no-preference" })
   await page.goto(`${server.baseURL}/playground`, { waitUntil: "load" })
   await page.waitForTimeout(1000)
-  await minimumTarget(
+  await minimumEffectiveTarget(
     page.getByRole("tab", { name: "Ethereal", exact: true }),
     "Ethereal tab"
   )
-  await minimumTarget(
+  await minimumEffectiveTarget(
     page.getByRole("tab", { name: "Event Horizon", exact: true }),
     "Event Horizon tab"
   )
-  await minimumTarget(
+  await minimumEffectiveTarget(
     page.getByRole("tab", { name: "Dither", exact: true }),
     "Dither tab"
   )

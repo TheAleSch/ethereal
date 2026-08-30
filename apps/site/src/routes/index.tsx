@@ -194,20 +194,11 @@ function Home() {
             the column wider than small viewports and clip */}
         <div className="mx-auto max-w-2xl min-w-0 space-y-4">
           <Tabs defaultValue="npm">
-            <TabsList
-              variant="line"
-              className="mb-3 w-full justify-start gap-4 border-b border-white/5"
-            >
-              <TabsTrigger
-                value="npm"
-                className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
-              >
+            <TabsList className="mb-3 w-fit justify-start">
+              <TabsTrigger value="npm" className="flex-none px-4">
                 npm
               </TabsTrigger>
-              <TabsTrigger
-                value="shadcn"
-                className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
-              >
+              <TabsTrigger value="shadcn" className="flex-none px-4">
                 shadcn/ui
               </TabsTrigger>
             </TabsList>
