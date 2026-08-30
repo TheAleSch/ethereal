@@ -108,45 +108,52 @@ export function SliderRow({
     setDraft(null)
   }
   return (
-    <div className="grid grid-cols-[7rem_1fr_2.75rem] items-center gap-3 sm:grid-cols-[9rem_1fr_3.25rem]">
+    <div className="grid grid-cols-[7rem_1fr] items-center gap-3 sm:grid-cols-[9rem_1fr]">
       <RowLabel label={label} marker={marker} hint={hint} />
-      {/* click anywhere on the rail to jump there (Base UI only drags) */}
-      <div
-        // Capture before the thumb's 44px pseudo hit area handles the event;
-        // otherwise nearby rail presses are swallowed and appear inert.
-        onPointerDownCapture={(e) => {
-          const r = e.currentTarget.getBoundingClientRect()
-          const frac = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width))
-          const raw = min + frac * (max - min)
-          // min-anchored so steps land on the same grid the slider uses
-          const snapped = Math.min(
-            max,
-            Math.max(min, min + Math.round((raw - min) / step) * step)
-          )
-          onChange(Number(snapped.toFixed(4)))
-        }}
-      >
-        <Slider
-          value={value}
-          min={min}
-          max={max}
-          step={step}
-          ariaLabel={label}
-          onValueChange={(v) => onChange(typeof v === "number" ? v : v[0])}
+      {/* track + readout share one filled pill, like the selects */}
+      <div className="flex min-h-11 items-center gap-2 rounded-xl bg-input/50 pl-3">
+        {/* click anywhere on the rail to jump there (Base UI only drags) */}
+        <div
+          className="flex-1"
+          // Capture before the thumb's 44px pseudo hit area handles the event;
+          // otherwise nearby rail presses are swallowed and appear inert.
+          onPointerDownCapture={(e) => {
+            const r = e.currentTarget.getBoundingClientRect()
+            const frac = Math.min(
+              1,
+              Math.max(0, (e.clientX - r.left) / r.width)
+            )
+            const raw = min + frac * (max - min)
+            // min-anchored so steps land on the same grid the slider uses
+            const snapped = Math.min(
+              max,
+              Math.max(min, min + Math.round((raw - min) / step) * step)
+            )
+            onChange(Number(snapped.toFixed(4)))
+          }}
+        >
+          <Slider
+            value={value}
+            min={min}
+            max={max}
+            step={step}
+            ariaLabel={label}
+            onValueChange={(v) => onChange(typeof v === "number" ? v : v[0])}
+          />
+        </div>
+        <input
+          value={shown}
+          inputMode="decimal"
+          aria-label={`${label} value`}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") commit()
+            if (e.key === "Escape") setDraft(null)
+          }}
+          className="min-h-11 w-11 shrink-0 rounded-r-xl border-none bg-transparent pr-2.5 text-right font-mono text-xs text-foreground/80 tabular-nums focus:text-foreground focus:outline-none sm:w-13"
         />
       </div>
-      <input
-        value={shown}
-        inputMode="decimal"
-        aria-label={`${label} value`}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") commit()
-          if (e.key === "Escape") setDraft(null)
-        }}
-        className="min-h-11 w-full min-w-11 rounded border border-transparent bg-transparent px-1 py-0.5 text-right font-mono text-xs text-foreground/80 tabular-nums focus:border-white/15 focus:bg-black/30 focus:outline-none"
-      />
     </div>
   )
 }
