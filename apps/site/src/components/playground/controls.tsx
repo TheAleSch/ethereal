@@ -449,7 +449,7 @@ export function ControlSections({
               ),
           }
         : { defaultValue: [idPrefix + (sections[0]?.title ?? "")] })}
-      className="rounded-lg border border-white/10"
+      className="rounded-xl bg-white/[0.03]"
     >
       {sections.map((sec) => (
         <AccordionItem

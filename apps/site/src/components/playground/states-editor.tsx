@@ -481,7 +481,7 @@ export function StatesEditor({
             branch AND flip the preview to match. On the Base row they pick
             the layer being edited and leave the preview alone — see
             baseTarget. */}
-        <div className="flex gap-1 rounded border border-white/10 bg-white/5 p-1">
+        <div className="flex gap-1 rounded-xl bg-input/30 p-1">
           {THEME_ROW.map((t) => (
             <button
               key={t.key}
@@ -520,7 +520,7 @@ export function StatesEditor({
             </button>
           ))}
         </div>
-        <div className="flex gap-1 rounded border border-white/10 bg-white/5 p-1">
+        <div className="flex gap-1 rounded-xl bg-input/30 p-1">
           {SLOT_ROW.map((s) => (
             <button
               key={s.key}
@@ -674,7 +674,7 @@ export function StatesEditor({
           // means "show me the config with nothing layered on top"
           if (next[0]) onActive(next[0] === "__base__" ? "idle" : next[0])
         }}
-        className="rounded-lg border border-white/10"
+        className="rounded-xl bg-white/[0.03]"
       >
         {baseSlot && (
           <AccordionItem
