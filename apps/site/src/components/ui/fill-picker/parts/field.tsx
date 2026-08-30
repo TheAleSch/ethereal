@@ -24,7 +24,7 @@ export const FieldShell = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex h-8 items-stretch overflow-hidden rounded-md border border-input bg-transparent font-mono text-xs shadow-xs",
+        "flex h-8 items-stretch overflow-hidden rounded-lg border border-transparent bg-input/50 font-mono text-xs",
         "focus-within:ring-1 focus-within:ring-ring",
         className
       )}
@@ -35,7 +35,7 @@ export const FieldShell = React.forwardRef<
 
 /** Vertical 1px divider between fields inside a `FieldShell`. */
 export function FieldDivider() {
-  return <div aria-hidden className="w-px self-stretch bg-border" />
+  return <div aria-hidden className="w-px self-stretch bg-white/5" />
 }
 
 /**

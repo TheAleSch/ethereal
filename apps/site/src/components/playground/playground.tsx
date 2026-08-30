@@ -533,7 +533,7 @@ function EffectSection({
   ])
   // chat is the demo that sells the effect — a composer-sized host shows the
   // travelling light as product chrome, where the tiny button reads as a toy
-  const [host, setHost] = useState<PreviewHostKind>("chat")
+  const [host, setHost] = useState<PreviewHostKind>("card")
   // pausing is process-wide (see setPaused), so this mirrors it rather than
   // owning it — remount must not silently leave the loop frozen
   const [frozen, setFrozen] = useState(() => isPaused())
@@ -618,7 +618,7 @@ function EffectSection({
             )}
           </button>
           {/* backdrop toggle — preview the glow on a light surface */}
-          <div className="absolute top-3 right-3 z-20 flex rounded-lg bg-black/50 p-0.5 backdrop-blur-sm">
+          <div className="absolute top-3 right-3 z-20 flex rounded-xl bg-black/50 p-1 backdrop-blur-sm">
             {(["dark", "light"] as const).map((m) => (
               <button
                 key={m}
@@ -627,7 +627,7 @@ function EffectSection({
                 aria-pressed={backdrop === m}
                 aria-label={`${m} backdrop`}
                 className={cn(
-                  "hit-44-pseudo flex size-6 items-center justify-center rounded-md transition-colors",
+                  "hit-44-pseudo flex size-6 items-center justify-center rounded-lg transition-colors",
                   backdrop === m
                     ? "bg-white/10 text-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -642,7 +642,7 @@ function EffectSection({
             ))}
           </div>
           {/* preview host selector — try the effect on different elements */}
-          <div className="absolute top-3 left-3 z-20 flex rounded-lg bg-black/50 p-0.5 backdrop-blur-sm">
+          <div className="absolute top-3 left-3 z-20 flex rounded-xl bg-black/50 p-1 backdrop-blur-sm">
             {(["button", "chat", "card", "pill"] as const).map((h) => (
               <button
                 key={h}
@@ -651,7 +651,7 @@ function EffectSection({
                 aria-pressed={host === h}
                 aria-label={`${h} preview host`}
                 className={cn(
-                  "hit-44-pseudo rounded-md px-2 py-1 text-[10px] font-medium capitalize transition-colors sm:px-2.5 sm:text-[11px]",
+                  "hit-44-pseudo min-h-6 rounded-lg px-2 py-1 text-[10px] font-medium capitalize transition-colors sm:px-2.5 sm:text-[11px]",
                   host === h
                     ? "bg-white/10 text-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -708,7 +708,7 @@ function EffectSection({
             code panel is the thing that gives — on a short viewport its header
             (and both copy buttons) got squeezed past the bottom edge, out of
             reach, instead of the column scrolling */}
-        <div className="min-w-0 shrink-0 overflow-hidden rounded-xl bg-black/40">
+        <div className="min-w-0 shrink-0 overflow-hidden rounded-xl bg-white/[0.03]">
           <div className="flex items-center justify-between border-b border-white/5 px-3 py-2">
             <span className="font-mono text-xs text-muted-foreground">JSX</span>
             <div className="flex items-center gap-1.5">
@@ -720,7 +720,7 @@ function EffectSection({
                 kind={kind}
                 light={backdrop === "light"}
               />
-              <CopyButton value={code} className="size-7" />
+              <CopyButton value={code} className="size-8" />
             </div>
           </div>
           {/* capped and scrollable: the generated JSX grows a line per override,
@@ -746,7 +746,7 @@ function EffectSection({
               onValueChange={(v) => v && v !== "Custom" && onPreset(String(v))}
             >
               <SelectTrigger
-                className="min-h-11 w-full"
+                className="w-full"
                 aria-label="main preset"
               >
                 <SelectValue />
@@ -790,7 +790,7 @@ function EffectSection({
                   ? `reset ${activeNamedState} state`
                   : "reset the whole effect"
               }
-              className="hit-44 flex size-8 items-center justify-center rounded-lg border border-white/10 text-muted-foreground transition-colors hover:text-foreground"
+              className="hit-44 flex size-9 items-center justify-center rounded-xl bg-input/30 text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
             >
               <RotateCcw className="size-3.5" />
             </button>
@@ -849,7 +849,7 @@ function EffectSection({
           <button
             type="button"
             onClick={onCopyLink}
-            className="hit-44-tight inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-md border border-white/10 text-xs text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground"
+            className="hit-44-tight inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg bg-input/30 text-xs text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
           >
             {linkCopied ? (
               <Check className="size-3.5 text-emerald-400" />

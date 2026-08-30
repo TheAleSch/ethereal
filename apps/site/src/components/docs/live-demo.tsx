@@ -6,7 +6,7 @@ import { Link } from "@tanstack/react-router"
 // safe under prerender — the glow lights up on the client.
 export function LiveDemo() {
   return (
-    <div className="flex items-center justify-center rounded-xl border border-white/[0.07] bg-[#0a0a0c] p-6 sm:p-8">
+    <div className="flex items-center justify-center rounded-2xl bg-white/[0.02] p-6 sm:p-8">
       <Link
         to="/playground"
         className="relative isolate inline-flex min-h-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] px-7 py-3 text-sm font-medium text-foreground transition-[color,background-color,transform] hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:outline-none active:scale-[0.96]"

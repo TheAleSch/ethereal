@@ -21,7 +21,7 @@ export function CodeBlock({
     <div
       data-slot="code-block"
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.02]",
+        "group relative overflow-hidden rounded-xl bg-white/[0.02]",
         className
       )}
     >
@@ -30,7 +30,7 @@ export function CodeBlock({
           {label ?? "shell"}
         </span>
         {meta && (
-          <span className="ml-auto rounded-full border border-white/10 px-2 py-0.5 font-mono text-[10px] whitespace-nowrap text-muted-foreground">
+          <span className="ml-auto rounded-full bg-input/30 px-2 py-0.5 font-mono text-[10px] whitespace-nowrap text-muted-foreground">
             {meta}
           </span>
         )}

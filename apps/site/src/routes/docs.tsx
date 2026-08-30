@@ -59,7 +59,7 @@ function Prose({ children }: { children: React.ReactNode }) {
 
 function Note({ children }: { children: React.ReactNode }) {
   return (
-    <div className="max-w-[68ch] rounded-lg border border-white/[0.07] bg-white/[0.02] px-4 py-3 text-[14px] leading-relaxed text-muted-foreground">
+    <div className="max-w-[68ch] rounded-xl bg-white/[0.03] px-4 py-3 text-[14px] leading-relaxed text-muted-foreground">
       {children}
     </div>
   )
@@ -67,7 +67,7 @@ function Note({ children }: { children: React.ReactNode }) {
 
 function Code({ children }: { children: React.ReactNode }) {
   return (
-    <code className="rounded bg-white/[0.06] px-1.5 py-0.5 font-mono text-[0.85em] text-zinc-200">
+    <code className="rounded bg-input/30 px-1.5 py-0.5 font-mono text-[0.85em] text-zinc-200">
       {children}
     </code>
   )
@@ -85,10 +85,10 @@ function StatePropsTable({
   rows?: typeof STATE_PROPS
 }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-white/[0.07]">
+    <div className="overflow-x-auto rounded-xl bg-white/[0.02]">
       <table className="w-full min-w-[46rem] border-collapse text-left text-sm">
         <thead>
-          <tr className="border-b border-white/[0.07] bg-white/[0.02] text-[11px] tracking-wide text-zinc-300 uppercase">
+          <tr className="border-b border-white/5 bg-white/[0.04] text-[11px] tracking-wide text-zinc-300 uppercase">
             <th className="px-4 py-2.5 font-medium">Prop</th>
             <th className="px-4 py-2.5 font-medium">Type</th>
             <th className="px-4 py-2.5 font-medium">Default</th>
@@ -101,7 +101,7 @@ function StatePropsTable({
               key={row.name}
               className={
                 "align-top transition-colors hover:bg-white/[0.02]" +
-                (i < arr.length - 1 ? " border-b border-white/[0.04]" : "")
+                (i < arr.length - 1 ? " border-b border-white/5" : "")
               }
             >
               <td className="px-4 py-2.5 font-mono text-[13px] whitespace-nowrap text-foreground">
@@ -150,7 +150,7 @@ function DocsPage() {
 
         <div className="lg:grid lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-12">
           {/* mobile: collapsible in-page nav (the sidebar is lg-only) */}
-          <details className="mb-8 rounded-lg border border-white/10 lg:hidden">
+          <details className="mb-8 rounded-xl bg-white/[0.03] lg:hidden">
             <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-foreground select-none">
               On this page
             </summary>
@@ -159,7 +159,7 @@ function DocsPage() {
                 <a
                   key={item.id}
                   href={`#${item.id}`}
-                  className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  className="rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-input/30 hover:text-foreground"
                 >
                   {item.label}
                 </a>
@@ -235,10 +235,10 @@ function DocsPage() {
                 override the theme baseline. The full merge order, lowest to
                 highest:
               </Prose>
-              <div className="overflow-x-auto rounded-xl border border-white/[0.07]">
+              <div className="overflow-x-auto rounded-xl bg-white/[0.02]">
                 <table className="w-full min-w-[28rem] border-collapse text-left text-sm">
                   <thead>
-                    <tr className="border-b border-white/[0.07] bg-white/[0.02] text-[11px] tracking-wide text-zinc-300 uppercase">
+                    <tr className="border-b border-white/5 bg-white/[0.04] text-[11px] tracking-wide text-zinc-300 uppercase">
                       <th className="px-4 py-2.5 font-medium">Layer</th>
                       <th className="px-4 py-2.5 font-medium">Source</th>
                     </tr>
@@ -262,7 +262,7 @@ function DocsPage() {
                         className={
                           "align-top transition-colors hover:bg-white/[0.02]" +
                           (i < arr.length - 1
-                            ? " border-b border-white/[0.04]"
+                            ? " border-b border-white/5"
                             : "")
                         }
                       >
@@ -340,7 +340,7 @@ function DocsPage() {
                 {Object.entries(EVENT_HORIZON_PRESETS).map(([name, cfg]) => (
                   <div
                     key={name}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.07] bg-white/[0.02] px-4 py-3"
+                    className="flex items-center justify-between gap-3 rounded-xl bg-white/[0.03] px-4 py-3"
                   >
                     <span className="font-mono text-[13px] text-foreground">
                       {name}
@@ -350,7 +350,7 @@ function DocsPage() {
                         <span
                           key={i}
                           title={c}
-                          className="size-4 rounded-full ring-1 ring-white/10"
+                          className="relative size-4 rounded-full after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.18)] after:content-['']"
                           style={{ backgroundColor: c }}
                         />
                       ))}

@@ -38,14 +38,14 @@ export function CopyPage() {
     })
 
   const btn =
-    "inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 px-2.5 text-xs text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground focus-visible:bg-white/5 focus-visible:outline-none"
+    "inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 px-2.5 text-xs text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground focus-visible:bg-input/50 focus-visible:outline-none"
 
   return (
-    <div className="flex items-center overflow-hidden rounded-lg border border-white/10">
+    <div className="flex items-center overflow-hidden rounded-lg bg-input/30">
       <button
         type="button"
         onClick={copyPage}
-        className={cn(btn, "border-r border-white/10")}
+        className={cn(btn, "border-r border-white/5")}
       >
         {state === "copied" ? (
           <Check className="size-3.5 text-emerald-400" />
@@ -68,7 +68,7 @@ export function CopyPage() {
         <PopoverContent align="end" className="w-56 p-1">
           <a
             href={MD_PATH}
-            className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+            className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-input/30 hover:text-foreground"
           >
             <FileText className="size-3.5" />
             View as Markdown
@@ -79,7 +79,7 @@ export function CopyPage() {
               href={a.href}
               target="_blank"
               rel="noreferrer noopener"
-              className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+              className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-input/30 hover:text-foreground"
             >
               <ExternalLink className="size-3.5" />
               {a.label}

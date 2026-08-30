@@ -37,8 +37,8 @@ export function SectionNav({ items }: { items: NavItem[] }) {
           key={item.id}
           href={`#${item.id}`}
           className={cn(
-            "rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground",
-            active === item.id && "bg-white/[0.06] text-foreground"
+            "rounded-lg px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground",
+            active === item.id && "bg-input/50 text-foreground"
           )}
         >
           {item.label}

@@ -33,7 +33,7 @@ export function KonamiTip() {
       type="button"
       onClick={dismiss}
       aria-label="Dismiss hint: try the Konami code"
-      className="fixed right-4 bottom-4 z-40 inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/10 bg-black/50 px-3 py-1.5 font-mono text-[11px] text-muted-foreground backdrop-blur-md transition-colors hover:text-foreground"
+      className="fixed right-4 bottom-4 z-40 inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-black/50 px-3 py-1.5 font-mono text-[11px] text-muted-foreground backdrop-blur-md transition-colors hover:text-foreground"
     >
       try the konami code
     </button>

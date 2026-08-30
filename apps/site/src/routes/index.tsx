@@ -98,7 +98,7 @@ function Home() {
                 hotspots={3}
                 hotSpread={40}
                 className="w-full sm:w-auto"
-                style={{ borderRadius: 12 }}
+                style={{ borderRadius: 14 }}
               >
                 <Link
                   to="/playground"
@@ -128,7 +128,7 @@ function Home() {
                 hoverAmount={1.2}
                 colors={SUNSET}
                 className="w-full sm:w-auto"
-                style={{ borderRadius: 12 }}
+                style={{ borderRadius: 14 }}
               >
                 <Link
                   to="/playground"
@@ -139,7 +139,7 @@ function Home() {
               </EtherealWrap>
             )}
 
-            <div className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-3 sm:w-auto sm:justify-start">
+            <div className="flex w-full items-center justify-center gap-2 rounded-xl bg-input/30 px-5 py-3 sm:w-auto sm:justify-start">
               <Switch
                 id="dither-mode"
                 checked={dither}
@@ -196,7 +196,7 @@ function Home() {
           <Tabs defaultValue="npm">
             <TabsList
               variant="line"
-              className="mb-3 w-full justify-start gap-4 border-b border-white/10"
+              className="mb-3 w-full justify-start gap-4 border-b border-white/5"
             >
               <TabsTrigger
                 value="npm"

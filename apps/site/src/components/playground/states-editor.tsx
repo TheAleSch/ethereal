@@ -497,7 +497,7 @@ export function StatesEditor({
                   : (previewTheme ?? "light") === t.key
               }
               className={cn(
-                "hit-44-tight flex min-w-11 flex-1 items-center justify-center gap-1 truncate rounded-lg px-1 py-1 text-[11px] font-medium capitalize transition-colors sm:px-1.5",
+                "hit-44-pseudo flex min-w-11 flex-1 items-center justify-center gap-1 truncate rounded-lg px-1 py-1.5 text-[11px] font-medium capitalize transition-colors sm:px-1.5",
                 (
                   isBaseConfig
                     ? baseTarget === (t.key === "light" ? "base" : "dark")
@@ -528,7 +528,7 @@ export function StatesEditor({
               onClick={() => setActiveSlot(s.key)}
               aria-pressed={activeSlot === s.key}
               className={cn(
-                "hit-44-tight flex min-w-11 flex-1 items-center justify-center gap-1 truncate rounded-lg px-1 py-1 text-[11px] font-medium capitalize transition-colors sm:px-1.5",
+                "hit-44-pseudo flex min-w-11 flex-1 items-center justify-center gap-1 truncate rounded-lg px-1 py-1.5 text-[11px] font-medium capitalize transition-colors sm:px-1.5",
                 activeSlot === s.key
                   ? "bg-white/10 text-foreground"
                   : "text-muted-foreground hover:text-foreground"
@@ -567,7 +567,7 @@ export function StatesEditor({
               onValueChange={(picked) => picked && applyPreset(name, picked)}
             >
               <SelectTrigger
-                className="hit-44-tight h-7 w-full text-[11px]"
+                className="hit-44-tight h-8 w-full rounded-lg text-[11px]"
                 aria-label={`start ${name} from a preset`}
               >
                 <span className="text-muted-foreground">
@@ -639,7 +639,7 @@ export function StatesEditor({
                 ? `empty ${name} so the derived variation applies again`
                 : `clear every override on ${name}`
             }
-            className="hit-44-tight inline-flex items-center justify-center gap-1.5 rounded-md border border-white/10 px-2 py-1 text-[11px] text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground"
+            className="hit-44-tight inline-flex items-center justify-center gap-1.5 rounded-lg bg-input/30 px-2 py-1 text-[11px] text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
           >
             <RotateCcw className="size-3 shrink-0" />
             {derives(name) ? "back to derived" : `reset ${name}`}
@@ -721,12 +721,12 @@ export function StatesEditor({
                     "identical to base" and is misleading now that it means
                     "the package derives a variation for it". */}
                 {customized(name) ? (
-                  <span className="rounded bg-white/10 px-1 py-px text-[9px] tracking-wide text-muted-foreground uppercase">
+                  <span className="rounded-md bg-input/50 px-1 py-px text-[9px] tracking-wide text-muted-foreground uppercase">
                     customized
                   </span>
                 ) : (
                   derives(name) && (
-                    <span className="rounded bg-white/5 px-1 py-px text-[9px] tracking-wide text-muted-foreground/70 uppercase">
+                    <span className="rounded-md bg-input/30 px-1 py-px text-[9px] tracking-wide text-muted-foreground/70 uppercase">
                       derived
                     </span>
                   )
@@ -755,7 +755,7 @@ export function StatesEditor({
       {/* add a custom state — the name lives in a dialog so the panel keeps
           one control instead of a permanently-empty text field */}
       <Dialog open={adding} onOpenChange={setAdding}>
-        <DialogTrigger className="hit-44-tight inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-md border border-white/10 text-xs text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground">
+        <DialogTrigger className="hit-44-tight inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-lg bg-input/30 text-xs text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground">
           <Plus className="size-3.5" /> Add state
         </DialogTrigger>
         <DialogContent>
@@ -773,7 +773,7 @@ export function StatesEditor({
             }}
             placeholder="sending"
             aria-label="New state name"
-            className="h-9 w-full rounded-md border border-white/10 bg-black/30 px-2.5 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
+            className="h-9 w-full rounded-lg border border-transparent bg-input/50 px-2.5 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
           />
           {nameTaken && (
             <p className="text-[11px] text-amber-300">
@@ -781,14 +781,14 @@ export function StatesEditor({
             </p>
           )}
           <div className="flex justify-end gap-2">
-            <DialogClose className="hit-44 h-8 rounded-md px-3 text-xs text-muted-foreground transition-colors hover:text-foreground">
+            <DialogClose className="hit-44 h-8 rounded-lg px-3 text-xs text-muted-foreground transition-colors hover:bg-input/30 hover:text-foreground">
               Cancel
             </DialogClose>
             <button
               type="button"
               onClick={addState}
               disabled={!cleanName || nameTaken}
-              className="hit-44 h-8 rounded-md border border-white/10 bg-white/5 px-3 text-xs text-foreground transition-colors hover:bg-white/10 disabled:pointer-events-none disabled:opacity-40"
+              className="hit-44 h-8 rounded-lg bg-input/50 px-3 text-xs text-foreground transition-colors hover:bg-input/70 disabled:pointer-events-none disabled:opacity-40"
             >
               Add state
             </button>

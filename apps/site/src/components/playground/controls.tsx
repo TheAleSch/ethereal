@@ -111,7 +111,7 @@ export function SliderRow({
     <div className="grid grid-cols-[7rem_1fr] items-center gap-3 sm:grid-cols-[9rem_1fr]">
       <RowLabel label={label} marker={marker} hint={hint} />
       {/* track + readout share one filled pill, like the selects */}
-      <div className="flex min-h-11 items-center gap-2 rounded-xl bg-input/50 pl-3">
+      <div className="flex min-h-9 items-center gap-2 rounded-xl bg-input/50 pl-3">
         {/* click anywhere on the rail to jump there (Base UI only drags) */}
         <div
           className="flex-1"
@@ -151,7 +151,7 @@ export function SliderRow({
             if (e.key === "Enter") commit()
             if (e.key === "Escape") setDraft(null)
           }}
-          className="min-h-11 w-11 shrink-0 rounded-r-xl border-none bg-transparent pr-2.5 text-right font-mono text-xs text-foreground/80 tabular-nums focus:text-foreground focus:outline-none sm:w-13"
+          className="min-h-9 w-11 shrink-0 rounded-r-xl border-none bg-transparent pr-2.5 text-right font-mono text-xs text-foreground/80 tabular-nums focus:text-foreground focus:outline-none sm:w-13"
         />
       </div>
     </div>
@@ -181,7 +181,7 @@ export function SelectRow({
         value={value}
         onValueChange={(v) => v != null && onChange(String(v))}
       >
-        <SelectTrigger className="min-h-11 w-full">
+        <SelectTrigger className="w-full">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -277,7 +277,7 @@ export function ColorsRow({
             >
               <PopoverTrigger
                 aria-label={`color ${i + 1}`}
-                className="block size-11 cursor-pointer rounded-xl bg-input/50 p-2 transition-colors hover:bg-input/70"
+                className="hit-44-pseudo block size-9 cursor-pointer rounded-xl bg-input/50 p-1.5 transition-colors hover:bg-input/70"
               >
                 {/* backgroundColor, never the `background` shorthand — the
                     shorthand accepts url(...) images, which would turn a
@@ -300,7 +300,7 @@ export function ColorsRow({
                     fallback={
                       <div
                         aria-hidden
-                        className="h-[13.5rem] w-[17.5rem] rounded-lg border border-border bg-popover shadow-sm"
+                        className="h-[13.5rem] w-[17.5rem] rounded-xl bg-popover ring-1 ring-foreground/10 shadow-sm"
                       />
                     }
                   >
@@ -319,7 +319,7 @@ export function ColorsRow({
                         setOpenColor(null)
                         onChange(colors.filter((_, j) => j !== i))
                       }}
-                      className="inline-flex h-11 min-w-11 shrink-0 items-center justify-center rounded-md border border-white/10 bg-popover px-3 text-xs text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
+                      className="hit-44-pseudo inline-flex h-9 min-w-9 shrink-0 items-center justify-center rounded-lg bg-input/30 px-3 text-xs text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
                     >
                       Remove color
                     </button>
@@ -336,7 +336,7 @@ export function ColorsRow({
             onClick={() =>
               onChange([...colors, colors[colors.length - 1] ?? "#ffffff"])
             }
-            className="flex size-11 items-center justify-center rounded-xl bg-input/30 text-sm text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
+            className="hit-44-pseudo flex size-9 items-center justify-center rounded-xl bg-input/30 text-sm text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
           >
             +
           </button>

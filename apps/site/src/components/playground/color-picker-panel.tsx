@@ -32,11 +32,11 @@ export default function ColorPickerPanel({
       onValueChange={(_next, _formatted, formats) => onHexChange(formats.hex)}
       className="flex flex-col gap-2"
     >
-      <ColorPickerArea mode="oklch-cl" className="h-32 w-full rounded-md" />
+      <ColorPickerArea mode="oklch-cl" className="h-32 w-full rounded-lg" />
       <ColorPickerHue className="w-full" />
       <div className="flex items-center gap-2">
-        <ColorPickerPreview className="size-6 shrink-0 rounded" />
-        <ColorPickerCssInput className="h-7 flex-1 rounded border border-white/10 bg-black/30 px-2 font-mono text-[11px]" />
+        <ColorPickerPreview className="size-6 shrink-0 rounded-md" />
+        <ColorPickerCssInput className="h-7 flex-1 rounded-md border-transparent bg-input/50 px-2 font-mono text-[11px] hover:bg-input/70" />
         <ColorPickerEyeDropper className="size-6 shrink-0" />
       </div>
     </ColorPickerRoot>

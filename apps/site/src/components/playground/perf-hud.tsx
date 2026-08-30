@@ -102,7 +102,7 @@ export function PerfHud({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "pointer-events-none absolute right-3 bottom-3 z-20 flex flex-col gap-0.5 rounded-lg border border-white/10 bg-black/60 px-2.5 py-1.5 text-right font-mono text-[10px] leading-tight text-muted-foreground backdrop-blur-sm",
+        "pointer-events-none absolute right-3 bottom-3 z-20 flex flex-col gap-0.5 rounded-lg bg-black/50 px-2.5 py-1.5 text-right font-mono text-[10px] leading-tight text-muted-foreground backdrop-blur-sm",
         className
       )}
     >

@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 
 import appCss from "../styles.css?url"
 
@@ -100,6 +101,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   // scroll the layout exists to avoid. Its links are all in the nav pill.
   const path = useRouterState({ select: (s) => s.location.pathname })
   const chrome = !path.startsWith("/playground")
+  const reduced = useReducedMotion()
   return (
     <html lang="en" className="dark">
       <head>
@@ -152,8 +154,36 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           </a>
         </nav>
         {/* wrapper rather than flex-1 on each route's own <main>: it holds
-            whatever the route renders, so no page has to opt in */}
-        <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+            whatever the route renders, so no page has to opt in.
+            Keyed by pathname so route changes cross-fade instead of jumping;
+            initial={false} keeps first paint static, and reduced motion drops
+            the animation entirely. mode="wait" with a fast quiet exit keeps
+            the swap under ~400ms total. */}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={path}
+            className="flex min-h-0 flex-1 flex-col"
+            initial={reduced ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={
+              reduced
+                ? undefined
+                : {
+                    opacity: 0,
+                    y: -8,
+                    // exits run quieter and faster than enters
+                    transition: { duration: 0.15, ease: "easeIn" },
+                  }
+            }
+            transition={
+              reduced
+                ? { duration: 0 }
+                : { duration: 0.25, ease: [0.32, 0.72, 0, 1] }
+            }
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
         {chrome && <Footer />}
         <KonamiAsteroids />
         <KonamiTip />

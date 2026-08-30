@@ -222,4 +222,10 @@
   .hit-44-gap::after {
     width: calc(100% + 6px);
   }
+  /* pseudo-only chips sit beside each other, so the hit area may grow
+     vertically but must never spill sideways onto a neighbour — a 44px-wide
+     overlay on a 24px chip makes the LAST sibling swallow every click */
+  .hit-44-pseudo::after {
+    width: 100%;
+  }
 }
