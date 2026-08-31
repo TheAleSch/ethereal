@@ -737,7 +737,7 @@ function EffectSection({
           scroll independently */}
       <div className="flex min-h-0 flex-col gap-4 rounded-2xl bg-white/[0.02] p-3 sm:p-4 lg:overflow-y-auto">
         <div className="grid grid-cols-[7rem_1fr] items-center gap-3 sm:grid-cols-[9rem_1fr]">
-          <span className="font-mono text-xs text-muted-foreground">
+          <span className="inline-block font-mono text-sm text-muted-foreground first-letter:uppercase">
             preset
           </span>
           <div className="flex items-center gap-2">
@@ -790,7 +790,7 @@ function EffectSection({
                   ? `reset ${activeNamedState} state`
                   : "reset the whole effect"
               }
-              className="hit-44-pseudo flex size-9 items-center justify-center rounded-xl bg-input/30 text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
+              className="hit-44-pseudo flex size-9 shrink-0 items-center justify-center rounded-xl bg-input/30 text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
             >
               <RotateCcw className="size-3.5" />
             </button>

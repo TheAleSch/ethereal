@@ -53,7 +53,7 @@ export function RowLabel({
 }) {
   return (
     <span className={cn("flex min-w-0 items-center", className)}>
-      <Label className="truncate font-mono text-xs text-muted-foreground">
+      <Label className="inline-block truncate font-mono text-sm text-muted-foreground first-letter:uppercase">
         {label}
       </Label>
       {marker}
@@ -283,7 +283,7 @@ export function ColorsRow({
                     shorthand accepts url(...) images, which would turn a
                     hostile shared palette into cross-origin requests */}
                 <span
-                  className="block h-full w-full rounded"
+                  className="block h-full w-full rounded-md"
                   style={{ backgroundColor: c }}
                 />
               </PopoverTrigger>
