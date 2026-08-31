@@ -790,7 +790,7 @@ function EffectSection({
                   ? `reset ${activeNamedState} state`
                   : "reset the whole effect"
               }
-              className="hit-44 flex size-9 items-center justify-center rounded-xl bg-input/30 text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
+              className="hit-44-pseudo flex size-9 items-center justify-center rounded-xl bg-input/30 text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
             >
               <RotateCcw className="size-3.5" />
             </button>
