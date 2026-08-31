@@ -91,9 +91,17 @@ gtag('config', 'G-J9T7KWF9P6');`,
 })
 
 // px tightens below sm so the whole pill (4 items + divider) still fits a
-// 320px viewport without wrapping — it has no wrap mode, it would just clip
+// 320px viewport without wrapping — it has no wrap mode, it would just clip.
+// The active background is NOT here — it's the shared motion pill below,
+// which needs `relative` on every link to layer under the label.
 const navLink =
-  "inline-flex min-h-11 items-center rounded-full px-2.5 py-1 text-sm font-medium whitespace-nowrap text-white/80 transition-colors hover:text-white sm:px-3 [&.active]:bg-white/10 [&.active]:text-white"
+  "relative inline-flex min-h-11 items-center rounded-full px-2.5 py-1 text-sm font-medium whitespace-nowrap text-white/80 transition-colors hover:text-white sm:px-3"
+
+const NAV_ITEMS = [
+  { to: "/", label: "Home" },
+  { to: "/playground", label: "Playground" },
+  { to: "/docs", label: "Docs" },
+] as const
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   // the playground is a fixed-height tool: its main is capped at 100svh and
@@ -124,15 +132,34 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             leave a bare stripe above it. Pages that would otherwise start
             under the pill carry their own top padding instead. */}
         <nav className="fixed top-4 left-1/2 z-50 flex max-w-[calc(100vw-1rem)] -translate-x-1/2 items-center gap-0.5 rounded-full border border-white/10 bg-black/40 p-1.5 text-white backdrop-blur-md sm:top-6 sm:gap-1">
-          <Link to="/" className={navLink} activeOptions={{ exact: true }}>
-            Home
-          </Link>
-          <Link to="/playground" className={navLink}>
-            Playground
-          </Link>
-          <Link to="/docs" className={navLink}>
-            Docs
-          </Link>
+          {NAV_ITEMS.map((item) => {
+            const active =
+              item.to === "/" ? path === "/" : path.startsWith(item.to)
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={cn(navLink, active && "text-white")}
+                activeOptions={item.to === "/" ? { exact: true } : undefined}
+              >
+                {/* one shared pill that slides between items on navigation —
+                    layoutId gives it the travel; the label sits above it */}
+                {active && (
+                  <motion.span
+                    aria-hidden
+                    layoutId="nav-active-pill"
+                    className="absolute inset-0 rounded-full bg-white/10"
+                    transition={
+                      reduced
+                        ? { duration: 0 }
+                        : { type: "spring", duration: 0.45, bounce: 0 }
+                    }
+                  />
+                )}
+                <span className="relative">{item.label}</span>
+              </Link>
+            )
+          })}
           <span aria-hidden className="mx-1 h-5 w-px bg-white/10" />
           <a
             href="https://github.com/TheAleSch/ethereal"
@@ -155,35 +182,38 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         </nav>
         {/* wrapper rather than flex-1 on each route's own <main>: it holds
             whatever the route renders, so no page has to opt in.
-            Keyed by pathname so route changes cross-fade instead of jumping;
-            initial={false} keeps first paint static, and reduced motion drops
-            the animation entirely. mode="wait" with a fast quiet exit keeps
-            the swap under ~400ms total. */}
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={path}
-            className="flex min-h-0 flex-1 flex-col"
-            initial={reduced ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={
-              reduced
-                ? undefined
-                : {
-                    opacity: 0,
-                    y: -8,
-                    // exits run quieter and faster than enters
-                    transition: { duration: 0.15, ease: "easeIn" },
-                  }
-            }
-            transition={
-              reduced
-                ? { duration: 0 }
-                : { duration: 0.25, ease: [0.32, 0.72, 0, 1] }
-            }
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+            Keyed by pathname so route changes cross-fade; popLayout pops the
+            exiting page to absolute so the pages OVERLAP instead of showing a
+            blank frame between them (mode="wait" flashed). The relative outer
+            div keeps the popped page anchored to this slot, not the viewport.
+            initial={false} keeps first paint static; reduced motion drops the
+            animation entirely. */}
+        <div className="relative flex min-h-0 flex-1 flex-col">
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.div
+              key={path}
+              className="flex min-h-0 w-full flex-1 flex-col"
+              initial={reduced ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={
+                reduced
+                  ? undefined
+                  : {
+                      opacity: 0,
+                      // exits run quieter and faster than enters
+                      transition: { duration: 0.12, ease: "easeIn" },
+                    }
+              }
+              transition={
+                reduced
+                  ? { duration: 0 }
+                  : { duration: 0.25, ease: [0.32, 0.72, 0, 1] }
+              }
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </div>
         {chrome && <Footer />}
         <KonamiAsteroids />
         <KonamiTip />
