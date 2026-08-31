@@ -61,7 +61,7 @@ export function RowLabel({
         <Popover>
           <PopoverTrigger
             aria-label={`what does ${label} do?`}
-            className="hit-44-gap ml-1 flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted-foreground/40 transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
+            className="hit-44-pseudo ml-2 flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted-foreground/40 transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
           >
             <Info className="size-3" />
           </PopoverTrigger>
