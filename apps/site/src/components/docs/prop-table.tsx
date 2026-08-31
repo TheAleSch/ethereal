@@ -17,7 +17,7 @@ export function PropTable({ groups }: { groups: PropGroup[] }) {
   // honours `w-full`, squeezes four columns into ~340px and the description
   // turns into one word per line.
   return (
-    <div className="overflow-x-auto rounded-xl border border-white/[0.07]">
+    <div className="overflow-x-auto rounded-xl bg-white/[0.02]">
       <table className="w-full min-w-[46rem] border-collapse text-left text-sm">
         <thead>
           <tr className="border-b border-white/[0.07] bg-white/[0.02] text-[11px] tracking-wide text-zinc-300 uppercase">
@@ -40,7 +40,7 @@ export function PropTable({ groups }: { groups: PropGroup[] }) {
 function GroupRows({ group }: { group: PropGroup }) {
   return (
     <>
-      <tr className="border-b border-white/[0.07] bg-white/[0.015]">
+      <tr className="border-b border-white/5 bg-white/[0.03]">
         <td
           colSpan={4}
           className="px-4 py-1.5 text-[11px] font-semibold tracking-wide text-zinc-400 uppercase"

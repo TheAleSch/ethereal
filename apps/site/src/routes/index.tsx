@@ -52,14 +52,6 @@ const INSTALL_GLOW = [
   "rgb(30,185,170)",
 ]
 
-const SPECS = [
-  "Zero dependencies",
-  "One shared loop, 60fps default",
-  "Pauses off-screen",
-  "Respects reduced motion",
-  "Pure ESM + types",
-]
-
 function Home() {
   // dither mode: every live effect on the page swaps to its blocky
   // EtherealDither rendering
@@ -78,7 +70,7 @@ function Home() {
           stacking into an 11rem void */}
       <section className="container mx-auto grid items-center gap-10 px-4 pt-16 pb-10 sm:gap-14 sm:pt-20 sm:pb-12 lg:grid-cols-[1.05fr_0.95fr] lg:pt-28 lg:pb-12">
         <div className="max-w-xl">
-          <h1 className="text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+          <h1 className="text-4xl leading-[1.05] font-medium tracking-tight text-balance sm:text-5xl lg:text-6xl">
             Organic glow
             <br />
             <span className="bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
@@ -98,7 +90,7 @@ function Home() {
                 hotspots={3}
                 hotSpread={40}
                 className="w-full sm:w-auto"
-                style={{ borderRadius: 12 }}
+                style={{ borderRadius: 14 }}
               >
                 <Link
                   to="/playground"
@@ -128,7 +120,7 @@ function Home() {
                 hoverAmount={1.2}
                 colors={SUNSET}
                 className="w-full sm:w-auto"
-                style={{ borderRadius: 12 }}
+                style={{ borderRadius: 14 }}
               >
                 <Link
                   to="/playground"
@@ -139,7 +131,7 @@ function Home() {
               </EtherealWrap>
             )}
 
-            <div className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-3 sm:w-auto sm:justify-start">
+            <div className="flex w-full items-center justify-center gap-2 rounded-xl bg-input/30 px-5 py-3 sm:w-auto sm:justify-start">
               <Switch
                 id="dither-mode"
                 checked={dither}
@@ -194,20 +186,11 @@ function Home() {
             the column wider than small viewports and clip */}
         <div className="mx-auto max-w-2xl min-w-0 space-y-4">
           <Tabs defaultValue="npm">
-            <TabsList
-              variant="line"
-              className="mb-3 w-full justify-start gap-4 border-b border-white/10"
-            >
-              <TabsTrigger
-                value="npm"
-                className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
-              >
+            <TabsList className="mb-3 w-fit justify-start">
+              <TabsTrigger value="npm" className="flex-none px-4">
                 npm
               </TabsTrigger>
-              <TabsTrigger
-                value="shadcn"
-                className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
-              >
+              <TabsTrigger value="shadcn" className="flex-none px-4">
                 shadcn/ui
               </TabsTrigger>
             </TabsList>
@@ -231,21 +214,6 @@ function Home() {
               </InstallBorder>
             </TabsContent>
           </Tabs>
-
-          {/* trust signals sit next to the ask, not in their own section —
-              the full detail lives in /docs#behavior */}
-          <ul className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 pt-2 text-center font-mono text-xs text-muted-foreground">
-            {SPECS.map((s, i) => (
-              <li key={s} className="flex items-center gap-3">
-                {i > 0 && (
-                  <span aria-hidden className="text-white/20">
-                    ·
-                  </span>
-                )}
-                {s}
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
     </main>

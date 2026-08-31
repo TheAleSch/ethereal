@@ -93,7 +93,7 @@ export function CopyForAi({
       aria-label="Copy this configuration as a prompt, with the host contract and a link to the full reference"
       title="Copy for an AI assistant — includes the host contract and the reference URL"
       className={cn(
-        "inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-md border border-white/10 px-2 text-[11px] font-medium text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
+        "hit-44-pseudo inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-lg bg-input/30 px-2 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
         className
       )}
     >

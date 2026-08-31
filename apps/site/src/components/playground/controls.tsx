@@ -53,7 +53,7 @@ export function RowLabel({
 }) {
   return (
     <span className={cn("flex min-w-0 items-center", className)}>
-      <Label className="truncate font-mono text-xs text-muted-foreground">
+      <Label className="inline-block truncate font-mono text-sm text-muted-foreground first-letter:uppercase">
         {label}
       </Label>
       {marker}
@@ -61,7 +61,7 @@ export function RowLabel({
         <Popover>
           <PopoverTrigger
             aria-label={`what does ${label} do?`}
-            className="hit-44-gap ml-1 flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted-foreground/40 transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
+            className="hit-44-pseudo ml-2 flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted-foreground/40 transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
           >
             <Info className="size-3" />
           </PopoverTrigger>
@@ -108,45 +108,52 @@ export function SliderRow({
     setDraft(null)
   }
   return (
-    <div className="grid grid-cols-[7rem_1fr_2.75rem] items-center gap-3 sm:grid-cols-[9rem_1fr_3.25rem]">
+    <div className="grid grid-cols-[7rem_1fr] items-center gap-3 sm:grid-cols-[9rem_1fr]">
       <RowLabel label={label} marker={marker} hint={hint} />
-      {/* click anywhere on the rail to jump there (Base UI only drags) */}
-      <div
-        // Capture before the thumb's 44px pseudo hit area handles the event;
-        // otherwise nearby rail presses are swallowed and appear inert.
-        onPointerDownCapture={(e) => {
-          const r = e.currentTarget.getBoundingClientRect()
-          const frac = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width))
-          const raw = min + frac * (max - min)
-          // min-anchored so steps land on the same grid the slider uses
-          const snapped = Math.min(
-            max,
-            Math.max(min, min + Math.round((raw - min) / step) * step)
-          )
-          onChange(Number(snapped.toFixed(4)))
-        }}
-      >
-        <Slider
-          value={value}
-          min={min}
-          max={max}
-          step={step}
-          ariaLabel={label}
-          onValueChange={(v) => onChange(typeof v === "number" ? v : v[0])}
+      {/* track + readout share one filled pill, like the selects */}
+      <div className="flex min-h-9 items-center gap-2 rounded-xl bg-input/50 pl-3">
+        {/* click anywhere on the rail to jump there (Base UI only drags) */}
+        <div
+          className="flex-1"
+          // Capture before the thumb's 44px pseudo hit area handles the event;
+          // otherwise nearby rail presses are swallowed and appear inert.
+          onPointerDownCapture={(e) => {
+            const r = e.currentTarget.getBoundingClientRect()
+            const frac = Math.min(
+              1,
+              Math.max(0, (e.clientX - r.left) / r.width)
+            )
+            const raw = min + frac * (max - min)
+            // min-anchored so steps land on the same grid the slider uses
+            const snapped = Math.min(
+              max,
+              Math.max(min, min + Math.round((raw - min) / step) * step)
+            )
+            onChange(Number(snapped.toFixed(4)))
+          }}
+        >
+          <Slider
+            value={value}
+            min={min}
+            max={max}
+            step={step}
+            ariaLabel={label}
+            onValueChange={(v) => onChange(typeof v === "number" ? v : v[0])}
+          />
+        </div>
+        <input
+          value={shown}
+          inputMode="decimal"
+          aria-label={`${label} value`}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") commit()
+            if (e.key === "Escape") setDraft(null)
+          }}
+          className="min-h-9 w-11 shrink-0 rounded-r-xl border-none bg-transparent pr-2.5 text-right font-mono text-xs text-foreground/80 tabular-nums focus:text-foreground focus:outline-none sm:w-13"
         />
       </div>
-      <input
-        value={shown}
-        inputMode="decimal"
-        aria-label={`${label} value`}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") commit()
-          if (e.key === "Escape") setDraft(null)
-        }}
-        className="min-h-11 w-full min-w-11 rounded border border-transparent bg-transparent px-1 py-0.5 text-right font-mono text-xs text-foreground/80 tabular-nums focus:border-white/15 focus:bg-black/30 focus:outline-none"
-      />
     </div>
   )
 }
@@ -174,7 +181,7 @@ export function SelectRow({
         value={value}
         onValueChange={(v) => v != null && onChange(String(v))}
       >
-        <SelectTrigger className="min-h-11 w-full">
+        <SelectTrigger className="w-full">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -226,7 +233,7 @@ export function CopyButton({
       onClick={() => void copy(value)}
       aria-label={copied ? "Copied" : "Copy code"}
       className={cn(
-        "hit-44 inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-white/10 text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
+        "hit-44-pseudo inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-input/30 text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
         className
       )}
     >
@@ -270,13 +277,13 @@ export function ColorsRow({
             >
               <PopoverTrigger
                 aria-label={`color ${i + 1}`}
-                className="block size-11 cursor-pointer rounded-md border border-white/15 p-2"
+                className="hit-44-pseudo block size-9 cursor-pointer rounded-xl bg-input/50 p-1.5 transition-colors hover:bg-input/70"
               >
                 {/* backgroundColor, never the `background` shorthand — the
                     shorthand accepts url(...) images, which would turn a
                     hostile shared palette into cross-origin requests */}
                 <span
-                  className="block h-full w-full rounded"
+                  className="block h-full w-full rounded-md"
                   style={{ backgroundColor: c }}
                 />
               </PopoverTrigger>
@@ -293,7 +300,7 @@ export function ColorsRow({
                     fallback={
                       <div
                         aria-hidden
-                        className="h-[13.5rem] w-[17.5rem] rounded-lg border border-border bg-popover shadow-sm"
+                        className="h-[13.5rem] w-[17.5rem] rounded-xl bg-popover ring-1 ring-foreground/10 shadow-sm"
                       />
                     }
                   >
@@ -312,7 +319,7 @@ export function ColorsRow({
                         setOpenColor(null)
                         onChange(colors.filter((_, j) => j !== i))
                       }}
-                      className="inline-flex h-11 min-w-11 shrink-0 items-center justify-center rounded-md border border-white/10 bg-popover px-3 text-xs text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
+                      className="hit-44-pseudo inline-flex h-9 min-w-9 shrink-0 items-center justify-center rounded-lg bg-input/30 px-3 text-xs text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
                     >
                       Remove color
                     </button>
@@ -329,7 +336,7 @@ export function ColorsRow({
             onClick={() =>
               onChange([...colors, colors[colors.length - 1] ?? "#ffffff"])
             }
-            className="flex size-11 items-center justify-center rounded-md border border-dashed border-white/20 text-sm text-muted-foreground transition-colors hover:border-white/40 hover:text-foreground"
+            className="hit-44-pseudo flex size-9 items-center justify-center rounded-xl bg-input/30 text-sm text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
           >
             +
           </button>
@@ -442,7 +449,7 @@ export function ControlSections({
               ),
           }
         : { defaultValue: [idPrefix + (sections[0]?.title ?? "")] })}
-      className="rounded-lg border border-white/10"
+      className="rounded-xl bg-white/[0.03]"
     >
       {sections.map((sec) => (
         <AccordionItem

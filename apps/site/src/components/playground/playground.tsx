@@ -299,10 +299,6 @@ export function Playground() {
       <div className="container mx-auto flex min-h-0 flex-1 flex-col px-4 pt-24 pb-10 lg:pb-6">
         <header className="mb-8 lg:mb-6">
           <h1 className="text-3xl font-semibold tracking-tight">Playground</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Tune all three effects live, copy the exact JSX, and share the URL —
-            the current configuration is encoded in the link.
-          </p>
         </header>
 
         <Tabs
@@ -310,26 +306,14 @@ export function Playground() {
           onValueChange={(v) => setTab(v as Tab)}
           className="flex min-h-0 flex-1 flex-col"
         >
-          <TabsList
-            variant="line"
-            className="mb-6 w-full shrink-0 justify-start gap-4 border-b border-white/10 lg:mb-4"
-          >
-            <TabsTrigger
-              value="ethereal"
-              className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
-            >
+          <TabsList className="mb-6 w-fit shrink-0 justify-start lg:mb-4">
+            <TabsTrigger value="ethereal" className="flex-none px-4">
               Ethereal
             </TabsTrigger>
-            <TabsTrigger
-              value="eh"
-              className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
-            >
+            <TabsTrigger value="eh" className="flex-none px-4">
               Event Horizon
             </TabsTrigger>
-            <TabsTrigger
-              value="dither"
-              className="flex-none rounded-sm px-1 font-mono text-xs after:bottom-[-1px]"
-            >
+            <TabsTrigger value="dither" className="flex-none px-4">
               Dither
             </TabsTrigger>
           </TabsList>
@@ -549,7 +533,7 @@ function EffectSection({
   ])
   // chat is the demo that sells the effect — a composer-sized host shows the
   // travelling light as product chrome, where the tiny button reads as a toy
-  const [host, setHost] = useState<PreviewHostKind>("chat")
+  const [host, setHost] = useState<PreviewHostKind>("card")
   // pausing is process-wide (see setPaused), so this mirrors it rather than
   // owning it — remount must not silently leave the loop frozen
   const [frozen, setFrozen] = useState(() => isPaused())
@@ -625,7 +609,7 @@ function EffectSection({
             aria-pressed={frozen}
             aria-label={frozen ? "resume the animation" : "pause the animation"}
             title={frozen ? "resume" : "pause — tweak a frozen frame"}
-            className="hit-44 absolute bottom-3 left-3 z-20 flex size-7 items-center justify-center rounded-lg border border-white/10 bg-black/50 text-muted-foreground backdrop-blur-sm transition-colors hover:text-foreground"
+            className="hit-44 absolute bottom-3 left-3 z-20 flex size-7 items-center justify-center rounded-lg bg-black/50 text-muted-foreground backdrop-blur-sm transition-colors hover:text-foreground"
           >
             {frozen ? (
               <Play className="size-3.5" />
@@ -634,7 +618,7 @@ function EffectSection({
             )}
           </button>
           {/* backdrop toggle — preview the glow on a light surface */}
-          <div className="absolute top-3 right-3 z-20 flex rounded-lg border border-white/10 bg-black/50 p-0.5 backdrop-blur-sm">
+          <div className="absolute top-3 right-3 z-20 flex rounded-xl bg-black/50 p-1 backdrop-blur-sm">
             {(["dark", "light"] as const).map((m) => (
               <button
                 key={m}
@@ -643,7 +627,7 @@ function EffectSection({
                 aria-pressed={backdrop === m}
                 aria-label={`${m} backdrop`}
                 className={cn(
-                  "hit-44-tight flex size-6 items-center justify-center rounded-md transition-colors",
+                  "hit-44-pseudo flex size-6 items-center justify-center rounded-lg transition-colors",
                   backdrop === m
                     ? "bg-white/10 text-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -658,7 +642,7 @@ function EffectSection({
             ))}
           </div>
           {/* preview host selector — try the effect on different elements */}
-          <div className="absolute top-3 left-3 z-20 flex rounded-lg border border-white/10 bg-black/50 p-0.5 backdrop-blur-sm">
+          <div className="absolute top-3 left-3 z-20 flex rounded-xl bg-black/50 p-1 backdrop-blur-sm">
             {(["button", "chat", "card", "pill"] as const).map((h) => (
               <button
                 key={h}
@@ -667,7 +651,7 @@ function EffectSection({
                 aria-pressed={host === h}
                 aria-label={`${h} preview host`}
                 className={cn(
-                  "hit-44-tight rounded-md px-2 py-1 text-[10px] font-medium capitalize transition-colors sm:px-2.5 sm:text-[11px]",
+                  "hit-44-pseudo min-h-6 rounded-lg px-2 py-1 text-[10px] font-medium capitalize transition-colors sm:px-2.5 sm:text-[11px]",
                   host === h
                     ? "bg-white/10 text-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -724,7 +708,7 @@ function EffectSection({
             code panel is the thing that gives — on a short viewport its header
             (and both copy buttons) got squeezed past the bottom edge, out of
             reach, instead of the column scrolling */}
-        <div className="min-w-0 shrink-0 overflow-hidden rounded-xl border border-white/5 bg-black/40">
+        <div className="min-w-0 shrink-0 overflow-hidden rounded-xl bg-white/[0.03]">
           <div className="flex items-center justify-between border-b border-white/5 px-3 py-2">
             <span className="font-mono text-xs text-muted-foreground">JSX</span>
             <div className="flex items-center gap-1.5">
@@ -736,7 +720,7 @@ function EffectSection({
                 kind={kind}
                 light={backdrop === "light"}
               />
-              <CopyButton value={code} className="size-7" />
+              <CopyButton value={code} className="size-8" />
             </div>
           </div>
           {/* capped and scrollable: the generated JSX grows a line per override,
@@ -751,9 +735,9 @@ function EffectSection({
 
       {/* controls — the long column, and the one that actually needs to
           scroll independently */}
-      <div className="flex min-h-0 flex-col gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-3 sm:p-4 lg:overflow-y-auto">
+      <div className="flex min-h-0 flex-col gap-4 rounded-2xl bg-white/[0.02] p-3 sm:p-4 lg:overflow-y-auto">
         <div className="grid grid-cols-[7rem_1fr] items-center gap-3 sm:grid-cols-[9rem_1fr]">
-          <span className="font-mono text-xs text-muted-foreground">
+          <span className="inline-block font-mono text-sm text-muted-foreground first-letter:uppercase">
             preset
           </span>
           <div className="flex items-center gap-2">
@@ -762,7 +746,7 @@ function EffectSection({
               onValueChange={(v) => v && v !== "Custom" && onPreset(String(v))}
             >
               <SelectTrigger
-                className="min-h-11 w-full"
+                className="w-full"
                 aria-label="main preset"
               >
                 <SelectValue />
@@ -806,7 +790,7 @@ function EffectSection({
                   ? `reset ${activeNamedState} state`
                   : "reset the whole effect"
               }
-              className="hit-44 flex size-8 items-center justify-center rounded-lg border border-white/10 text-muted-foreground transition-colors hover:text-foreground"
+              className="hit-44-pseudo flex size-9 shrink-0 items-center justify-center rounded-xl bg-input/30 text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
             >
               <RotateCcw className="size-3.5" />
             </button>
@@ -865,7 +849,7 @@ function EffectSection({
           <button
             type="button"
             onClick={onCopyLink}
-            className="hit-44-tight inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-md border border-white/10 text-xs text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground"
+            className="hit-44-tight inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg bg-input/30 text-xs text-muted-foreground transition-colors hover:bg-input/50 hover:text-foreground"
           >
             {linkCopied ? (
               <Check className="size-3.5 text-emerald-400" />

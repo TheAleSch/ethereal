@@ -49,7 +49,7 @@ export const Root = React.forwardRef<HTMLDivElement, RootProps>(function Root(
         ref={ref}
         data-slot="color-picker"
         className={cn(
-          "flex w-full max-w-[280px] flex-col gap-2 rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-sm",
+          "flex w-full max-w-[280px] flex-col gap-2 rounded-xl bg-popover p-3 text-popover-foreground shadow-sm ring-1 ring-foreground/10",
           className
         )}
         {...rest}

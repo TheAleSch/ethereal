@@ -57,8 +57,8 @@ let browser
     }
   }
 
-  const minimumEffectiveTarget = async (locator, label) => {
-    const hitArea = await locator.evaluate((element) => {
+  const effectiveArea = (locator) =>
+    locator.evaluate((element) => {
       const box = element.getBoundingClientRect()
       const pseudoSize = (pseudo) => {
         const style = getComputedStyle(element, pseudo)
@@ -74,10 +74,41 @@ let browser
         height: Math.max(box.height, before.height, after.height),
       }
     })
+
+  const minimumEffectiveTarget = async (locator, label) => {
+    const hitArea = await effectiveArea(locator)
     ok(
       hitArea.width >= 44 && hitArea.height >= 44,
       `${label} effective hit area is at least 44x44 (${hitArea.width.toFixed(1)}x${hitArea.height.toFixed(1)})`
     )
+  }
+
+  const minimumEffectiveTargets = async (locator, label) => {
+    const targets = await locator.all()
+    ok(targets.length > 0, `${label} targets are present`)
+    for (const [index, target] of targets.entries()) {
+      await minimumEffectiveTarget(target, `${label} ${index + 1}`)
+    }
+  }
+
+  /* Chips that sit flush in a segmented group cannot claim a 44px-wide hit
+     area without stealing their neighbour's taps, so they follow WCAG 2.5.8's
+     24px minimum for grouped targets instead; the hit-44-pseudo utility still
+     stretches their tappable height to 44. */
+  const groupedTarget = async (locator, label) => {
+    const hitArea = await effectiveArea(locator)
+    ok(
+      hitArea.width >= 24 && hitArea.height >= 24,
+      `${label} grouped hit area is at least 24x24 (${hitArea.width.toFixed(1)}x${hitArea.height.toFixed(1)})`
+    )
+  }
+
+  const groupedTargets = async (locator, label) => {
+    const targets = await locator.all()
+    ok(targets.length > 0, `${label} targets are present`)
+    for (const [index, target] of targets.entries()) {
+      await groupedTarget(target, `${label} ${index + 1}`)
+    }
   }
 
   const nav = page.locator("nav.fixed").first()
@@ -102,7 +133,7 @@ let browser
     .all()
   ok(installTabBox !== null, "Install tab list is visible")
   for (const [index, trigger] of installTriggers.entries()) {
-    await minimumTarget(trigger, `Install tab ${index + 1}`)
+    await minimumEffectiveTarget(trigger, `Install tab ${index + 1}`)
     const triggerBox = await trigger.boundingBox()
     ok(
       installTabBox !== null &&
@@ -252,31 +283,31 @@ let browser
   await page.emulateMedia({ reducedMotion: "no-preference" })
   await page.goto(`${server.baseURL}/playground`, { waitUntil: "load" })
   await page.waitForTimeout(1000)
-  await minimumTarget(
+  await minimumEffectiveTarget(
     page.getByRole("tab", { name: "Ethereal", exact: true }),
     "Ethereal tab"
   )
-  await minimumTarget(
+  await minimumEffectiveTarget(
     page.getByRole("tab", { name: "Event Horizon", exact: true }),
     "Event Horizon tab"
   )
-  await minimumTarget(
+  await minimumEffectiveTarget(
     page.getByRole("tab", { name: "Dither", exact: true }),
     "Dither tab"
   )
-  await minimumTarget(
+  await minimumEffectiveTarget(
     page.getByRole("combobox", { name: "main preset" }),
     "Preset picker"
   )
-  await minimumTarget(
+  await minimumEffectiveTarget(
     page.getByRole("button", { name: /Copy this configuration as a prompt/ }),
     "Copy for AI"
   )
-  await minimumTargets(
+  await groupedTargets(
     page.getByRole("button", { name: /^(dark|light) backdrop$/ }),
     "Backdrop selector"
   )
-  await minimumTargets(
+  await groupedTargets(
     page.getByRole("button", {
       name: /^(button|chat|card|pill) preview host$/,
     }),
@@ -286,11 +317,14 @@ let browser
     page.locator('[data-slot="accordion-trigger"]:visible'),
     "Visible accordion trigger"
   )
-  await minimumTargets(
+  await minimumEffectiveTargets(
     page.locator('[data-slot="select-trigger"]:visible'),
     "Visible select trigger"
   )
-  await minimumTargets(
+  /* <input> is a replaced element and renders no ::after, so the pseudo
+     hit-area utility cannot stretch it; the readout sits flush inside the
+     slider pill, making it a grouped target under WCAG 2.5.8. */
+  await groupedTargets(
     page.locator('input[aria-label$=" value"]:visible'),
     "Visible numeric input"
   )
@@ -390,11 +424,11 @@ let browser
   for (const [index, thumb] of thumbs.entries()) {
     await minimumEffectiveTarget(thumb, `Visible slider thumb ${index + 1}`)
   }
-  await minimumTargets(
+  await groupedTargets(
     page.getByRole("button", { name: /^color \d+$/ }),
     "Visible color swatch"
   )
-  await minimumTarget(
+  await groupedTarget(
     page.getByRole("button", { name: "add color" }),
     "Add color"
   )
@@ -416,7 +450,7 @@ let browser
   const removeColor = page.getByRole("button", { name: "remove color 1" })
   await removeColor.waitFor()
   await page.waitForTimeout(150)
-  await minimumTarget(removeColor, "Remove color")
+  await minimumEffectiveTarget(removeColor, "Remove color")
   await removeColor.focus()
   ok(
     await removeColor.evaluate((element) => document.activeElement === element),
