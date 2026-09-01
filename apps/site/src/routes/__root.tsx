@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
-import { AnimatePresence, motion, useReducedMotion } from "motion/react"
+import { motion, useReducedMotion } from "motion/react"
 
 import appCss from "../styles.css?url"
 
@@ -152,7 +152,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                     transition={
                       reduced
                         ? { duration: 0 }
-                        : { type: "spring", duration: 0.45, bounce: 0 }
+                        : { duration: 0.2, ease: [0.32, 0.72, 0, 1] }
                     }
                   />
                 )}
@@ -182,38 +182,23 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         </nav>
         {/* wrapper rather than flex-1 on each route's own <main>: it holds
             whatever the route renders, so no page has to opt in.
-            Keyed by pathname so route changes cross-fade; popLayout pops the
-            exiting page to absolute so the pages OVERLAP instead of showing a
-            blank frame between them (mode="wait" flashed). The relative outer
-            div keeps the popped page anchored to this slot, not the viewport.
-            initial={false} keeps first paint static; reduced motion drops the
-            animation entirely. */}
-        <div className="relative flex min-h-0 flex-1 flex-col">
-          <AnimatePresence mode="popLayout" initial={false}>
-            <motion.div
-              key={path}
-              className="flex min-h-0 w-full flex-1 flex-col"
-              initial={reduced ? false : { opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={
-                reduced
-                  ? undefined
-                  : {
-                      opacity: 0,
-                      // exits run quieter and faster than enters
-                      transition: { duration: 0.12, ease: "easeIn" },
-                    }
-              }
-              transition={
-                reduced
-                  ? { duration: 0 }
-                  : { duration: 0.25, ease: [0.32, 0.72, 0, 1] }
-              }
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+            Keyed by pathname so a route change fades the NEW page in; the old
+            one unmounts instantly. No exit animation on purpose — keeping
+            both pages mounted (each running live glow loops) through a
+            crossfade is what made the transition stutter. Opacity only: a
+            transform here promotes the whole page to a compositing layer.
+            Reduced motion drops the fade entirely. */}
+        <motion.div
+          key={path}
+          className="flex min-h-0 flex-1 flex-col"
+          initial={reduced ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={
+            reduced ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }
+          }
+        >
+          {children}
+        </motion.div>
         {chrome && <Footer />}
         <KonamiAsteroids />
         <KonamiTip />
