@@ -318,10 +318,15 @@ export function Playground() {
             </TabsTrigger>
           </TabsList>
 
+          {/* children gated on the active tab: during the one commit where
+              Base UI has both the outgoing and incoming panel in the DOM, an
+              ungated panel doubles the page height for a frame and everything
+              below it visibly jumps twice */}
           <TabsContent
             value="ethereal"
             className="flex min-h-0 flex-1 flex-col"
           >
+            {tab === "ethereal" && (
             <EffectSection
               kind="ethereal"
               cfg={eCfg}
@@ -373,9 +378,11 @@ export function Playground() {
               previewTheme={theme}
               onPreviewTheme={setTheme}
             />
+            )}
           </TabsContent>
 
           <TabsContent value="eh" className="flex min-h-0 flex-1 flex-col">
+            {tab === "eh" && (
             <EffectSection
               kind="eh"
               cfg={hCfg}
@@ -395,9 +402,11 @@ export function Playground() {
               previewTheme={theme}
               onPreviewTheme={setTheme}
             />
+            )}
           </TabsContent>
 
           <TabsContent value="dither" className="flex min-h-0 flex-1 flex-col">
+            {tab === "dither" && (
             <EffectSection
               kind="dither"
               cfg={dCfg}
@@ -420,6 +429,7 @@ export function Playground() {
               previewTheme={theme}
               onPreviewTheme={setTheme}
             />
+            )}
           </TabsContent>
         </Tabs>
       </div>
