@@ -9,35 +9,33 @@ import { cn } from "@/lib/utils";
  * A button wearing the travelling-light glow.
  *
  * The only host contract is a stacking context — `relative isolate` — which
- * this component applies for you. Everything else is an ordinary <button>.
+ * this component applies for you. Everything else is an ordinary <button>:
+ * display, sizing and colors are defaults your `className`/`style` can
+ * override, so `hidden` and `style={{ display: "none" }}` work as expected.
  *
  * Pass any Ethereal config through `glow`:
  *   <EtherealButton glow={{ path: "around", heads: 2, spin: "counter" }}>
  */
-export function EtherealButton({
-  glow,
-  className,
-  style,
-  children,
-  ...props
-}: React.ComponentProps<"button"> & { glow?: EtherealProps }) {
+export const EtherealButton = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentPropsWithoutRef<"button"> & { glow?: EtherealProps }
+>(function EtherealButton({ glow, className, style, children, ...props }, ref) {
   return (
     <button
+      ref={ref}
       className={cn(
-        "items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-medium transition-colors hover:bg-white/[0.08]",
+        "inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-medium transition-colors hover:bg-white/[0.08]",
         className,
-        // Host-contract and touch-target invariants come last so tailwind-merge
-        // cannot let caller utilities such as `static`, `contents`, or
-        // `isolation-auto` cancel them.
-        "relative isolate inline-flex min-h-11 min-w-11",
+        // Host-contract invariants come last so tailwind-merge cannot let
+        // caller utilities such as `static` or `isolation-auto` cancel them.
+        "relative isolate",
       )}
+      // Caller styles spread first: anything except the host contract may be
+      // overridden (display: none must win; position/isolation must not).
       style={{
         ...style,
         position: "relative",
         isolation: "isolate",
-        display: "inline-flex",
-        minWidth: 44,
-        minHeight: 44,
       }}
       {...props}
     >
@@ -48,4 +46,4 @@ export function EtherealButton({
       <Ethereal path="around" heads={2} spin="counter" {...glow} />
     </button>
   );
-}
+});
