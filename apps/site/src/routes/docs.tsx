@@ -261,9 +261,7 @@ function DocsPage() {
                         key={layer}
                         className={
                           "align-top transition-colors hover:bg-white/[0.02]" +
-                          (i < arr.length - 1
-                            ? " border-b border-white/5"
-                            : "")
+                          (i < arr.length - 1 ? " border-b border-white/5" : "")
                         }
                       >
                         <td className="px-4 py-2.5 font-mono text-[13px] whitespace-nowrap text-foreground">

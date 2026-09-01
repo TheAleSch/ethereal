@@ -327,108 +327,110 @@ export function Playground() {
             className="flex min-h-0 flex-1 flex-col"
           >
             {tab === "ethereal" && (
-            <EffectSection
-              kind="ethereal"
-              cfg={eCfg}
-              controls={ETHEREAL_CONTROLS}
-              presetNames={Object.keys(ETHEREAL_PRESETS)}
-              presetGroups={ETHEREAL_PRESET_GROUPS}
-              presets={ETHEREAL_PRESETS}
-              defaultCfg={ETHEREAL}
-              derive={deriveEtherealState}
-              presetValue={ePreset}
-              onPreset={(n) => {
-                // a preset owns BOTH cells — picking one must replace the dark
-                // branch too, or the previous preset's dark overrides survive
-                // on top of the new base and you get a config nobody authored
-                const { themes, ...flat } = ETHEREAL_PRESETS[n] ?? {}
-                setECfg({ ...ETHEREAL, ...flat })
-                setEThemes(themes?.dark ? { dark: themes.dark } : {})
-              }}
-              onControl={setEControl}
-              onReset={() => {
-                setECfg({ ...ETHEREAL })
-                setEState("idle")
-                setEStates({})
-                setEThemes({})
-              }}
-              onCopyLink={copyLink}
-              linkCopied={linkCopied}
-              code={eCode}
-              preview={
-                <Ethereal
-                  state={eState}
-                  states={eStates}
-                  themes={eThemes}
-                  transitionMs={eFade}
-                  theme={theme}
-                  {...eCfg}
-                />
-              }
-              label="Get started"
-              stateValue={eState}
-              stateOptions={ETHEREAL_STATE_OPTIONS}
-              onState={setEState}
-              statesMap={eStates}
-              onStatesChange={setEStates}
-              themes={eThemes}
-              onThemesChange={setEThemes}
-              stateFade={eFade}
-              onStateFade={setEFade}
-              previewTheme={theme}
-              onPreviewTheme={setTheme}
-            />
+              <EffectSection
+                kind="ethereal"
+                cfg={eCfg}
+                controls={ETHEREAL_CONTROLS}
+                presetNames={Object.keys(ETHEREAL_PRESETS)}
+                presetGroups={ETHEREAL_PRESET_GROUPS}
+                presets={ETHEREAL_PRESETS}
+                defaultCfg={ETHEREAL}
+                derive={deriveEtherealState}
+                presetValue={ePreset}
+                onPreset={(n) => {
+                  // a preset owns BOTH cells — picking one must replace the dark
+                  // branch too, or the previous preset's dark overrides survive
+                  // on top of the new base and you get a config nobody authored
+                  const { themes, ...flat } = ETHEREAL_PRESETS[n] ?? {}
+                  setECfg({ ...ETHEREAL, ...flat })
+                  setEThemes(themes?.dark ? { dark: themes.dark } : {})
+                }}
+                onControl={setEControl}
+                onReset={() => {
+                  setECfg({ ...ETHEREAL })
+                  setEState("idle")
+                  setEStates({})
+                  setEThemes({})
+                }}
+                onCopyLink={copyLink}
+                linkCopied={linkCopied}
+                code={eCode}
+                preview={
+                  <Ethereal
+                    state={eState}
+                    states={eStates}
+                    themes={eThemes}
+                    transitionMs={eFade}
+                    theme={theme}
+                    {...eCfg}
+                  />
+                }
+                label="Get started"
+                stateValue={eState}
+                stateOptions={ETHEREAL_STATE_OPTIONS}
+                onState={setEState}
+                statesMap={eStates}
+                onStatesChange={setEStates}
+                themes={eThemes}
+                onThemesChange={setEThemes}
+                stateFade={eFade}
+                onStateFade={setEFade}
+                previewTheme={theme}
+                onPreviewTheme={setTheme}
+              />
             )}
           </TabsContent>
 
           <TabsContent value="eh" className="flex min-h-0 flex-1 flex-col">
             {tab === "eh" && (
-            <EffectSection
-              kind="eh"
-              cfg={hCfg}
-              controls={EH_CONTROLS}
-              presetNames={Object.keys(EH_PRESETS)}
-              presets={EH_PRESETS}
-              defaultCfg={EVENT_HORIZON}
-              presetValue={hPreset}
-              onPreset={(n) => setHCfg({ ...EVENT_HORIZON, ...EH_PRESETS[n] })}
-              onControl={setHControl}
-              onReset={() => setHCfg({ ...EVENT_HORIZON })}
-              onCopyLink={copyLink}
-              linkCopied={linkCopied}
-              code={hCode}
-              preview={<EventHorizon theme={theme} {...hCfg} />}
-              label="Enter the void"
-              previewTheme={theme}
-              onPreviewTheme={setTheme}
-            />
+              <EffectSection
+                kind="eh"
+                cfg={hCfg}
+                controls={EH_CONTROLS}
+                presetNames={Object.keys(EH_PRESETS)}
+                presets={EH_PRESETS}
+                defaultCfg={EVENT_HORIZON}
+                presetValue={hPreset}
+                onPreset={(n) =>
+                  setHCfg({ ...EVENT_HORIZON, ...EH_PRESETS[n] })
+                }
+                onControl={setHControl}
+                onReset={() => setHCfg({ ...EVENT_HORIZON })}
+                onCopyLink={copyLink}
+                linkCopied={linkCopied}
+                code={hCode}
+                preview={<EventHorizon theme={theme} {...hCfg} />}
+                label="Enter the void"
+                previewTheme={theme}
+                onPreviewTheme={setTheme}
+              />
             )}
           </TabsContent>
 
           <TabsContent value="dither" className="flex min-h-0 flex-1 flex-col">
             {tab === "dither" && (
-            <EffectSection
-              kind="dither"
-              cfg={dCfg}
-              controls={DITHER_CONTROLS}
-              presetNames={Object.keys(DITHER_PRESETS)}
-              presets={DITHER_PRESETS}
-              defaultCfg={ETHEREAL_DITHER}
-              presetValue={dPreset}
-              onPreset={(n) =>
-                setDCfg({ ...ETHEREAL_DITHER, ...DITHER_PRESETS[n] })
-              }
-              onControl={setDControl}
-              onReset={() => setDCfg({ ...ETHEREAL_DITHER })}
-              onCopyLink={copyLink}
-              linkCopied={linkCopied}
-              code={dCode}
-              preview={<EtherealDither theme={theme} {...dCfg} />}
-              label="Insert coin"
-              presetGroups={DITHER_PRESET_GROUPS}
-              previewTheme={theme}
-              onPreviewTheme={setTheme}
-            />
+              <EffectSection
+                kind="dither"
+                cfg={dCfg}
+                controls={DITHER_CONTROLS}
+                presetNames={Object.keys(DITHER_PRESETS)}
+                presets={DITHER_PRESETS}
+                defaultCfg={ETHEREAL_DITHER}
+                presetValue={dPreset}
+                onPreset={(n) =>
+                  setDCfg({ ...ETHEREAL_DITHER, ...DITHER_PRESETS[n] })
+                }
+                onControl={setDControl}
+                onReset={() => setDCfg({ ...ETHEREAL_DITHER })}
+                onCopyLink={copyLink}
+                linkCopied={linkCopied}
+                code={dCode}
+                preview={<EtherealDither theme={theme} {...dCfg} />}
+                label="Insert coin"
+                presetGroups={DITHER_PRESET_GROUPS}
+                previewTheme={theme}
+                onPreviewTheme={setTheme}
+              />
             )}
           </TabsContent>
         </Tabs>
@@ -755,10 +757,7 @@ function EffectSection({
               value={presetValue}
               onValueChange={(v) => v && v !== "Custom" && onPreset(String(v))}
             >
-              <SelectTrigger
-                className="w-full"
-                aria-label="main preset"
-              >
+              <SelectTrigger className="w-full" aria-label="main preset">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

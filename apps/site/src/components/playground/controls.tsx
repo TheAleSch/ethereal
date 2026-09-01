@@ -300,7 +300,7 @@ export function ColorsRow({
                     fallback={
                       <div
                         aria-hidden
-                        className="h-[13.5rem] w-[17.5rem] rounded-xl bg-popover ring-1 ring-foreground/10 shadow-sm"
+                        className="h-[13.5rem] w-[17.5rem] rounded-xl bg-popover shadow-sm ring-1 ring-foreground/10"
                       />
                     }
                   >
