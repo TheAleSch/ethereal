@@ -106,9 +106,9 @@ familiar `colors` / `path` / `heads` / `spin` / `duration` / `hover`.
 the config you gave**, not a different look bolted on top. The built-in states
 are derived from your own config: your colors, path, geometry and pacing go in,
 and the same effect comes back quicker and more restless (`thinking`). A red
-comet going `around` stays a red comet going around. Changing state rebuilds
-the layers with a fade-in
-(`transitionMs`, default `320`, `0` disables). Built-ins mirror an AI chat
+comet going `around` stays a red comet going around. Changing state — or a
+`whileHover` / `whilePressed` treatment kicking in — cross-fades the rebuilt
+layers with the old ones (`transitionMs`, default `320`, `0` disables). Built-ins mirror an AI chat
 composer:
 
 ```tsx

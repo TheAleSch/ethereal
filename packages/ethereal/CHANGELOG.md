@@ -4,6 +4,25 @@ All notable changes to `ethereal-glow` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- `<Ethereal>` strong glows roll off like light instead of clamping: past
+  `strength` 1 the halo reaches further and, on dark surfaces, the core runs
+  hotter, while pulse and flicker stay visible. Hotspot cores are tinted by the
+  head's colour instead of pure white (grey smoke on dark pages, a bleached
+  hole on light ones).
+- `<Ethereal>` renders a comet chain as one masked layer per head instead of
+  one per chain circle, and skips unchanged per-frame variable writes — roughly
+  a third of the per-frame style and paint work for the default config.
+
+### Fixed
+
+- `<Ethereal>` config changes (states, `whileHover`, `whilePressed`) now
+  cross-fade over `transitionMs`. The fade never ran after the first mount, so
+  every hover treatment snapped in.
+
 ## [0.1.0] — 2026-08-21
 
 Initial release.
