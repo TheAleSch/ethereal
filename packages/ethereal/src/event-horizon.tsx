@@ -107,7 +107,22 @@ export const EVENT_HORIZON_PRESETS: Record<string, EventHorizonCfg> = {
   // Presets are ambient treatments. Their resting laps are intentionally
   // slower than the raw component default; derived states can still add
   // urgency without making every idle surface feel mechanically busy.
-  Gargantua: { ...EVENT_HORIZON, duration: 10.5 },
+  // was the default config slowed down, and rendered as its twin; now the
+  // big white-gold disk the name promises
+  Gargantua: {
+    ...EVENT_HORIZON,
+    colors: ['#fff1d6', '#ffc56b', '#ff8a3d'],
+    duration: 12,
+    ring: 3,
+    tail: 2.2,
+    nodes: 14,
+    node: 1.1,
+    shimmer: 0.4,
+    blur: 20,
+    halo: 1.2,
+    shadow: 0.55,
+    lens: 7,
+  },
   'Blue giant': {
     ...EVENT_HORIZON,
     colors: ['#7ab8ff', '#a5d8ff', '#5c7cff'],
@@ -151,16 +166,48 @@ export const EVENT_HORIZON_PRESETS: Record<string, EventHorizonCfg> = {
   Neutron: {
     ...EVENT_HORIZON,
     colors: ['#dff2ff', '#9ad9ff', '#ffffff'],
-    duration: 3.2,
+    // at 3.2s with a 1.6 tail and 9px blur the trail broke into separate
+    // lumps; a shorter, softer tail holds together at a still-quick lap
+    duration: 4.2,
     ring: 1.5,
-    tail: 1.6,
+    tail: 1.2,
     nodes: 12,
-    node: 0.8,
-    shimmer: 0.85,
-    blur: 9,
+    node: 1,
+    shimmer: 0.6,
+    blur: 11,
     halo: 1.15,
     shadow: 0.2,
     lens: 7,
+  },
+  // the only teal
+  Pulsar: {
+    ...EVENT_HORIZON,
+    colors: ['#5dffc8', '#3ad0ff', '#b8ffe9'],
+    duration: 6.5,
+    ring: 2,
+    tail: 1.4,
+    nodes: 10,
+    shimmer: 0.6,
+    blur: 14,
+    halo: 1,
+    shadow: 0.3,
+    lens: 4,
+  },
+  // built to survive a light surface: no lens and almost no core shadow,
+  // the two layers that grey a white host
+  Eclipse: {
+    ...EVENT_HORIZON,
+    colors: ['#ff6a2b', '#e8336b', '#7a4dff'],
+    duration: 9,
+    ring: 2.5,
+    tail: 1.6,
+    nodes: 11,
+    node: 1.1,
+    shimmer: 0.5,
+    blur: 14,
+    halo: 1.4,
+    shadow: 0.05,
+    lens: 0,
   },
 }
 
@@ -456,16 +503,20 @@ export function EventHorizon({
     // page being pulled toward the hole, not a frosted band.
     let lensRO: ResizeObserver | null = null
     if (clamped.lens > 0) {
+      // the brightness lift is the "light pileup" at the rim — on a dark page
+      // it reads as light bending round the hole; on a light page it lifts
+      // the surface to pure white and prints a white frame round the host
+      const lift = (amount: number) => (theme === 'light' ? '' : ` brightness(${amount})`)
       const bands = [
         {
           width: 10,
           blur: clamped.lens * 1.7,
-          extra: ' brightness(1.14) saturate(1.45)',
+          extra: `${lift(1.14)} saturate(1.45)`,
         },
         {
           width: 20,
           blur: clamped.lens * 0.9,
-          extra: ' brightness(1.05) saturate(1.2)',
+          extra: `${lift(1.05)} saturate(1.2)`,
         },
         { width: 34, blur: clamped.lens * 0.35, extra: '' },
       ]
@@ -623,7 +674,7 @@ export function EventHorizon({
       removeHost(rec)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cfgSignature, safeTransitionMs, reducedMotion])
+  }, [cfgSignature, safeTransitionMs, reducedMotion, theme])
   return (
     <span
       ref={ref}

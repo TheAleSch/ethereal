@@ -207,7 +207,7 @@ describe("preset pacing stays ambient", () => {
   it("keeps energetic variants distinct without returning to frantic laps", () => {
     expect(ETHEREAL_PRESETS["Line (original)"].duration).toBe(5.4)
     expect(ETHEREAL_PRESETS["Gatecaster Orange"].duration).toBe(6)
-    expect(EH_PRESETS.Neutron.duration).toBe(3.2)
+    expect(EH_PRESETS.Neutron.duration).toBe(4.2)
     expect(DITHER_PRESETS["Dual scan"].duration).toBe(12.3)
   })
 })
