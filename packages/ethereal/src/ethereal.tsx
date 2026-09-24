@@ -329,6 +329,14 @@ function tickAll(nowSec: number, dt: number) {
             : 0
     }
     const travel = (EASE[cfg.travelEase] || EASE.linear)(progress)
+    // Dead interval — the repeatDelay gap, or the bottom sweep's hidden
+    // wraparound (an eighth of every default cycle): every layer is at opacity
+    // 0, but a browser still restyles and repaints a zero-opacity layer whose
+    // vars changed. Park the envelope and write nothing else until it returns.
+    if (gapRamp === 0 || (cfg.path === 'bottom' && bottomSweepEnvelope(travel) === 0)) {
+      writeVar(rec, '--bedge', '0')
+      return
+    }
     let head1, head2, beamW, edgeRamp
     // outward path normals, computed from the CANONICAL orientation before
     // any motion reversal — reversing a head's travel (bottom's second
@@ -1117,10 +1125,10 @@ export function Ethereal({
       return parts.join(', ')
     }
 
-    // mode-scoped per-frame vars persist on the HOST across rebuilds — a
+    // mode-scoped per-frame vars persist on the effect span across rebuilds — a
     // stale --njFade (~0 near a breathe-jitter cycle wrap) would freeze the
     // next config's bloom dimmed or invisible
-    host.style.removeProperty('--njFade')
+    fx.style.removeProperty('--njFade')
     // STATE TRANSITIONS: when cfg changes (a different `state`, a hover or
     // press treatment, any prop) the rebuilt layers crossfade with the old
     // ones over `transitionMs` (e.g. idle → sending → thinking on a chat
@@ -1400,7 +1408,7 @@ export function Ethereal({
     updateResponsiveMasks()
 
     // reveal starts hidden; other modes at full
-    host.style.setProperty('--hov', clamped.hover === 'reveal' ? '0' : '1')
+    fx.style.setProperty('--hov', clamped.hover === 'reveal' ? '0' : '1')
 
     const cleanupStatic = () => {
       unclaim()
@@ -1409,10 +1417,10 @@ export function Ethereal({
     if (reducedMotion) {
       // no ticker → --bedge would stay at its 0 default and every layer
       // (opacity × var(--bedge,0)) would be invisible; render one static frame
-      host.style.setProperty('--bedge', '1')
+      fx.style.setProperty('--bedge', '1')
       // reveal initializes --hov to 0 expecting pointer events + ticker to
       // raise it — neither runs here, so force it visible too
-      host.style.setProperty('--hov', '1')
+      fx.style.setProperty('--hov', '1')
       const metricsRO = new ResizeObserver(updateResponsiveMasks)
       metricsRO.observe(host)
       return () => {
@@ -1422,7 +1430,11 @@ export function Ethereal({
     }
     const initialAspect = quantAspect(host.offsetWidth, host.offsetHeight)
     const rec: HostRec = {
-      el: host,
+      // the per-frame vars live on the effect span, not the host: set on the
+      // host they were inherited by the caller's whole content subtree —
+      // restyled every frame, and shadowing any --bw / --hov / --dx of the
+      // caller's own
+      el: fx,
       cfg: clamped,
       phase: driverRef.current!.phase,
       hovT: driverRef.current!.hovT,
@@ -1480,6 +1492,10 @@ export function Ethereal({
         inset: 0,
         pointerEvents: 'none',
         borderRadius: 'inherit',
+        // its own compositor layer: the glow repaints every frame, and
+        // without one the host's content under it is re-rastered with it
+        // (measured: raster -50% on a button gallery, -73% on a hero card)
+        willChange: 'transform',
       }}
     />
   )

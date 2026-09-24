@@ -76,7 +76,11 @@ const render = (element: ReturnType<typeof createElement>) => {
   act(() => root!.render(element))
 }
 
-const read = (name: string) => host.style.getPropertyValue(name)
+// Ethereal writes its per-frame vars on its effect span (the host's first
+// child), so the caller's content never inherits them; EventHorizon still
+// writes on the host
+const read = (name: string) => (host.firstElementChild as HTMLElement).style.getPropertyValue(name)
+const readHost = (name: string) => host.style.getPropertyValue(name)
 
 /** run `count` frames of ~60fps starting at `start` ms */
 function run(count: number, start = 100) {
@@ -252,6 +256,25 @@ describe('Ethereal drives its host every frame', () => {
     expect(Math.abs(Number(read('--bx')) - before)).toBeLessThan(0.05)
   })
 
+  it('writes nothing but the parked envelope through the bottom sweep\'s hidden wraparound', () => {
+    // every layer is at opacity 0 there, so rewriting the head would buy a
+    // restyle and repaint of an invisible frame
+    render(createElement(EtherealSubject, { path: 'bottom', duration: 1 }))
+    let parkedPairs = 0
+    let previous: { edge: string; head: string } | null = null
+    for (let index = 0; index < 120; index++) {
+      frame(100 + index * 16)
+      const current = { edge: read('--bedge'), head: read('--bx') }
+      if (previous && previous.edge === '0' && current.edge === '0') {
+        parkedPairs++
+        expect(current.head).toBe(previous.head)
+      }
+      previous = current
+    }
+    // two seconds of a 1s cycle crosses the hidden interval at least once
+    expect(parkedPairs).toBeGreaterThan(0)
+  })
+
   it('paints a static frame under prefers-reduced-motion and never ticks', () => {
     reduceMotion = true
     render(createElement(EtherealSubject, { path: 'around', duration: 2, hover: 'reveal' }))
@@ -287,10 +310,10 @@ describe('EventHorizon drives its host every frame', () => {
     for (let index = 0; index < count; index++) {
       frame(start + index * 16)
       seen.push({
-        bx: Number(read('--bx')),
-        by: Number(read('--by')),
-        dx: Number(read('--dx')),
-        dy: Number(read('--dy')),
+        bx: Number(readHost('--bx')),
+        by: Number(readHost('--by')),
+        dx: Number(readHost('--dx')),
+        dy: Number(readHost('--dy')),
       })
     }
     return seen
@@ -300,10 +323,10 @@ describe('EventHorizon drives its host every frame', () => {
     render(createElement(HorizonSubject, { duration: 2, nodes: 5 }))
     run(2)
     for (const name of ['--bx', '--by', '--dx', '--dy', '--adx', '--ady', '--tx1', '--ty1'])
-      expect(read(name)).not.toBe('')
-    const early = ['--bx', '--by', '--tx1', '--ty1'].map(read)
+      expect(readHost(name)).not.toBe('')
+    const early = ['--bx', '--by', '--tx1', '--ty1'].map(readHost)
     run(20, 1000)
-    expect(['--bx', '--by', '--tx1', '--ty1'].map(read)).not.toEqual(early)
+    expect(['--bx', '--by', '--tx1', '--ty1'].map(readHost)).not.toEqual(early)
   })
 
   it('keeps the tangent pointing along the direction of travel — both ways round', () => {
@@ -359,7 +382,7 @@ describe('EventHorizon drives its host every frame', () => {
       )
       run(3)
       for (const name of ['--bx', '--by', '--dx', '--dy', '--adx', '--ady', '--tx1', '--ty1'])
-        expect(Number.isFinite(Number(read(name))), name).toBe(true)
+        expect(Number.isFinite(Number(readHost(name))), name).toBe(true)
     },
   )
 
@@ -377,18 +400,18 @@ describe('EventHorizon drives its host every frame', () => {
     render(createElement(HorizonSubject, { hover: 'reveal', whileHover: { colors: ['#ff0000'] } }))
     dispatchMousePointer('pointerenter')
     run(48)
-    expect(Number(read('--hov'))).toBeGreaterThan(0.9)
+    expect(Number(readHost('--hov'))).toBeGreaterThan(0.9)
   })
 
   it('honors intersection visibility transitions', () => {
     render(createElement(HorizonSubject, { duration: 2 }))
     const observer = ControlledIntersectionObserver.instances[0]!
     observer.trigger(false)
-    const before = read('--bx')
+    const before = readHost('--bx')
     run(5)
-    expect(read('--bx')).toBe(before)
+    expect(readHost('--bx')).toBe(before)
     observer.trigger(true)
     run(2, 500)
-    expect(read('--bx')).not.toBe(before)
+    expect(readHost('--bx')).not.toBe(before)
   })
 })

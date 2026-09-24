@@ -121,8 +121,13 @@ export const p3t = (color: string) =>
 // maps a 0..1 path fraction onto the ELEMENT box of a layer inset by `inset`
 // px — any layer with inset -N must pass N for gradients AND masks or the
 // paint drifts away from its mask window as the head orbits
+//
+// Every one of these is re-parsed on every animation frame (they carry the
+// per-frame vars), so the common uninset case drops its two no-op px terms.
 export const pos = (inset: number, fraction: string, offset?: string) =>
-  `calc(${inset}px + (100% - ${2 * inset}px) * ${fraction}${offset ? ` + (${offset})` : ''})`
+  inset
+    ? `calc(${inset}px + (100% - ${2 * inset}px) * ${fraction}${offset ? ` + (${offset})` : ''})`
+    : `calc(100% * ${fraction}${offset ? ` + (${offset})` : ''})`
 
 // ax/ay = |tangent| — blends ellipse w/h so the glow rotates with the travel
 // direction as the head rounds the border

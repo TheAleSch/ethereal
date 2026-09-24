@@ -3,6 +3,13 @@
 // element that inherits them — an empty host hides that cost entirely.
 import { createRoot } from 'react-dom/client'
 import { Ethereal, type EtherealProps } from '../src/ethereal'
+import { subscribe } from '../src/core/ticker'
+
+// counted by run.mjs: per-TICK cost stays comparable when a loaded machine
+// starves the frame rate, where per-second totals would not
+const counter = globalThis as { __ticks?: number }
+counter.__ticks = 0
+subscribe(() => counter.__ticks!++, 1)
 
 const params = new URLSearchParams(location.search)
 const scene = params.get('scene') ?? 'gallery'

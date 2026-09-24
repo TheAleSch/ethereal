@@ -47,26 +47,34 @@ for (let rep = 0; rep < Number(process.env.REPS || 3); rep++) {
   page.on('console', (message) => message.type() === 'error' && console.error('console', message.text()))
   await page.goto(`${baseURL}/index.html?scene=${scene}&strength=${strength}`)
   await page.waitForTimeout(1500)
+  const ticksBefore = await page.evaluate(() => globalThis.__ticks || 0)
   await browser.startTracing(page, { categories: ['devtools.timeline', 'disabled-by-default-devtools.timeline'] })
   await page.waitForTimeout(Number(seconds) * 1000)
   const trace = JSON.parse((await browser.stopTracing()).toString())
+  const ticks = (await page.evaluate(() => globalThis.__ticks || 0)) - ticksBefore
   await page.close()
   const totals = Object.fromEntries(TRACKED.map((name) => [name, 0]))
   let frames = 0
   for (const event of trace.traceEvents) {
     if (event.name === 'Commit') frames++
-    if (event.ph === 'X' && event.dur && TRACKED.includes(event.name)) totals[event.name] += event.dur / 1000
+    // thread time, not wall time: a loaded machine inflates wall durations
+    if (event.ph === 'X' && event.dur && TRACKED.includes(event.name)) totals[event.name] += (event.tdur ?? event.dur) / 1000
   }
   // main-thread milliseconds spent per wall-clock second: 1000 = saturated
-  runs.push({ frames: frames / Number(seconds), ...Object.fromEntries(TRACKED.map((name) => [name, totals[name] / Number(seconds)])) })
+  runs.push({
+    frames: frames / Number(seconds),
+    ticks: ticks / Number(seconds),
+    ...Object.fromEntries(TRACKED.map((name) => [name, totals[name] / Number(seconds)])),
+    perTick: Object.fromEntries(TRACKED.map((name) => [name, totals[name] / Math.max(1, ticks)])),
+  })
 }
 await browser.close()
 const median = (values) => values.sort((a, b) => a - b)[Math.floor(values.length / 2)]
-const summary = Object.fromEntries(Object.keys(runs[0]).map((key) => [key, +median(runs.map((run) => run[key])).toFixed(1)]))
-// per committed frame too: a faster build commits MORE frames per second, so
-// per-second totals alone under-state the win
-const perFrame = Object.fromEntries(
-  TRACKED.map((name) => [name, +median(runs.map((run) => run[name] / Math.max(1, run.frames))).toFixed(2)])
+const perSecond = Object.fromEntries(
+  ['frames', 'ticks', ...TRACKED].map((key) => [key, +median(runs.map((run) => run[key])).toFixed(1)])
 )
-console.log(JSON.stringify({ scene, strength: +strength, perSecond: summary, msPerFrame: perFrame }))
+// per animation tick: a faster build ticks MORE often, and a loaded machine
+// ticks less, so per-second totals alone mislead in both directions
+const msPerTick = Object.fromEntries(TRACKED.map((name) => [name, +median(runs.map((run) => run.perTick[name])).toFixed(3)]))
+console.log(JSON.stringify({ scene, strength: +strength, perSecond, msPerTick }))
 server.close()
