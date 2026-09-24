@@ -10,7 +10,7 @@ import { getLUT, pathPx, quantAspect, rand, randEdgePos, walkRect, walkSmooth, t
 import { boundedPalette, finiteNumber, runtimeConfigSignature } from './core/normalize'
 import { mergeConfig, useInteraction, type StateConfig, type ThemeConfig } from './core/state'
 import { subscribe } from './core/ticker'
-import { useReducedMotion, useTheme, type Theme } from './core/theme'
+import { detectTheme, useReducedMotion, useTheme, type Theme } from './core/theme'
 import {
   EASE,
   HEADS,
@@ -679,6 +679,13 @@ export function Ethereal({
     const fx = ref.current,
       host = fx?.parentElement as HTMLElement | null
     if (!fx || !host) return
+    // useTheme starts at 'light' and corrects itself in a layout effect, which
+    // re-renders — but this passive effect of the FIRST commit still runs with
+    // the stale value. Building then would paint a dark page's first frames in
+    // the light config and build everything twice; the re-render already
+    // queued carries the real theme, so wait for it.
+    const liveTheme = explicitTheme ?? (themeDetector ? themeDetector(host) : detectTheme(host))
+    if (liveTheme !== theme) return
     // degenerate-input guards: empty palette would crash the gradient
     // builders; zero/negative spot dims emit invalid gradients whose dropped
     // MASK floods the element with unmasked paint. num() also caps the
@@ -1119,7 +1126,9 @@ export function Ethereal({
     // ones over `transitionMs` (e.g. idle → sending → thinking on a chat
     // composer, or a `whileHover` that brightens the glow)
     const generation = nextGeneration(fx, reducedMotion ? 0 : safeTransitionMs)
-    fx.style.overflow = clamped.place === 'internal' ? 'hidden' : 'visible'
+    // on the GENERATION, not the effect span: a crossfade from an external
+    // placement back to internal must not clip the outgoing halo mid-fade
+    generation.style.overflow = clamped.place === 'internal' ? 'hidden' : 'visible'
     // anchor to the BORDER box, not the padding box, so the lit ring lands ON
     // the host's real border instead of 1px inside it (double-border
     // artifact) — per side, borders aren't always uniform
@@ -1174,26 +1183,23 @@ export function Ethereal({
     // Opacity clamps at 1, and a hard clamp is what made strong glows look
     // synthetic: past it the pulse, flicker and edge ramp all flatten, and a
     // strength of 1.5 renders identically to 2. So the steady part rolls off
-    // on a soft knee instead — linear up to `knee`, then easing toward (never
-    // reaching) `ceiling` — and the flicker multiplies AFTER the roll-off,
-    // with the ceiling lowered by the flicker's own depth, so its swing can
-    // never be clamped away. Returned as [fallback, rolled]: assign both, in
-    // that order — an engine that rejects the rolled calc() ignores the second
-    // assignment and keeps the plain linear envelope rather than no opacity.
-    const envelope = (flicker: string, amount: number, flickerDepth: number): [string, string] => {
+    // on a short soft knee instead — linear up to `knee`, then easing toward
+    // (never reaching) `ceiling`. The flicker multiplies AFTER the roll-off,
+    // and past strength 1 the ceiling drops by the flicker's own depth so its
+    // swing survives; at or below 1 the ceiling stays at 1 and the knee sits
+    // high, so the looks tuned at strength 1 barely move (the default ring
+    // peaks at 0.95 where it used to clip to 1).
+    //
+    // min()/max() and division by a number expression are as widely supported
+    // as var() in this position, and a var()-bearing value is only validated
+    // at computed-value time anyway — there is no meaningful fallback to set.
+    const envelope = (flicker: string, amount: number, flickerDepth: number) => {
       const steady = `(var(--bedge,0) * var(--hov,1) * ${amount.toFixed(3)})`
-      const ceiling = 1 / (1 + flickerDepth)
-      const knee = (0.8 * ceiling).toFixed(3)
-      const room = (0.2 * ceiling).toFixed(3)
+      const ceiling = 1 / (1 + flickerDepth * Math.min(1, excess))
+      const knee = (0.85 * ceiling).toFixed(3)
+      const room = (0.15 * ceiling).toFixed(3)
       const over = `max(0, ${steady} - ${knee})`
-      return [
-        `calc(${steady} * ${flicker})`,
-        `calc((min(${steady}, ${knee}) + ${room} * ${over} / (${over} + ${room})) * ${flicker})`,
-      ]
-    }
-    const setOpacity = (layer: HTMLElement, [fallback, rolled]: [string, string]) => {
-      layer.style.opacity = fallback
-      layer.style.opacity = rolled
+      return `calc((min(${steady}, ${knee}) + ${room} * ${over} / (${over} + ${room})) * ${flicker})`
     }
     // peak deviation of --flk from 1 is 0.46·flicker; --flk2 swings 0.45 of it
     const bloomFlickerDepth = 0.46 * clamped.flicker
@@ -1254,7 +1260,7 @@ export function Ethereal({
           ...masked(spotMask),
           filter: glowFilter(spotBlurF, '--bhue'),
         })
-        setOpacity(inner, envelope('var(--flk2,1)', clamped.innerOpacity * clamped.strength, washFlickerDepth))
+        inner.style.opacity = envelope('var(--flk2,1)', clamped.innerOpacity * clamped.strength, washFlickerDepth)
       }
       const whiteHead = `radial-gradient(ellipse ${rotW(24, 28, head)} ${rotH(24, 28, head)} at ${pos(0, head.x)} ${pos(0, head.y)}, rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%)`
       // ring thickness = the padding (content-box xor leaves only the rim);
@@ -1275,7 +1281,7 @@ export function Ethereal({
         ...masked(spotMask),
         filter: glowFilter(spotBlurF, '--bhue'),
       })
-      setOpacity(stroke, envelope('var(--flk2,1)', clamped.strokeOpacity * clamped.strength, washFlickerDepth))
+      stroke.style.opacity = envelope('var(--flk2,1)', clamped.strokeOpacity * clamped.strength, washFlickerDepth)
     }
     // needle bloom layer(s) — internal: confined to a narrow border band so a
     // large blurred head cannot turn the middle of a compact button into a
@@ -1366,7 +1372,7 @@ export function Ethereal({
         backgroundBlendMode: theme === 'dark' ? 'screen' : '',
         ...masked(spotsBG),
       })
-      setOpacity(bloom, envelope('var(--flk,1) * var(--njFade,1)', clamped.bloomOpacity * clamped.strength, bloomFlickerDepth))
+      bloom.style.opacity = envelope('var(--flk,1) * var(--njFade,1)', clamped.bloomOpacity * clamped.strength, bloomFlickerDepth)
       if (!external) bloom.style.clipPath = clip
       else if (clamped.place === 'ext-border') {
         // rounded-hole clip (absolute px — recut when the host resizes).

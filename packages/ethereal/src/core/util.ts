@@ -247,6 +247,9 @@ export const holePath = (width: number, height: number, inset: number, radius: n
   return `path(evenodd, "M0 0 H${boxW} V${boxH} H0 Z M${x0 + corner} ${y0} H${x1 - corner} A${corner} ${corner} 0 0 1 ${x1} ${y0 + corner} V${y1 - corner} A${corner} ${corner} 0 0 1 ${x1 - corner} ${y1} H${x0 + corner} A${corner} ${corner} 0 0 1 ${x0} ${y1 - corner} V${y0 + corner} A${corner} ${corner} 0 0 1 ${x0 + corner} ${y0} Z")`
 }
 
+// generations already fading out — never touched again until they retire
+const retiring = new WeakSet<Element>()
+
 /** Start a new generation of an effect's layer tree and retire the old one.
  *
  *  Returns the element the rebuilt layers go into. With `durationMs` > 0 the
@@ -256,9 +259,11 @@ export const holePath = (width: number, height: number, inset: number, radius: n
  *  treatment is a config change like any other.
  *
  *  An interrupted crossfade (hover in, out, in again inside one duration)
- *  fades each leaving generation from wherever it had got to, so nothing
- *  jumps; each is removed once it has faded. Where the Web Animations API is missing (jsdom) or the duration is
- *  0, it is a plain swap. */
+ *  leaves every generation already on its way out alone — cancelling its fade
+ *  would settle its `finished` promise and retire it on the spot, a visible
+ *  drop in light — and fades the generation that was coming in from wherever
+ *  it had got to. Each is removed once it has faded. Where the Web Animations
+ *  API is missing (jsdom) or the duration is 0, it is a plain swap. */
 export function nextGeneration(fx: HTMLElement, durationMs: number): HTMLElement {
   const generation = document.createElement('span')
   generation.style.cssText = 'position:absolute;inset:0;pointer-events:none;border-radius:inherit'
@@ -272,7 +277,10 @@ export function nextGeneration(fx: HTMLElement, durationMs: number): HTMLElement
   // sags: two symmetric fades cross at half opacity each, and a glow visibly
   // dims mid-swap.
   for (const old of leaving) {
+    if (retiring.has(old)) continue
+    retiring.add(old)
     const from = getComputedStyle(old).opacity
+    // only a fade-IN can be running here; stopping it does not retire anything
     old.getAnimations().forEach((animation) => animation.cancel())
     const fadeOut = old.animate([{ opacity: from }, { opacity: 0 }], {
       duration: durationMs,

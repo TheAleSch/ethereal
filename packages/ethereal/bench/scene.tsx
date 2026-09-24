@@ -18,6 +18,10 @@ if (freezeAt !== null) {
     nativeFrame((now) => callback(Math.min(now - start, Number(freezeAt) * 1000) + 1000))
 }
 
+// headless Chromium reports prefers-color-scheme: light, so without an explicit
+// theme every dark backdrop here would render the LIGHT variant
+const sceneTheme = params.get('theme') === 'light' ? 'light' : 'dark'
+
 const Content = ({ rows }: { rows: number }) => (
   <span style={{ position: 'relative', zIndex: 10, display: 'block', padding: 12 }}>
     {Array.from({ length: rows }, (_, row) => (
@@ -40,7 +44,7 @@ const Host = ({ width, height, rows, ...props }: EtherealProps & { width: number
       width,
       height,
       borderRadius: 16,
-      background: params.get('theme') === 'light' ? '#fff' : '#111',
+      background: sceneTheme === 'light' ? '#fff' : '#111',
       margin: 36,
       display: 'inline-block',
       color: '#ddd',
@@ -48,7 +52,7 @@ const Host = ({ width, height, rows, ...props }: EtherealProps & { width: number
     }}
   >
     {rows > 0 && <Content rows={rows} />}
-    <Ethereal transitionMs={0} strength={strength} {...props} />
+    <Ethereal transitionMs={0} strength={strength} theme={sceneTheme} {...props} />
   </div>
 )
 
@@ -97,7 +101,7 @@ function App() {
     )
   if (scene === 'sheet')
     return (
-      <div style={{ padding: 10, background: params.get('bg') ?? '#050505' }}>
+      <div style={{ padding: 10, background: params.get('bg') ?? (sceneTheme === 'light' ? '#f4f4f2' : '#050505') }}>
         {sheetRows.map((row, rowIndex) => (
           <div key={rowIndex}>
             {sheetStrengths.map((value) => (

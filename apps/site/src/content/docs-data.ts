@@ -263,7 +263,7 @@ export const ETHEREAL_GROUPS: PropGroup[] = [
         type: "number",
         default: "1",
         description:
-          "Master intensity. Up to 1 it scales every layer's opacity; past 1 the glow rolls off instead of clipping — the halo reaches further and, on dark surfaces, the core runs hotter — so pulse and flicker stay alive at any strength.",
+          "Master intensity. Up to 1 it scales every layer's opacity, with highlights easing off just short of full instead of clipping. Past 1 the extra goes into light rather than paint: the halo reaches further and, on dark surfaces, the core runs hotter, so pulse and flicker stay visible at any strength.",
       },
       {
         name: "saturation",

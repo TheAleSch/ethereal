@@ -8,7 +8,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -18,6 +17,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -60,7 +60,7 @@ effect span
           radial-gradient(ellipse calc(78px * var(--bw,1) * var(--bs3,1)) calc(78px * var(--bw,1) * var(--bs3,1)) at calc(0px + (100% - 0px) * var(--sc1x2,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y2,var(--by,1))), rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.22) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
           radial-gradient(ellipse calc(73px * var(--bw,1) * var(--bs4,1)) calc(73px * var(--bw,1) * var(--bs4,1)) at calc(0px + (100% - 0px) * var(--sc1x3,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y3,var(--by,1))), rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.17) 37%, rgba(255,255,255,0.05) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -109,7 +109,7 @@ effect span
           radial-gradient(ellipse calc(78px * var(--bw,1) * var(--bs3,1)) calc(78px * var(--bw,1) * var(--bs3,1)) at calc(0px + (100% - 0px) * var(--sc1x2,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y2,var(--by,1))), rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.22) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
           radial-gradient(ellipse calc(73px * var(--bw,1) * var(--bs4,1)) calc(73px * var(--bw,1) * var(--bs4,1)) at calc(0px + (100% - 0px) * var(--sc1x3,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y3,var(--by,1))), rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.17) 37%, rgba(255,255,255,0.05) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -151,7 +151,7 @@ effect span
           radial-gradient(ellipse calc(109px * var(--bw,1) * var(--bs2,1)) calc(109px * var(--bw,1) * var(--bs2,1)) at calc(0px + (100% - 0px) * var(--sc1x1,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y1,var(--by,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(95px * var(--bw,1) * var(--bs3,1)) calc(95px * var(--bw,1) * var(--bs3,1)) at calc(0px + (100% - 0px) * var(--sc1x2,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y2,var(--by,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(89px * var(--bw,1) * var(--bs4,1)) calc(89px * var(--bw,1) * var(--bs4,1)) at calc(0px + (100% - 0px) * var(--sc1x3,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y3,var(--by,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -163,7 +163,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: visible
   top: -1px
   right: -2px
   bottom: -3px
@@ -173,6 +172,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: visible
     child[0]
       position: absolute
       inset: 0px
@@ -213,7 +213,7 @@ effect span
           radial-gradient(ellipse calc(92px * var(--bw,1) * var(--bs2,1)) calc(92px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -50.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -50.0px * var(--dy,0)), rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.28) 37%, rgba(255,255,255,0.09) 74%, transparent 100%),
           radial-gradient(ellipse calc(75px * var(--bw,1) * var(--bs3,1)) calc(75px * var(--bw,1) * var(--bs3,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -100.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -100.0px * var(--dy,0)), rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.20) 37%, rgba(255,255,255,0.06) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -260,7 +260,7 @@ effect span
           radial-gradient(ellipse calc(92px * var(--bw,1) * var(--bs2,1)) calc(92px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -50.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -50.0px * var(--dy,0)), rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.28) 37%, rgba(255,255,255,0.09) 74%, transparent 100%),
           radial-gradient(ellipse calc(75px * var(--bw,1) * var(--bs3,1)) calc(75px * var(--bw,1) * var(--bs3,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -100.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -100.0px * var(--dy,0)), rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.20) 37%, rgba(255,255,255,0.06) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -309,7 +309,7 @@ effect span
           radial-gradient(ellipse calc(154px * var(--bw,1) * var(--bs1,1)) calc(154px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(131px * var(--bw,1) * var(--bs2,1)) calc(131px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -50.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -50.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(106px * var(--bw,1) * var(--bs3,1)) calc(106px * var(--bw,1) * var(--bs3,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -100.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -100.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)
     child[3]
       position: absolute
@@ -359,7 +359,7 @@ effect span
           radial-gradient(ellipse calc(154px * var(--bw,1) * var(--bs1,1)) calc(154px * var(--bw,1) * var(--bs1,1)) at calc(calc(192px + (100% - 384px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(192px + (100% - 384px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(131px * var(--bw,1) * var(--bs2,1)) calc(131px * var(--bw,1) * var(--bs2,1)) at calc(calc(192px + (100% - 384px) * var(--bx,.5)) + -50.0px * var(--dx,1)) calc(calc(192px + (100% - 384px) * var(--by,1)) + -50.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(106px * var(--bw,1) * var(--bs3,1)) calc(106px * var(--bw,1) * var(--bs3,1)) at calc(calc(192px + (100% - 384px) * var(--bx,.5)) + -100.0px * var(--dx,1)) calc(calc(192px + (100% - 384px) * var(--by,1)) + -100.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))"
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))"
 `;
 
 exports[`Ethereal internal bands on a measured host > compact pill 1`] = `
@@ -370,7 +370,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -380,6 +379,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -418,7 +418,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -463,7 +463,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -501,7 +501,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -513,7 +513,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -523,6 +522,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -561,7 +561,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(0px + (100% - 0px) * var(--sc1x0,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y0,var(--by,1))), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(0px + (100% - 0px) * var(--sc1x1,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y1,var(--by,1))), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -606,7 +606,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(0px + (100% - 0px) * var(--sc1x0,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y0,var(--by,1))), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(0px + (100% - 0px) * var(--sc1x1,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y1,var(--by,1))), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -644,7 +644,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(0px + (100% - 0px) * var(--sc1x0,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y0,var(--by,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(0px + (100% - 0px) * var(--sc1x1,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y1,var(--by,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -656,7 +656,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -666,6 +665,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -720,7 +720,7 @@ effect span
           radial-gradient(ellipse calc(31px * var(--bw,1) * var(--bs1,1)) calc(31px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 36.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 36.0px * var(--dy,0)), rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.04) 37%, rgba(255,255,255,0.01) 74%, transparent 100%),
           radial-gradient(ellipse calc(24px * var(--bw,1) * var(--bs2,1)) calc(24px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -45.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -45.0px * var(--dy,0)), rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.02) 37%, rgba(255,255,255,0.01) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -781,7 +781,7 @@ effect span
           radial-gradient(ellipse calc(31px * var(--bw,1) * var(--bs1,1)) calc(31px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 36.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 36.0px * var(--dy,0)), rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.04) 37%, rgba(255,255,255,0.01) 74%, transparent 100%),
           radial-gradient(ellipse calc(24px * var(--bw,1) * var(--bs2,1)) calc(24px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -45.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -45.0px * var(--dy,0)), rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.02) 37%, rgba(255,255,255,0.01) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -835,7 +835,7 @@ effect span
           radial-gradient(ellipse calc(44px * var(--bw,1) * var(--bs4,1)) calc(44px * var(--bw,1) * var(--bs4,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -36.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -36.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(43px * var(--bw,1) * var(--bs1,1)) calc(43px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 36.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 36.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(33px * var(--bw,1) * var(--bs2,1)) calc(33px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -45.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -45.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -847,7 +847,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -857,6 +856,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -895,7 +895,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -940,7 +940,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -979,7 +979,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -991,7 +991,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -1001,6 +1000,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -1039,7 +1039,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -1084,7 +1084,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -1122,7 +1122,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -1134,7 +1134,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -1144,6 +1143,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -1182,7 +1182,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -1227,7 +1227,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -1271,7 +1271,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -1283,7 +1283,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -1293,6 +1292,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -1331,7 +1331,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -1376,7 +1376,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -1414,7 +1414,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -1426,7 +1426,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -1436,6 +1435,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -1474,7 +1474,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -1519,7 +1519,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -1557,7 +1557,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -1569,7 +1569,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -1579,6 +1578,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -1617,7 +1617,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -1662,7 +1662,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -1707,7 +1707,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -1719,7 +1719,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -1729,6 +1728,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -1767,7 +1767,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -1812,7 +1812,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -1850,7 +1850,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -1862,7 +1862,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -1872,6 +1871,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -1910,7 +1910,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(0px + (100% - 0px) * var(--sc1x0,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y0,var(--by,1))), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(0px + (100% - 0px) * var(--sc1x1,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y1,var(--by,1))), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -1955,7 +1955,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(0px + (100% - 0px) * var(--sc1x0,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y0,var(--by,1))), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(0px + (100% - 0px) * var(--sc1x1,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y1,var(--by,1))), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -1994,7 +1994,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(0px + (100% - 0px) * var(--sc2x0,var(--bx2,.5))) calc(0px + (100% - 0px) * var(--sc2y0,var(--by2,1))), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(0px + (100% - 0px) * var(--sc2x1,var(--bx2,.5))) calc(0px + (100% - 0px) * var(--sc2y1,var(--by2,1))), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[3]
       position: absolute
       inset: 0px
@@ -2039,7 +2039,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(0px + (100% - 0px) * var(--sc2x0,var(--bx2,.5))) calc(0px + (100% - 0px) * var(--sc2y0,var(--by2,1))), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(0px + (100% - 0px) * var(--sc2x1,var(--bx2,.5))) calc(0px + (100% - 0px) * var(--sc2y1,var(--by2,1))), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[4]
       position: absolute
       inset: 0px
@@ -2083,7 +2083,7 @@ effect span
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(0px + (100% - 0px) * var(--sc1x1,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y1,var(--by,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(0px + (100% - 0px) * var(--sc2x0,var(--bx2,.5))) calc(0px + (100% - 0px) * var(--sc2y0,var(--by2,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(0px + (100% - 0px) * var(--sc2x1,var(--bx2,.5))) calc(0px + (100% - 0px) * var(--sc2y1,var(--by2,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -2095,7 +2095,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -2105,6 +2104,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -2143,7 +2143,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -2188,7 +2188,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -2226,7 +2226,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -2238,7 +2238,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -2248,6 +2247,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -2282,7 +2282,7 @@ effect span
         -webkit-mask: radial-gradient(ellipse calc(207.0px * var(--bw,1)) calc(207.0px * var(--bw,1)) at calc(0px + (100% - 0px) * var(--bx,.5)) calc(0px + (100% - 0px) * var(--by,1)), #fff 0%, rgba(255,255,255,0.63) 37%, rgba(255,255,255,0.19) 74%, transparent 100%)
         mask: radial-gradient(ellipse calc(207.0px * var(--bw,1)) calc(207.0px * var(--bw,1)) at calc(0px + (100% - 0px) * var(--bx,.5)) calc(0px + (100% - 0px) * var(--by,1)), #fff 0%, rgba(255,255,255,0.63) 37%, rgba(255,255,255,0.19) 74%, transparent 100%)
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -2322,7 +2322,7 @@ effect span
         -webkit-mask: radial-gradient(ellipse calc(207.0px * var(--bw,1)) calc(207.0px * var(--bw,1)) at calc(0px + (100% - 0px) * var(--bx,.5)) calc(0px + (100% - 0px) * var(--by,1)), #fff 0%, rgba(255,255,255,0.63) 37%, rgba(255,255,255,0.19) 74%, transparent 100%)
         mask: radial-gradient(ellipse calc(207.0px * var(--bw,1)) calc(207.0px * var(--bw,1)) at calc(0px + (100% - 0px) * var(--bx,.5)) calc(0px + (100% - 0px) * var(--by,1)), #fff 0%, rgba(255,255,255,0.63) 37%, rgba(255,255,255,0.19) 74%, transparent 100%)
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -2354,7 +2354,7 @@ effect span
         filter: blur(8px) hue-rotate(var(--bhue2, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
         -webkit-mask: radial-gradient(ellipse calc(291.0px * var(--bw,1)) calc(291.0px * var(--bw,1)) at calc(0px + (100% - 0px) * var(--bx,.5)) calc(0px + (100% - 0px) * var(--by,1)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%)
         mask: radial-gradient(ellipse calc(291.0px * var(--bw,1)) calc(291.0px * var(--bw,1)) at calc(0px + (100% - 0px) * var(--bx,.5)) calc(0px + (100% - 0px) * var(--by,1)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%)
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -2366,7 +2366,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -2376,6 +2375,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -2413,7 +2413,7 @@ effect span
         -webkit-mask: linear-gradient(to top, rgb(255, 255, 255), rgba(255, 255, 255, 0.55) 35%, transparent 68%)
         mask: linear-gradient(to top, rgb(255, 255, 255), rgba(255, 255, 255, 0.55) 35%, transparent 68%)
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -2456,7 +2456,7 @@ effect span
         -webkit-mask: linear-gradient(to top, rgb(255, 255, 255), rgba(255, 255, 255, 0.55) 35%, transparent 68%)
         mask: linear-gradient(to top, rgb(255, 255, 255), rgba(255, 255, 255, 0.55) 35%, transparent 68%)
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -2488,7 +2488,7 @@ effect span
         filter: blur(8px) hue-rotate(var(--bhue2, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
         -webkit-mask: linear-gradient(to top, rgb(255, 255, 255), rgba(255, 255, 255, 0.55) 35%, transparent 68%)
         mask: linear-gradient(to top, rgb(255, 255, 255), rgba(255, 255, 255, 0.55) 35%, transparent 68%)
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -2500,7 +2500,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: visible
   top: -1px
   right: -2px
   bottom: -3px
@@ -2510,6 +2509,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: visible
     child[0]
       position: absolute
       inset: 0px
@@ -2548,7 +2548,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -2593,7 +2593,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -2631,7 +2631,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)
     child[3]
       position: absolute
@@ -2670,7 +2670,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(94px + (100% - 188px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(94px + (100% - 188px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(94px + (100% - 188px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(94px + (100% - 188px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))"
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))"
 `;
 
 exports[`Ethereal rendered layers > place ext-border 1`] = `
@@ -2681,7 +2681,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: visible
   top: -1px
   right: -2px
   bottom: -3px
@@ -2691,6 +2690,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: visible
     child[0]
       position: absolute
       inset: 0px
@@ -2735,7 +2735,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: -94px
@@ -2773,7 +2773,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(94px + (100% - 188px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(94px + (100% - 188px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(94px + (100% - 188px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(94px + (100% - 188px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: path(evenodd, "M0 0 H188 V188 H0 Z M94 94 H94 A0 0 0 0 1 94 94 V94 A0 0 0 0 1 94 94 H94 A0 0 0 0 1 94 94 V94 A0 0 0 0 1 94 94 Z")"
 `;
 
@@ -2785,7 +2785,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: visible
   top: -1px
   right: -2px
   bottom: -3px
@@ -2795,6 +2794,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: visible
     child[0]
       position: absolute
       inset: 0px
@@ -2839,7 +2839,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: -94px
@@ -2877,7 +2877,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(94px + (100% - 188px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(94px + (100% - 188px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(94px + (100% - 188px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(94px + (100% - 188px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))"
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))"
 `;
 
 exports[`Ethereal rendered layers > place internal 1`] = `
@@ -2888,7 +2888,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -2898,6 +2897,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -2936,7 +2936,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -2981,7 +2981,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -3019,7 +3019,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -3031,7 +3031,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -3041,6 +3040,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -3085,7 +3085,7 @@ effect span
           radial-gradient(ellipse calc(44px * var(--bw,1) * var(--bs4,1)) calc(44px * var(--bw,1) * var(--bs4,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -13.5px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -13.5px * var(--dy,0)), rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.19) 37%, rgba(255,255,255,0.06) 74%, transparent 100%),
           radial-gradient(ellipse calc(40px * var(--bw,1) * var(--bs1,1)) calc(40px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 37%, rgba(255,255,255,0.05) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -3136,7 +3136,7 @@ effect span
           radial-gradient(ellipse calc(44px * var(--bw,1) * var(--bs4,1)) calc(44px * var(--bw,1) * var(--bs4,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -13.5px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -13.5px * var(--dy,0)), rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.19) 37%, rgba(255,255,255,0.06) 74%, transparent 100%),
           radial-gradient(ellipse calc(40px * var(--bw,1) * var(--bs1,1)) calc(40px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 37%, rgba(255,255,255,0.05) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -3180,7 +3180,7 @@ effect span
           radial-gradient(ellipse calc(63px * var(--bw,1) * var(--bs3,1)) calc(63px * var(--bw,1) * var(--bs3,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -9.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -9.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(62px * var(--bw,1) * var(--bs4,1)) calc(62px * var(--bw,1) * var(--bs4,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -13.5px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -13.5px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(56px * var(--bw,1) * var(--bs1,1)) calc(56px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -3192,7 +3192,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -3202,6 +3201,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -3240,7 +3240,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(calc(0px + (100% - 0px) * var(--bx,.5)) + (var(--nx,0)) * 6px) + 0.0px * var(--dx,1)) calc(calc(calc(0px + (100% - 0px) * var(--by,1)) + (var(--ny,1)) * 6px) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.48) 31%, rgba(255,255,255,0.17) 77%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(calc(0px + (100% - 0px) * var(--bx,.5)) + (var(--nx,0)) * 6px) + -18.0px * var(--dx,1)) calc(calc(calc(0px + (100% - 0px) * var(--by,1)) + (var(--ny,1)) * 6px) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.27) 31%, rgba(255,255,255,0.10) 77%, transparent 100%),
         filter: blur(3px) hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -3285,7 +3285,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(calc(0px + (100% - 0px) * var(--bx,.5)) + (var(--nx,0)) * 6px) + 0.0px * var(--dx,1)) calc(calc(calc(0px + (100% - 0px) * var(--by,1)) + (var(--ny,1)) * 6px) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.48) 31%, rgba(255,255,255,0.17) 77%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(calc(0px + (100% - 0px) * var(--bx,.5)) + (var(--nx,0)) * 6px) + -18.0px * var(--dx,1)) calc(calc(calc(0px + (100% - 0px) * var(--by,1)) + (var(--ny,1)) * 6px) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.27) 31%, rgba(255,255,255,0.10) 77%, transparent 100%),
         filter: blur(3px) hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -3323,7 +3323,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(calc(0px + (100% - 0px) * var(--bx,.5)) + (var(--nx,0)) * 6px) + 0.0px * var(--dx,1)) calc(calc(calc(0px + (100% - 0px) * var(--by,1)) + (var(--ny,1)) * 6px) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.69) 24%, rgba(255,255,255,0.25) 73%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(calc(0px + (100% - 0px) * var(--bx,.5)) + (var(--nx,0)) * 6px) + -18.0px * var(--dx,1)) calc(calc(calc(0px + (100% - 0px) * var(--by,1)) + (var(--ny,1)) * 6px) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.69) 24%, rgba(255,255,255,0.25) 73%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -3335,7 +3335,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -3345,6 +3344,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -3383,7 +3383,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.767) + 0.192 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.767) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.767) + 0.192)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -3428,7 +3428,7 @@ effect span
           radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
           radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.767) + 0.192 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.767) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.767) + 0.192)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -3466,7 +3466,7 @@ effect span
         mask:
           radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(0px + (100% - 0px) * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(0px + (100% - 0px) * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.730) + 0.182 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.730) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.730) + 0.182)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;
 
@@ -3478,7 +3478,6 @@ effect span
   position: absolute
   pointer-events: none
   border-radius: inherit
-  overflow: hidden
   top: -1px
   right: -2px
   bottom: -3px
@@ -3488,6 +3487,7 @@ effect span
     inset: 0px
     pointer-events: none
     border-radius: inherit
+    overflow: hidden
     child[0]
       position: absolute
       inset: 0px
@@ -3530,7 +3530,7 @@ effect span
           radial-gradient(ellipse calc(78px * var(--bw,1) * var(--bs3,1)) calc(78px * var(--bw,1) * var(--bs3,1)) at calc(0px + (100% - 0px) * var(--sc1x2,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y2,var(--by,1))), rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.22) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
           radial-gradient(ellipse calc(73px * var(--bw,1) * var(--bs4,1)) calc(73px * var(--bw,1) * var(--bs4,1)) at calc(0px + (100% - 0px) * var(--sc1x3,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y3,var(--by,1))), rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.17) 37%, rgba(255,255,255,0.05) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.700), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.700) - 0.850) + 0.150)) * var(--flk2,1))
     child[1]
       position: absolute
       inset: 0px
@@ -3579,7 +3579,7 @@ effect span
           radial-gradient(ellipse calc(78px * var(--bw,1) * var(--bs3,1)) calc(78px * var(--bw,1) * var(--bs3,1)) at calc(0px + (100% - 0px) * var(--sc1x2,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y2,var(--by,1))), rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.22) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
           radial-gradient(ellipse calc(73px * var(--bw,1) * var(--bs4,1)) calc(73px * var(--bw,1) * var(--bs4,1)) at calc(0px + (100% - 0px) * var(--sc1x3,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y3,var(--by,1))), rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.17) 37%, rgba(255,255,255,0.05) 74%, transparent 100%),
         filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.800) + 0.200)) * var(--flk2,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.140), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.140) - 0.850) + 0.150)) * var(--flk2,1))
     child[2]
       position: absolute
       inset: 0px
@@ -3621,6 +3621,6 @@ effect span
           radial-gradient(ellipse calc(109px * var(--bw,1) * var(--bs2,1)) calc(109px * var(--bw,1) * var(--bs2,1)) at calc(0px + (100% - 0px) * var(--sc1x1,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y1,var(--by,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(95px * var(--bw,1) * var(--bs3,1)) calc(95px * var(--bw,1) * var(--bs3,1)) at calc(0px + (100% - 0px) * var(--sc1x2,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y2,var(--by,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(89px * var(--bw,1) * var(--bs4,1)) calc(89px * var(--bw,1) * var(--bs4,1)) at calc(0px + (100% - 0px) * var(--sc1x3,var(--bx,.5))) calc(0px + (100% - 0px) * var(--sc1y3,var(--by,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
-        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.800) + 0.200 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.800) + 0.200)) * var(--flk,1) * var(--njFade,1))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;

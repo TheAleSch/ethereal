@@ -235,6 +235,18 @@ describe('nextGeneration', () => {
     expect([...fx.children]).toEqual([second])
   })
 
+  it('leaves a generation that is already fading out alone when interrupted', () => {
+    const fx = document.createElement('span')
+    const first = nextGeneration(fx, 300)
+    nextGeneration(fx, 300)
+    const fadeOutsBefore = recorded.filter((call) => call.el === first).length
+    // hover out inside the crossfade: `first` must keep fading, not restart —
+    // and above all must not be cancelled, which would retire it at once
+    nextGeneration(fx, 300)
+    expect(recorded.filter((call) => call.el === first).length).toBe(fadeOutsBefore)
+    expect(fx.contains(first)).toBe(true)
+  })
+
   it('swaps instantly for a zero duration or without the Web Animations API', () => {
     const fx = document.createElement('span')
     nextGeneration(fx, 300)
