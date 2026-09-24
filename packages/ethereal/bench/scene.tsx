@@ -40,7 +40,7 @@ const Host = ({ width, height, rows, ...props }: EtherealProps & { width: number
       width,
       height,
       borderRadius: 16,
-      background: '#111',
+      background: params.get('theme') === 'light' ? '#fff' : '#111',
       margin: 36,
       display: 'inline-block',
       color: '#ddd',
@@ -76,7 +76,25 @@ const sheetRows: EtherealProps[] = JSON.parse(
   params.get('rows') ?? '[{"path":"around"},{"path":"bottom"},{"path":"around","place":"both","heads":2},{"path":"breathe"}]'
 )
 
+// preset sheet: every entry of a presets.json served next to the bundle
+// (a name → props map, e.g. the playground's ETHEREAL_PRESETS), rendered in
+// the theme given by ?theme= on its matching backdrop
+const presetTheme = params.get('theme') === 'light' ? 'light' : 'dark'
+const presets: Record<string, EtherealProps> =
+  scene === 'presets' ? await (await fetch('presets.json')).json() : {}
+
 function App() {
+  if (scene === 'presets')
+    return (
+      <div style={{ padding: 10, background: presetTheme === 'light' ? '#f4f4f2' : '#050505', display: 'flex', flexWrap: 'wrap' }}>
+        {Object.entries(presets).map(([name, props]) => (
+          <div key={name} style={{ font: '10px monospace', color: '#888', textAlign: 'center' }}>
+            <Host width={200} height={52} rows={0} strength={1} {...props} theme={presetTheme} />
+            <div style={{ marginTop: -30 }}>{name}</div>
+          </div>
+        ))}
+      </div>
+    )
   if (scene === 'sheet')
     return (
       <div style={{ padding: 10, background: params.get('bg') ?? '#050505' }}>
