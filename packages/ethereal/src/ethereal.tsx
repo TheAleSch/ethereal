@@ -279,6 +279,13 @@ const spotChainOf = (cfg: EtherealCfg) => {
   return { count: offs.length, offs }
 }
 
+// A band's height: an external driver's `--fbK` (e.g. audio, written on the
+// HOST) wins, else the static path's own idle sway `--fbsK` (written on the
+// effect span), else 1. Two names rather than one because the span is the
+// nearer ancestor — its own `--fbK` would shadow the host's by inheritance
+// no matter which ticker subscriber wrote last.
+const bandHeight = (band: number) => `var(--fb${band}, var(--fbs${band}, 1))`
+
 // An unchanged value is skipped: many vars sit still for most frames (hover,
 // hue, flicker, a straight run's tangent), and a write is a string parse plus
 // a style invalidation. The comparison is against what THIS driver last
@@ -439,7 +446,7 @@ function tickAll(nowSec: number, dt: number) {
         }
     } else if (cfg.path === 'static') {
       // static: fixed bottom band, needles = waveform. Each band gets its own
-      // gentle desynced sway (`--fb0..7`), so the row reads as a living
+      // gentle desynced sway (`--fbs0..7`), so the row reads as a living
       // waveform rather than a fixed row of bars.
       head1 = { x: 0.5, y: 1, dx: 1, dy: 0 }
       head2 = head1
@@ -447,7 +454,7 @@ function tickAll(nowSec: number, dt: number) {
       edgeRamp = 1
       for (let band = 0; band < 8; band++)
         writeVar(rec, 
-          `--fb${band}`,
+          `--fbs${band}`,
           (0.55 + 0.45 * Math.sin((2 * Math.PI * time) / (duration * (0.9 + 0.13 * band)) + band * 1.9)).toFixed(3)
         )
     } else {
@@ -925,7 +932,7 @@ export function Ethereal({
           const radius = Math.max(30, Math.min(88, spacingPx * 1.15)) * shrink
           const coreAlpha = +(alpha0 * 0.62).toFixed(2)
           const shoulderAlpha = +(alpha0 * 0.28).toFixed(2)
-          return `radial-gradient(ellipse calc(${radius.toFixed(0)}px * var(--bs${(blobIndex % 4) + 1},1)) calc(${(+blobH * 1.15).toFixed(0)}px * var(--fb${band},1)) at ${pos(0, xFrac.toFixed(3))} 100%, ${color(staticColor, coreAlpha)} 0%, ${color(staticColor, shoulderAlpha)} ${Math.min(72, midStop + 14)}%, transparent 100%)`
+          return `radial-gradient(ellipse calc(${radius.toFixed(0)}px * var(--bs${(blobIndex % 4) + 1},1)) calc(${(+blobH * 1.15).toFixed(0)}px * ${bandHeight(band)}) at ${pos(0, xFrac.toFixed(3))} 100%, ${color(staticColor, coreAlpha)} 0%, ${color(staticColor, shoulderAlpha)} ${Math.min(72, midStop + 14)}%, transparent 100%)`
         }
         // around: each blob walks the path at its own arc offset (--pNxI,
         // set per-frame in the driver) so the comet bends through corners;
@@ -1016,7 +1023,7 @@ export function Ethereal({
         // other paths. `static` reads the band alone because there it IS the
         // waveform: the row's whole shape is the bands, not bands riding a
         // breathing pulse.
-        const bandVar = `var(--fb${Math.min(7, Math.floor((needleIndex / Math.max(1, clamped.needles - 1)) * 7.999))},1)`
+        const bandVar = bandHeight(Math.min(7, Math.floor((needleIndex / Math.max(1, clamped.needles - 1)) * 7.999)))
         // Travelling/breathing needles should emerge spatially from the edge,
         // not merely appear when the moving mask reaches them. Their existing
         // desynchronised pulse now scales length as well as width; static keeps
@@ -1129,6 +1136,9 @@ export function Ethereal({
     // stale --njFade (~0 near a breathe-jitter cycle wrap) would freeze the
     // next config's bloom dimmed or invisible
     fx.style.removeProperty('--njFade')
+    // ...and a static build's band sway would freeze every later path's
+    // needle heights at whatever the last static frame left
+    if (clamped.path !== 'static') for (let band = 0; band < 8; band++) fx.style.removeProperty(`--fbs${band}`)
     // STATE TRANSITIONS: when cfg changes (a different `state`, a hover or
     // press treatment, any prop) the rebuilt layers crossfade with the old
     // ones over `transitionMs` (e.g. idle → sending → thinking on a chat
@@ -1459,9 +1469,23 @@ export function Ethereal({
     })
     metricsRO.observe(host)
     // off-screen hosts pause entirely (generous margin — the glow overflows)
+    // Its own compositor layer while it animates: the glow repaints every
+    // frame, and without one the host's content under it is re-rastered
+    // along with it (measured: raster -50% on a button gallery, -73% on a
+    // hero card). Only while on screen — a layer costs GPU memory for the
+    // span's whole box — and never under reduced motion, where nothing
+    // repaints. Trade-off: text overlapping the glow may lose LCD subpixel
+    // anti-aliasing on Windows.
+    const promote = (on: boolean) => {
+      fx.style.willChange = on ? 'transform' : ''
+    }
+    promote(true)
     const io = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) rec.visible = entry.isIntersecting
+        for (const entry of entries) {
+          rec.visible = entry.isIntersecting
+          promote(entry.isIntersecting)
+        }
       },
       { rootMargin: '160px' }
     )
@@ -1475,6 +1499,7 @@ export function Ethereal({
       cleanupStatic()
       metricsRO.disconnect()
       io.disconnect()
+      promote(false)
       removeHost(rec)
     }
     // theme: the cores' tint, the bloom blend and the scatter all read it
@@ -1492,10 +1517,6 @@ export function Ethereal({
         inset: 0,
         pointerEvents: 'none',
         borderRadius: 'inherit',
-        // its own compositor layer: the glow repaints every frame, and
-        // without one the host's content under it is re-rastered with it
-        // (measured: raster -50% on a button gallery, -73% on a hero card)
-        willChange: 'transform',
       }}
     />
   )

@@ -313,6 +313,10 @@ changes.
   the loop clamps `dt` after background-tab pauses so clocks never jump.
 - **Layout reads are cached** by ResizeObserver — the per-frame code only
   writes CSS custom properties, so there is no layout thrash.
+- **`<Ethereal>` paints on its own compositor layer** while it animates on
+  screen, so the host's content is not re-rasterized with the glow every
+  frame. On Windows, text overlapping the glow may render with grayscale
+  rather than subpixel anti-aliasing as a result.
 - **`prefers-reduced-motion: reduce`** renders a static glow with no
   animation loop.
 - **Theming**: honors `html[data-theme]`, `.light`/`.dark` classes, or the

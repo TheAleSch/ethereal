@@ -143,7 +143,7 @@ describe('claimHost', () => {
     const releaseFirst = claimHost(target, 'Ethereal')
     const releaseSecond = claimHost(target, 'Ethereal')
     expect(warn).toHaveBeenCalledOnce()
-    expect(warn.mock.calls[0]![0]).toContain('will fight over CSS variables')
+    expect(warn.mock.calls[0]![0]).toContain('give each effect its own host')
     releaseFirst()
     releaseSecond()
   })

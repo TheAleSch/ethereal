@@ -188,15 +188,17 @@ export const devWarn = (message: string): void => {
     console.warn(message)
 }
 
-// both effects drive the SAME CSS variables (--bx/--bs1../--hov …) on their
-// host — two effects on one host silently corrupt each other, so warn
+// Two effects on one host overlap, and EventHorizon drives its per-frame CSS
+// variables (--bx/--bs1../--hov …) on the host itself, so a second one there
+// silently corrupts the first. Ethereal keeps its variables on its own span,
+// but stacking still double-paints — warn either way.
 type HostClaims = { count: number; names: Map<string, number> }
 const claimedHosts = new WeakMap<HTMLElement, HostClaims>()
 export function claimHost(host: HTMLElement, name: string) {
   const claims = claimedHosts.get(host) ?? { count: 0, names: new Map<string, number>() }
   if (claims.count > 0) {
     const previous = [...claims.names.keys()].join('/> and <')
-    devWarn(`[ethereal-glow] host already has <${previous}/> — <${name}/> on the same element will fight over CSS variables`)
+    devWarn(`[ethereal-glow] host already has <${previous}/> — <${name}/> on the same element will overlap (and EventHorizons fight over CSS variables) — give each effect its own host`)
   }
   claims.count++
   claims.names.set(name, (claims.names.get(name) ?? 0) + 1)

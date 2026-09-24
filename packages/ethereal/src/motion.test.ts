@@ -275,6 +275,18 @@ describe('Ethereal drives its host every frame', () => {
     expect(parkedPairs).toBeGreaterThan(0)
   })
 
+  it('keeps its static band sway off --fbK and clears it when leaving static', () => {
+    // --fbK is left free for a driver on the HOST (audio): the effect span is
+    // the nearer ancestor, so writing --fbK there would shadow the driver
+    render(createElement(EtherealSubject, { path: 'static', duration: 2 }))
+    run(4)
+    expect(read('--fbs0')).not.toBe('')
+    expect(read('--fb0')).toBe('')
+    // a stale sway would freeze every later path's needle heights
+    act(() => root!.render(createElement(EtherealSubject, { path: 'around', duration: 2 })))
+    expect(read('--fbs0')).toBe('')
+  })
+
   it('paints a static frame under prefers-reduced-motion and never ticks', () => {
     reduceMotion = true
     render(createElement(EtherealSubject, { path: 'around', duration: 2, hover: 'reveal' }))

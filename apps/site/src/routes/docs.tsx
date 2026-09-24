@@ -473,8 +473,9 @@ function DocsPage() {
                     One effect per host.
                   </strong>{" "}
                   Mounting two effects (or two of the same) on the same element
-                  makes them fight over the shared CSS variables; the second
-                  logs a console warning. Give each effect its own host.
+                  stacks their glows, and two EventHorizons fight over the CSS
+                  variables they drive on it; the second logs a console warning.
+                  Give each effect its own host.
                 </li>
                 <li>
                   <strong className="font-medium text-foreground">
