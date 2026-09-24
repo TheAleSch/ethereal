@@ -28,12 +28,12 @@ const shadcnSnippet = `npx shadcn@latest add https://ethereal.ale.design/r/ether
 
 // Whole-entry ESM, minified and gzipped — the bundlephobia convention, and
 // the honest number for the install command directly beside it. Importing a
-// single component tree-shakes to 10.7 kB. Regenerate after a release:
+// single component tree-shakes to 13.6 kB. Regenerate after a release:
 //   npm run build
 //   npx esbuild <(echo "export * from './packages/ethereal/dist/index.js'") \
 //     --bundle --format=esm --minify --external:react \
 //     --external:react/jsx-runtime | gzip -9 | wc -c
-const BUNDLE_SIZE = "16.6 kB min+gzip"
+const BUNDLE_SIZE = "19.5 kB min+gzip"
 
 const SUNSET = [
   "rgb(255,100,60)",
@@ -118,6 +118,9 @@ function Home() {
                 hotSpread={40}
                 hover="boost-speed"
                 hoverAmount={1.2}
+                // keep the sunset gold all the way to the head — a white tip
+                // bleaches the border to pale cream at every pass
+                whiteness={0}
                 colors={SUNSET}
                 className="w-full sm:w-auto"
                 style={{ borderRadius: 14 }}
