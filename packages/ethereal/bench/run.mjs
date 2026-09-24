@@ -63,5 +63,10 @@ for (let rep = 0; rep < Number(process.env.REPS || 3); rep++) {
 await browser.close()
 const median = (values) => values.sort((a, b) => a - b)[Math.floor(values.length / 2)]
 const summary = Object.fromEntries(Object.keys(runs[0]).map((key) => [key, +median(runs.map((run) => run[key])).toFixed(1)]))
-console.log(JSON.stringify({ scene, strength: +strength, perSecond: summary }))
+// per committed frame too: a faster build commits MORE frames per second, so
+// per-second totals alone under-state the win
+const perFrame = Object.fromEntries(
+  TRACKED.map((name) => [name, +median(runs.map((run) => run[name] / Math.max(1, run.frames))).toFixed(2)])
+)
+console.log(JSON.stringify({ scene, strength: +strength, perSecond: summary, msPerFrame: perFrame }))
 server.close()

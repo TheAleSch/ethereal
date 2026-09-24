@@ -8,6 +8,16 @@ const params = new URLSearchParams(location.search)
 const scene = params.get('scene') ?? 'gallery'
 const strength = Number(params.get('strength') ?? '1')
 
+// ?at=<seconds> freezes every animation clock at that moment, so two builds
+// can be screenshotted at the identical frame and diffed
+const freezeAt = params.get('at')
+if (freezeAt !== null) {
+  const nativeFrame = window.requestAnimationFrame.bind(window)
+  const start = performance.now()
+  window.requestAnimationFrame = (callback) =>
+    nativeFrame((now) => callback(Math.min(now - start, Number(freezeAt) * 1000) + 1000))
+}
+
 const Content = ({ rows }: { rows: number }) => (
   <span style={{ position: 'relative', zIndex: 10, display: 'block', padding: 12 }}>
     {Array.from({ length: rows }, (_, row) => (
@@ -59,7 +69,9 @@ const galleryProps: EtherealProps[] = [
 
 // strength sheet: one column per strength, one row per config, on the
 // backdrop given by ?bg= — for judging how the glow scales by eye
-const sheetStrengths = [0.6, 1, 1.5, 2]
+const sheetStrengths = (params.get('strengths') ?? '0.6,1,1.5,2').split(',').map(Number)
+const sheetW = Number(params.get('w') ?? 200)
+const sheetH = Number(params.get('h') ?? 56)
 const sheetRows: EtherealProps[] = JSON.parse(
   params.get('rows') ?? '[{"path":"around"},{"path":"bottom"},{"path":"around","place":"both","heads":2},{"path":"breathe"}]'
 )
@@ -71,7 +83,7 @@ function App() {
         {sheetRows.map((row, rowIndex) => (
           <div key={rowIndex}>
             {sheetStrengths.map((value) => (
-              <Host key={value} width={200} height={56} rows={0} {...row} strength={value} />
+              <Host key={value} width={sheetW} height={sheetH} rows={0} {...row} strength={value} />
             ))}
           </div>
         ))}

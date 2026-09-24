@@ -234,6 +234,11 @@ type HostRec = {
   // IntersectionObserver flag: off-screen hosts skip all per-frame work
   visible: boolean
   lut: LUT
+  // comet-chain px offsets — fixed for the life of a build, so the driver
+  // reads them instead of re-deriving (and re-sorting) them every frame
+  chainOffsets: number[]
+  // last value this driver wrote per custom property (see writeVar)
+  written: Map<string, string>
   needleLayers?: { el: HTMLElement; inset: number }[]
   needleCyc?: number
   needleBG?: (inset: number, seed?: number) => string
@@ -271,6 +276,19 @@ const spotChainOf = (cfg: EtherealCfg) => {
   // directions (head first, farthest circles last)
   offs.sort((a, b) => Math.abs(a) - Math.abs(b))
   return { count: offs.length, offs }
+}
+
+// An unchanged value is skipped: many vars sit still for most frames (hover,
+// hue, flicker, a straight run's tangent), and a write is a string parse plus
+// a style invalidation. The comparison is against what THIS driver last
+// wrote, not the live inline value — reading that back serializes a CSS value
+// on every call. A higher-priority ticker subscriber that overwrites one of
+// these vars (see core/ticker) does so every frame, after this driver, so the
+// skip never leaves its value standing in place of a changed one of ours.
+function writeVar(rec: HostRec, prop: string, value: string) {
+  if (rec.written.get(prop) === value) return
+  rec.written.set(prop, value)
+  rec.el.style.setProperty(prop, value)
 }
 
 function tickAll(nowSec: number, dt: number) {
@@ -348,8 +366,8 @@ function tickAll(nowSec: number, dt: number) {
       for (let i = 1; i < blobCount; i++) {
         const off = Math.ceil(i / 2) * 18 * (i % 2 ? 1 : -1)
         const blob1 = walkSmooth(travel + off / perimeterPx, 0.3, aspect, rec.lut)
-        el.style.setProperty(`--p1x${i}`, blob1.x.toFixed(4))
-        el.style.setProperty(`--p1y${i}`, blob1.y.toFixed(4))
+        writeVar(rec, `--p1x${i}`, blob1.x.toFixed(4))
+        writeVar(rec, `--p1y${i}`, blob1.y.toFixed(4))
         if (cfg.heads === 2) {
           const blob2 = walkSmooth(
             cfg.spin === 'counter' ? 1 - travel - off / perimeterPx : travel + 0.5 + off / perimeterPx,
@@ -357,8 +375,8 @@ function tickAll(nowSec: number, dt: number) {
             aspect,
             rec.lut
           )
-          el.style.setProperty(`--p2x${i}`, blob2.x.toFixed(4))
-          el.style.setProperty(`--p2y${i}`, blob2.y.toFixed(4))
+          writeVar(rec, `--p2x${i}`, blob2.x.toFixed(4))
+          writeVar(rec, `--p2y${i}`, blob2.y.toFixed(4))
         }
       }
       // spot chain (round AND adaptive on 'around'): each circle walks the
@@ -366,14 +384,14 @@ function tickAll(nowSec: number, dt: number) {
       // samples drift independently instead of translating as one welded
       // item, so the spot bends through corners instead of deforming
       {
-        const { offs } = spotChainOf(cfg)
+        const offs = rec.chainOffsets
         if (offs.length > 1)
           offs.forEach((offsetPx, circle) => {
             const sway = 6 * Math.sin((2 * Math.PI * time) / (duration * (0.8 + 0.17 * circle)) + circle * 2.1)
             const lag = (offsetPx + sway) / perimeterPx
             const circle1 = walkSmooth(travel + lag, 0.3, aspect, rec.lut)
-            el.style.setProperty(`--sc1x${circle}`, circle1.x.toFixed(4))
-            el.style.setProperty(`--sc1y${circle}`, circle1.y.toFixed(4))
+            writeVar(rec, `--sc1x${circle}`, circle1.x.toFixed(4))
+            writeVar(rec, `--sc1y${circle}`, circle1.y.toFixed(4))
             if (cfg.heads === 2) {
               const circle2 = walkSmooth(
                 cfg.spin === 'counter' ? 1 - travel - lag : travel + 0.5 + lag,
@@ -381,8 +399,8 @@ function tickAll(nowSec: number, dt: number) {
                 aspect,
                 rec.lut
               )
-              el.style.setProperty(`--sc2x${circle}`, circle2.x.toFixed(4))
-              el.style.setProperty(`--sc2y${circle}`, circle2.y.toFixed(4))
+              writeVar(rec, `--sc2x${circle}`, circle2.x.toFixed(4))
+              writeVar(rec, `--sc2y${circle}`, circle2.y.toFixed(4))
             }
           })
       }
@@ -397,8 +415,8 @@ function tickAll(nowSec: number, dt: number) {
             (4 + 36 * cfg.wander) * Math.sin((2 * Math.PI * time) / (duration * (0.7 + 0.19 * core)) + core * 1.7)
           const lag = (off + sway) / perimeterPx
           const core1 = walkSmooth(travel + lag, 0.3, aspect, rec.lut)
-          el.style.setProperty(`--hp1x${core}`, core1.x.toFixed(4))
-          el.style.setProperty(`--hp1y${core}`, core1.y.toFixed(4))
+          writeVar(rec, `--hp1x${core}`, core1.x.toFixed(4))
+          writeVar(rec, `--hp1y${core}`, core1.y.toFixed(4))
           if (cfg.heads === 2) {
             const core2 = walkSmooth(
               cfg.spin === 'counter' ? 1 - travel - lag : travel + 0.5 + lag,
@@ -406,8 +424,8 @@ function tickAll(nowSec: number, dt: number) {
               aspect,
               rec.lut
             )
-            el.style.setProperty(`--hp2x${core}`, core2.x.toFixed(4))
-            el.style.setProperty(`--hp2y${core}`, core2.y.toFixed(4))
+            writeVar(rec, `--hp2x${core}`, core2.x.toFixed(4))
+            writeVar(rec, `--hp2y${core}`, core2.y.toFixed(4))
           }
         }
     } else if (cfg.path === 'static') {
@@ -419,7 +437,7 @@ function tickAll(nowSec: number, dt: number) {
       beamW = 1
       edgeRamp = 1
       for (let band = 0; band < 8; band++)
-        el.style.setProperty(
+        writeVar(rec, 
           `--fb${band}`,
           (0.55 + 0.45 * Math.sin((2 * Math.PI * time) / (duration * (0.9 + 0.13 * band)) + band * 1.9)).toFixed(3)
         )
@@ -437,7 +455,7 @@ function tickAll(nowSec: number, dt: number) {
       const widthPeriods = [0.9, 1.1, 0.98],
         heightPeriods = [1.26, 0.81, 1.4]
       for (let quadrant = 0; quadrant < 4; quadrant++)
-        el.style.setProperty(
+        writeVar(rec, 
           '--q' + quadrant,
           (
             0.45 +
@@ -445,22 +463,22 @@ function tickAll(nowSec: number, dt: number) {
           ).toFixed(3)
         )
       for (let group = 1; group <= 3; group++) {
-        el.style.setProperty(
+        writeVar(rec, 
           `--w${group}`,
           (1 + swell * Math.sin((2 * Math.PI * time) / (duration * widthPeriods[group - 1]!) + group * 2.0)).toFixed(3)
         )
-        el.style.setProperty(
+        writeVar(rec, 
           `--h${group}`,
           (
             1 -
             swell * 0.9 * Math.sin((2 * Math.PI * time) / (duration * heightPeriods[group - 1]!) + group * 2.0)
           ).toFixed(3)
         )
-        el.style.setProperty(
+        writeVar(rec, 
           `--r${group}x`,
           (drift * Math.sin((2 * Math.PI * time) / (duration * (1.5 + 0.4 * group)) + group * 2.1)).toFixed(1) + 'px'
         )
-        el.style.setProperty(
+        writeVar(rec, 
           `--r${group}y`,
           (drift * 0.6 * Math.sin((2 * Math.PI * time) / (duration * (1.8 + 0.3 * group)) + group * 1.3 + 1)).toFixed(
             1
@@ -470,11 +488,11 @@ function tickAll(nowSec: number, dt: number) {
       if (cfg.needleJitter) {
         // small continuous wobble ("move slightly") — 3 shared oscillator groups
         for (let group = 1; group <= 3; group++) {
-          el.style.setProperty(
+          writeVar(rec, 
             `--nj${group}x`,
             (6 * Math.sin((2 * Math.PI * time) / (duration * (0.7 + 0.2 * group)) + group * 3.3)).toFixed(1) + 'px'
           )
-          el.style.setProperty(
+          writeVar(rec, 
             `--nj${group}y`,
             (6 * Math.cos((2 * Math.PI * time) / (duration * (0.9 + 0.15 * group)) + group * 2.1)).toFixed(1) + 'px'
           )
@@ -484,7 +502,7 @@ function tickAll(nowSec: number, dt: number) {
         // instead of blinking the entire thinking field off.
         const distToEdge = Math.min(progress, 1 - progress)
         const fadeWindow = 0.12
-        el.style.setProperty(
+        writeVar(rec, 
           '--njFade',
           (distToEdge >= fadeWindow ? 1 : 0.55 + 0.45 * smoothstep(distToEdge / fadeWindow)).toFixed(3)
         )
@@ -531,7 +549,7 @@ function tickAll(nowSec: number, dt: number) {
                 Math.sin(time * (8.3 + 1.1 * core) + core * 5.1) *
                 Math.sin(time * (4.7 + 0.6 * core) + core * 2.3) +
                 0.12 * Math.sin(time * (19 + 2.7 * core) + core * 3.7))
-          el.style.setProperty(`--hf${core}`, coreFlicker.toFixed(3))
+          writeVar(rec, `--hf${core}`, coreFlicker.toFixed(3))
         }
       }
     }
@@ -599,7 +617,7 @@ function tickAll(nowSec: number, dt: number) {
         ).toFixed(1) + 'deg',
       '--hov': (cfg.hover === 'reveal' ? rec.hovC : hovBoost ? 1 + 0.8 * cfg.hoverAmount * rec.hovC : 1).toFixed(3),
     }
-    for (const [prop, value] of Object.entries(vals)) el.style.setProperty(prop, value)
+    for (const prop in vals) writeVar(rec, prop, vals[prop]!)
   })
 }
 
@@ -759,10 +777,13 @@ export function Ethereal({
     // around the travelling head. One shape, three call sites — a lone spot, a
     // chain circle riding the path, a chain circle on a straight run — which
     // differ only in size and centre.
-    const spotWindow = (width: string, height: string, cx: string, cy: string, mid: number) => {
+    // `peak` scales the whole window's alpha: a chain circle's comet decay is
+    // baked in here, so every circle of a chain can share ONE masked layer
+    const spotWindow = (width: string, height: string, cx: string, cy: string, mid: number, peak = 1) => {
       const innerStop = Math.round(mid * (1 - 0.35 * soft))
       const outerStop = Math.round(mid + (100 - mid) * (0.45 + 0.15 * soft))
-      return `radial-gradient(ellipse ${width} ${height} at ${cx} ${cy}, #fff 0%, rgba(255,255,255,${(0.55 + 0.15 * soft).toFixed(2)}) ${innerStop}%, rgba(255,255,255,${(0.12 + 0.14 * soft).toFixed(2)}) ${outerStop}%, transparent 100%)`
+      const white = (alpha: number) => (alpha >= 1 ? '#fff' : `rgba(255,255,255,${alpha.toFixed(2)})`)
+      return `radial-gradient(ellipse ${width} ${height} at ${cx} ${cy}, ${white(peak)} 0%, ${white((0.55 + 0.15 * soft) * peak)} ${innerStop}%, ${white((0.12 + 0.14 * soft) * peak)} ${outerStop}%, transparent 100%)`
     }
     const spot = (inset: number, width: number, height: number, mid: number, head: Head) => {
       const { ax, ay } = spotCenter(inset, head)
@@ -772,7 +793,15 @@ export function Ethereal({
     // circles (Ø = short dim). On 'around' each circle walks the path at
     // its own arc offset (--scNxK, set per-frame in the driver) so the
     // chain bends and flows instead of translating as one item.
-    const spots = (inset: number, width: number, height: number, mid: number, head: Head): string[] => {
+    // `peakAt` dims circle `rank` of an n-circle chain (1 = full window)
+    const spots = (
+      inset: number,
+      width: number,
+      height: number,
+      mid: number,
+      head: Head,
+      peakAt: (rank: number, count: number) => number = () => 1
+    ): string[] => {
       // chains apply to round everywhere and to adaptive on 'around' (an
       // axis-aligned ellipse deforms through corners — the chain bends);
       // adaptive on straight paths keeps its classic stretched ellipse
@@ -801,14 +830,15 @@ export function Ethereal({
             pos(inset, `var(--sc${headNum}y${rank},${head.y})`),
             head
           )
-          return spotWindow(diameter, diameter, center.ax, center.ay, mid)
+          return spotWindow(diameter, diameter, center.ax, center.ay, mid, peakAt(rank, count))
         }
         return spotWindow(
           diameter,
           diameter,
           `calc(${ax} + ${offsetPx.toFixed(1)}px * ${head.dx})`,
           `calc(${ay} + ${offsetPx.toFixed(1)}px * ${head.dy})`,
-          mid
+          mid,
+          peakAt(rank, count)
         )
       })
     }
@@ -1136,12 +1166,11 @@ export function Ethereal({
             maskComposite: composites[1],
           }
         : { webkitMask: layers, mask: layers }
-    const responsiveInnerMasks: { el: HTMLElement; spotMask: string }[] = []
+    const responsiveInnerMasks: HTMLElement[] = []
     const responsiveBloomMasks: HTMLElement[] = []
     const updateResponsiveMasks = () => {
       ;({ edgeY, edgeX, bloomEdgeY, bloomEdgeX } = responsiveBands())
-      for (const { el, spotMask } of responsiveInnerMasks)
-        Object.assign(el.style, masked(`${spotMask}, ${edgeY}, ${edgeX}`, ['source-in, source-over', 'intersect, add']))
+      for (const el of responsiveInnerMasks) Object.assign(el.style, masked(`${edgeY}, ${edgeX}`, ['source-over', 'add']))
       for (const el of responsiveBloomMasks)
         Object.assign(el.style, masked(`${bloomEdgeY}, ${bloomEdgeX}`, ['source-over', 'add']))
     }
@@ -1151,50 +1180,59 @@ export function Ethereal({
     // blurs the spot's masked-in content itself — softens the hard cutoff at
     // the mask edge, beyond what blendSoftness's extra gradient stops do
     const spotBlurF = clamped.spotBlur ? `blur(${clamped.spotBlur}px) ` : ''
+    // comet decay along a chain: 1/√n keeps the overlapping circles from
+    // blowing out, and tail circles dim progressively — comet, not sausage
+    const chainPeak = (rank: number, count: number) =>
+      count > 1
+        ? (1 - (Math.min(1, Math.max(0, clamped.trailFade)) * rank) / (count - 1)) / Math.sqrt(count)
+        : 1
     for (const head of heads) {
-      // round + wide spot → chain of circle windows: one inner/stroke layer
-      // per circle (mask lists can't union-then-intersect), opacity damped
-      // 1/√n so circle overlaps don't blow out
-      const spotList =
+      // Every circle of a chain rides in ONE mask (the union of the circle
+      // windows, each with its decay baked into its alpha). The static part of
+      // each layer's mask — the edge relight bands, the stroke's ring — sits
+      // on a wrapper instead, because a mask list can't union-then-intersect.
+      // Nesting does the intersect: the wrapper's mask multiplies the child's.
+      // One layer per head instead of one per circle, and the wrapper's mask
+      // holds no custom properties, so the per-frame restyle skips re-parsing
+      // it.
+      const spotMask = (
         clamped.path === 'static'
           ? [staticSpot]
-          : spots(0, clamped.spotW * spotScale, clamped.spotH * spotScale, 45, head)
-      const baseDamp = spotList.length > 1 ? 1 / Math.sqrt(spotList.length) : 1
-      for (const [spotIndex, spotMask] of spotList.entries()) {
-        // tail circles dim progressively — comet, not sausage
-        const damp =
-          baseDamp * (1 - (Math.min(1, Math.max(0, clamped.trailFade)) * spotIndex) / Math.max(1, spotList.length - 1))
-        // interior wash only for the modes that own the inside
-        if (clamped.place === 'internal' || clamped.place === 'both') {
-          const inner = mk('1')
-          Object.assign(inner.style, {
-            background: cluster(0.45, 0.85, head),
-            ...masked(`${spotMask}, ${edgeY}, ${edgeX}`, ['source-in, source-over', 'intersect, add']),
-            clipPath: clip,
-            opacity: envelope('var(--flk2,1)', (clamped.innerOpacity * clamped.strength * damp).toFixed(3)),
-            filter: glowFilter(spotBlurF, '--bhue'),
-          })
-          responsiveInnerMasks.push({ el: inner, spotMask })
-        }
-        const whiteHead = `radial-gradient(ellipse ${rotW(24, 28, head)} ${rotH(24, 28, head)} at ${pos(0, head.x)} ${pos(0, head.y)}, rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%)`
-        const stroke = mk('2')
-        Object.assign(stroke.style, {
-          // ring thickness = the padding (content-box xor leaves only the rim)
-          padding: `${clamped.strokeWidth}px`,
-          // breathe/static: no travelling head → no white highlight
-          background:
-            clamped.path === 'breathe' || clamped.path === 'static'
-              ? cluster(1, 1, head)
-              : `${whiteHead}, ${cluster(1, 1, head)}`,
-          ...masked(`${spotMask}, linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`, [
-            'source-in, xor',
-            'intersect, exclude',
-          ]),
-          clipPath: clip,
-          opacity: envelope('var(--flk2,1)', (clamped.strokeOpacity * clamped.strength * damp).toFixed(3)),
+          : spots(0, clamped.spotW * spotScale, clamped.spotH * spotScale, 45, head, chainPeak)
+      ).join(', ')
+      // interior wash only for the modes that own the inside
+      if (clamped.place === 'internal' || clamped.place === 'both') {
+        const innerEdges = mk('1')
+        innerEdges.style.clipPath = clip
+        responsiveInnerMasks.push(innerEdges)
+        const inner = mk('1', innerEdges)
+        Object.assign(inner.style, {
+          background: cluster(0.45, 0.85, head),
+          ...masked(spotMask),
+          opacity: envelope('var(--flk2,1)', (clamped.innerOpacity * clamped.strength).toFixed(3)),
           filter: glowFilter(spotBlurF, '--bhue'),
         })
       }
+      const whiteHead = `radial-gradient(ellipse ${rotW(24, 28, head)} ${rotH(24, 28, head)} at ${pos(0, head.x)} ${pos(0, head.y)}, rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%)`
+      // ring thickness = the padding (content-box xor leaves only the rim);
+      // the absolutely positioned child still spans the full padding box
+      const ring = mk('2')
+      Object.assign(ring.style, {
+        padding: `${clamped.strokeWidth}px`,
+        ...masked('linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', ['xor', 'exclude']),
+        clipPath: clip,
+      })
+      const stroke = mk('2', ring)
+      Object.assign(stroke.style, {
+        // breathe/static: no travelling head → no white highlight
+        background:
+          clamped.path === 'breathe' || clamped.path === 'static'
+            ? cluster(1, 1, head)
+            : `${whiteHead}, ${cluster(1, 1, head)}`,
+        ...masked(spotMask),
+        opacity: envelope('var(--flk2,1)', (clamped.strokeOpacity * clamped.strength).toFixed(3)),
+        filter: glowFilter(spotBlurF, '--bhue'),
+      })
     }
     // needle bloom layer(s) — internal: confined to a narrow border band so a
     // large blurred head cannot turn the middle of a compact button into a
@@ -1337,6 +1375,8 @@ export function Ethereal({
       lut: getLUT(0.3, initialAspect),
       hPx: Math.max(1, host.offsetHeight),
       visible: true,
+      chainOffsets: spotChainOf(clamped).offs,
+      written: new Map(),
       needleLayers,
       needleBG,
     }
