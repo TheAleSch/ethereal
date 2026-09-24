@@ -85,6 +85,10 @@ export type EtherealCfg = {
   saturation: number
   brightness: number
   hueRange: number
+  /** how white-hot the centre of the light runs, 0..1. 1 = a white-tipped
+   *  head and cores that whiten like a real source; 0 keeps the palette's
+   *  own colour all the way to the centre */
+  whiteness: number
   gamut: 'srgb' | 'p3'
 }
 
@@ -142,6 +146,7 @@ export const ETHEREAL: EtherealCfg = {
   saturation: 1,
   brightness: 1,
   hueRange: 13,
+  whiteness: 1,
   gamut: 'srgb',
 }
 
@@ -750,6 +755,7 @@ export function Ethereal({
       saturation: finiteNumber(cfg.saturation, ETHEREAL.saturation, 0, 3),
       brightness: finiteNumber(cfg.brightness, ETHEREAL.brightness, 0.2, 3),
       hueRange: finiteNumber(cfg.hueRange, ETHEREAL.hueRange, 0, 360),
+      whiteness: finiteNumber(cfg.whiteness, ETHEREAL.whiteness, 0, 1),
     }
     // spotH is the real height of the LIGHT, not just the reveal window: the
     // wash blobs, needles and edge-relight bands all scale with it, so a big
@@ -762,8 +768,9 @@ export function Ethereal({
     // inside the host a wider window just greys the interior). On a light
     // surface a wide soft scatter reads as a smudge, so it barely grows there.
     const excess = Math.max(0, clamped.strength - 1)
-    // heat whitens — invisible on a light surface, so it only runs on dark
-    const heat = theme === 'dark' ? Math.min(1, excess) : 0
+    // heat whitens — invisible on a light surface, so it only runs on dark,
+    // and `whiteness` 0 turns it off with the rest of the white
+    const heat = theme === 'dark' ? Math.min(1, excess) * clamped.whiteness : 0
     const spread = 1 + (theme === 'light' ? 0.15 : 0.35) * excess
     // blur conserves light: grow it much slower than the reach, or the hot
     // core smears thinner and a stronger glow reads DIMMER at its centre
@@ -1076,7 +1083,7 @@ export function Ethereal({
           // it keeps most of its colour. `hot` only reaches the tight core,
           // never the halo: a whitened halo is exactly the grey smoke.
           const tint = trip(colAt(core)).split(',').map(Number)
-          const whiteMixScale = theme === 'light' ? 0.35 : 1
+          const whiteMixScale = (theme === 'light' ? 0.35 : 1) * clamped.whiteness
           // per-core alpha rides its own flicker oscillator (--hfK)
           const white = (alpha: number, whiteMix: number, hot = 0) => {
             const base = whiteMix * whiteMixScale
@@ -1283,7 +1290,7 @@ export function Ethereal({
         })
         inner.style.opacity = envelope('var(--flk2,1)', clamped.innerOpacity * clamped.strength, washFlickerDepth)
       }
-      const whiteHead = `radial-gradient(ellipse ${rotW(24, 28, head)} ${rotH(24, 28, head)} at ${pos(0, head.x)} ${pos(0, head.y)}, rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%)`
+      const whiteHead = `radial-gradient(ellipse ${rotW(24, 28, head)} ${rotH(24, 28, head)} at ${pos(0, head.x)} ${pos(0, head.y)}, rgba(255,255,255,${(0.38 * clamped.whiteness).toFixed(2)}) 0%, rgba(255,255,255,${(0.12 * clamped.whiteness).toFixed(2)}) 30%, transparent 65%)`
       // ring thickness = the padding (content-box xor leaves only the rim);
       // the absolutely positioned child still spans the full padding box
       const ring = mk('2')
@@ -1294,9 +1301,10 @@ export function Ethereal({
       })
       const stroke = mk('2', ring)
       Object.assign(stroke.style, {
-        // breathe/static: no travelling head → no white highlight
+        // breathe/static: no travelling head → no white highlight; nor at
+        // whiteness 0, where it would be a fully transparent gradient
         background:
-          clamped.path === 'breathe' || clamped.path === 'static'
+          clamped.path === 'breathe' || clamped.path === 'static' || clamped.whiteness === 0
             ? cluster(1, 1, head)
             : `${whiteHead}, ${cluster(1, 1, head)}`,
         ...masked(spotMask),

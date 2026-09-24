@@ -285,6 +285,13 @@ export const ETHEREAL_GROUPS: PropGroup[] = [
           "Degrees of hue oscillation over time (0 = fixed hue; breathe does a full-circle rotation).",
       },
       {
+        name: "whiteness",
+        type: "number",
+        default: "1",
+        description:
+          "How white-hot the centre of the light runs, 0–1. At 1 the head is white-tipped and the cores whiten like a real source (and strength past 1 runs them hotter still); at 0 the palette's own colour holds all the way to the centre — the setting for a glow that stays colourful on a dark surface.",
+      },
+      {
         name: "gamut",
         type: "'srgb' | 'p3'",
         default: "'srgb'",

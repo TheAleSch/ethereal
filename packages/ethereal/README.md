@@ -270,6 +270,7 @@ changes.
 | `spotSamples`                                   | `0`             | Circles in the round chain (0 = auto from spotW/spotH ratio)                                                  |
 | `hotspots` / `hotSpread`                        | `1` / `22`      | Extra white-hot cores fanned along the path, each walking it individually                                     |
 | `hover`                                         | `'none'`        | `boost` · `speed` · `reveal`                                                                                  |
+| `whiteness`                                     | `1`             | How white-hot the centre runs — `0` keeps the palette's colour to the core, for vivid glows on dark           |
 | `duration`, `spotW/H`, `needles`, `glowBlur`, … |                 | See `EtherealCfg` — every field is typed and documented in the source                                         |
 
 ### EventHorizon

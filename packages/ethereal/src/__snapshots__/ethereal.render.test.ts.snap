@@ -89,7 +89,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(79.7px * var(--bw,1)) calc(67.8px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(69.5px * var(--bw,1)) calc(64.8px * var(--bw,1)) at calc(100% * var(--p1x1,var(--bx,.5))) calc(100% * var(--p1y1,var(--by,1))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(71.4px * var(--bw,1)) calc(62.0px * var(--bw,1)) at calc(100% * var(--p1x2,var(--bx,.5))) calc(100% * var(--p1y2,var(--by,1))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -243,7 +243,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(56.7px * var(--bw,1)) calc(50.8px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(51.9px * var(--bw,1)) calc(51.8px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(51.8px * var(--bw,1)) calc(47.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -449,7 +449,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -593,7 +593,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc((24px * var(--adx,1) + 28px * var(--ady,0)) * var(--bw,1)) calc((28px * var(--adx,1) + 24px * var(--ady,0)) * var(--bh,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc((24px * var(--adx,1) + 28px * var(--ady,0)) * var(--bw,1)) calc((28px * var(--adx,1) + 24px * var(--ady,0)) * var(--bh,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc((23px * var(--adx,1) + 45.900000000000006px * var(--ady,0)) * var(--bw,1) * var(--bs1,1)) calc((34px * var(--adx,1) + 34.5px * var(--ady,0)) * var(--bh,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc((35px * var(--adx,1) + 35.1px * var(--ady,0)) * var(--bw,1) * var(--bs2,1)) calc((26px * var(--adx,1) + 52.5px * var(--ady,0)) * var(--bh,1)) at calc(100% * var(--p1x1,var(--bx,.5))) calc(100% * var(--p1y1,var(--by,1))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc((24px * var(--adx,1) + 39.150000000000006px * var(--ady,0)) * var(--bw,1) * var(--bs3,1)) calc((29px * var(--adx,1) + 36px * var(--ady,0)) * var(--bh,1)) at calc(100% * var(--p1x2,var(--bx,.5))) calc(100% * var(--p1y2,var(--by,1))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -753,7 +753,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -929,7 +929,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -1074,7 +1074,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -1218,7 +1218,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -1368,7 +1368,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -1512,7 +1512,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -1656,7 +1656,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -1807,7 +1807,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), color(display-p3 1.000 0.196 0.392 / 1) 0%, color(display-p3 1.000 0.196 0.392 / 0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), color(display-p3 0.157 0.706 0.863 / 1) 0%, color(display-p3 0.157 0.706 0.863 / 0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), color(display-p3 0.196 0.784 0.314 / 1) 0%, color(display-p3 0.196 0.784 0.314 / 0.4) 48%, transparent 100%),
@@ -1951,7 +1951,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--p1x1,var(--bx,.5))) calc(100% * var(--p1y1,var(--by,1))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--p1x2,var(--bx,.5))) calc(100% * var(--p1y2,var(--by,1))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -2035,7 +2035,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx2,.5)) calc(100% * var(--by2,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx2,.5)) calc(100% * var(--by2,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx2,.5) + (0px * var(--dx2,1))) calc(100% * var(--by2,1) + (0px * var(--dy2,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--p2x1,var(--bx2,.5))) calc(100% * var(--p2y1,var(--by2,1))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--p2x2,var(--bx2,.5))) calc(100% * var(--p2y2,var(--by2,1))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -2185,7 +2185,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -2593,7 +2593,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -2736,7 +2736,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -2841,7 +2841,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -2984,7 +2984,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -3134,7 +3134,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -3290,7 +3290,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 58%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 58%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 58%, transparent 100%),
@@ -3434,7 +3434,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -3582,7 +3582,7 @@ effect span
         border-radius: inherit
         z-index: 2
         background:
-          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%),
+          radial-gradient(ellipse calc(26.0px * var(--bw,1)) calc(26.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 30%, transparent 65%),
           radial-gradient(ellipse calc(79.7px * var(--bw,1)) calc(67.8px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(69.5px * var(--bw,1)) calc(64.8px * var(--bw,1)) at calc(100% * var(--p1x1,var(--bx,.5))) calc(100% * var(--p1y1,var(--by,1))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
           radial-gradient(ellipse calc(71.4px * var(--bw,1)) calc(62.0px * var(--bw,1)) at calc(100% * var(--p1x2,var(--bx,.5))) calc(100% * var(--p1y2,var(--by,1))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
@@ -3646,5 +3646,149 @@ effect span
           radial-gradient(ellipse calc(95px * var(--bw,1) * var(--bs3,1)) calc(95px * var(--bw,1) * var(--bs3,1)) at calc(100% * var(--sc1x2,var(--bx,.5))) calc(100% * var(--sc1y2,var(--by,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
           radial-gradient(ellipse calc(89px * var(--bw,1) * var(--bs4,1)) calc(89px * var(--bw,1) * var(--bs4,1)) at calc(100% * var(--sc1x3,var(--bx,.5))) calc(100% * var(--sc1y3,var(--by,1))), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
         opacity: calc((min((var(--bedge,0) * var(--hov,1) * 0.800), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 0.800) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
+        clip-path: inset(0 round 12px)"
+`;
+
+exports[`Ethereal rendered layers > whiteness 0, strength past 1 1`] = `
+"host custom properties
+effect span
+  z-index: 0
+  position: absolute
+  pointer-events: none
+  border-radius: inherit
+  top: -1px
+  right: -2px
+  bottom: -3px
+  left: -4px
+  --hov: 1
+  will-change: transform
+  child[0]
+    position: absolute
+    inset: 0px
+    pointer-events: none
+    border-radius: inherit
+    overflow: hidden
+    child[0]
+      position: absolute
+      inset: 0px
+      pointer-events: none
+      border-radius: inherit
+      z-index: 1
+      clip-path: inset(0 round 12px)
+      -webkit-mask:
+        linear-gradient(#fff, transparent 28px, transparent calc(100% - 28px), #fff),
+        linear-gradient(to right, #fff, transparent 28px, transparent calc(100% - 28px), #fff),
+      -webkit-mask-composite: source-over
+      mask:
+        linear-gradient(#fff, transparent 28px, transparent calc(100% - 28px), #fff),
+        linear-gradient(to right, #fff, transparent 28px, transparent calc(100% - 28px), #fff),
+      mask-composite: add
+      child[0]
+        position: absolute
+        inset: 0px
+        pointer-events: none
+        border-radius: inherit
+        z-index: 1
+        background:
+          radial-gradient(ellipse calc(33.0px * var(--bw,1)) calc(32.0px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,0.45) 0%, rgba(255,50,100,0.18) 48%, transparent 100%),
+          radial-gradient(ellipse calc(32.0px * var(--bw,1)) calc(34.8px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,0.45) 0%, rgba(40,180,220,0.18) 48%, transparent 100%),
+          radial-gradient(ellipse calc(29.6px * var(--bw,1)) calc(29.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,0.45) 0%, rgba(50,200,80,0.18) 48%, transparent 100%),
+          radial-gradient(ellipse calc(27.9px * var(--bw,1)) calc(30.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (36px * var(--dx,1))) calc(100% * var(--by,1) + (36px * var(--dy,0))), rgba(180,40,240,0.45) 0%, rgba(180,40,240,0.18) 48%, transparent 100%),
+          radial-gradient(ellipse calc(33.3px * var(--bw,1)) calc(33.0px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-36px * var(--dx,1))) calc(100% * var(--by,1) + (-36px * var(--dy,0))), rgba(255,160,30,0.45) 0%, rgba(255,160,30,0.18) 48%, transparent 100%),
+          radial-gradient(ellipse calc(30.7px * var(--bw,1)) calc(33.8px * var(--bw,1)) at calc(100% * var(--bx,.5) + (54px * var(--dx,1))) calc(100% * var(--by,1) + (54px * var(--dy,0))), rgba(100,70,255,0.45) 0%, rgba(100,70,255,0.18) 48%, transparent 100%),
+          radial-gradient(ellipse calc(33.4px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-54px * var(--dx,1))) calc(100% * var(--by,1) + (-54px * var(--dy,0))), rgba(40,140,255,0.45) 0%, rgba(40,140,255,0.18) 48%, transparent 100%),
+          radial-gradient(ellipse calc(33.5px * var(--bw,1)) calc(32.8px * var(--bw,1)) at calc(100% * var(--bx,.5) + (72px * var(--dx,1))) calc(100% * var(--by,1) + (72px * var(--dy,0))), rgba(240,50,180,0.45) 0%, rgba(240,50,180,0.18) 48%, transparent 100%),
+          radial-gradient(ellipse calc(33.8px * var(--bw,1)) calc(33.8px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-72px * var(--dx,1))) calc(100% * var(--by,1) + (-72px * var(--dy,0))), rgba(30,185,170,0.45) 0%, rgba(30,185,170,0.18) 48%, transparent 100%),
+        -webkit-mask:
+          radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(100% * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(100% * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
+          radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(100% * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(100% * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
+        mask:
+          radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(100% * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(100% * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
+          radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(100% * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(100% * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
+        filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.400), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.400) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.400) - 0.850) + 0.150)) * var(--flk2,1))
+    child[1]
+      position: absolute
+      inset: 0px
+      pointer-events: none
+      border-radius: inherit
+      z-index: 2
+      padding-top: 1px
+      padding-right: 1px
+      padding-bottom: 1px
+      padding-left: 1px
+      padding: 1px
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0),
+      -webkit-mask-composite: xor
+      mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0),
+      mask-composite: exclude
+      clip-path: inset(0 round 12px)
+      child[0]
+        position: absolute
+        inset: 0px
+        pointer-events: none
+        border-radius: inherit
+        z-index: 2
+        background:
+          radial-gradient(ellipse calc(34.5px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (0px * var(--dx,1))) calc(100% * var(--by,1) + (0px * var(--dy,0))), rgba(255,50,100,1) 0%, rgba(255,50,100,0.4) 48%, transparent 100%),
+          radial-gradient(ellipse calc(35.0px * var(--bw,1)) calc(39.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (18px * var(--dx,1))) calc(100% * var(--by,1) + (18px * var(--dy,0))), rgba(40,180,220,1) 0%, rgba(40,180,220,0.4) 48%, transparent 100%),
+          radial-gradient(ellipse calc(31.6px * var(--bw,1)) calc(32.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-18px * var(--dx,1))) calc(100% * var(--by,1) + (-18px * var(--dy,0))), rgba(50,200,80,1) 0%, rgba(50,200,80,0.4) 48%, transparent 100%),
+          radial-gradient(ellipse calc(30.4px * var(--bw,1)) calc(34.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (36px * var(--dx,1))) calc(100% * var(--by,1) + (36px * var(--dy,0))), rgba(180,40,240,1) 0%, rgba(180,40,240,0.4) 48%, transparent 100%),
+          radial-gradient(ellipse calc(35.3px * var(--bw,1)) calc(36.0px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-36px * var(--dx,1))) calc(100% * var(--by,1) + (-36px * var(--dy,0))), rgba(255,160,30,1) 0%, rgba(255,160,30,0.4) 48%, transparent 100%),
+          radial-gradient(ellipse calc(33.2px * var(--bw,1)) calc(37.5px * var(--bw,1)) at calc(100% * var(--bx,.5) + (54px * var(--dx,1))) calc(100% * var(--by,1) + (54px * var(--dy,0))), rgba(100,70,255,1) 0%, rgba(100,70,255,0.4) 48%, transparent 100%),
+          radial-gradient(ellipse calc(35.4px * var(--bw,1)) calc(37.3px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-54px * var(--dx,1))) calc(100% * var(--by,1) + (-54px * var(--dy,0))), rgba(40,140,255,1) 0%, rgba(40,140,255,0.4) 48%, transparent 100%),
+          radial-gradient(ellipse calc(35.5px * var(--bw,1)) calc(35.8px * var(--bw,1)) at calc(100% * var(--bx,.5) + (72px * var(--dx,1))) calc(100% * var(--by,1) + (72px * var(--dy,0))), rgba(240,50,180,1) 0%, rgba(240,50,180,0.4) 48%, transparent 100%),
+          radial-gradient(ellipse calc(35.8px * var(--bw,1)) calc(36.8px * var(--bw,1)) at calc(100% * var(--bx,.5) + (-72px * var(--dx,1))) calc(100% * var(--by,1) + (-72px * var(--dy,0))), rgba(30,185,170,1) 0%, rgba(30,185,170,0.4) 48%, transparent 100%),
+        -webkit-mask:
+          radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(100% * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(100% * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
+          radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(100% * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(100% * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
+        mask:
+          radial-gradient(ellipse calc(54px * var(--bw,1) * var(--bs1,1)) calc(54px * var(--bw,1) * var(--bs1,1)) at calc(calc(100% * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(100% * var(--by,1)) + 0.0px * var(--dy,0)), rgba(255,255,255,0.71) 0%, rgba(255,255,255,0.44) 37%, rgba(255,255,255,0.13) 74%, transparent 100%),
+          radial-gradient(ellipse calc(38px * var(--bw,1) * var(--bs2,1)) calc(38px * var(--bw,1) * var(--bs2,1)) at calc(calc(100% * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(100% * var(--by,1)) + -18.0px * var(--dy,0)), rgba(255,255,255,0.39) 0%, rgba(255,255,255,0.24) 37%, rgba(255,255,255,0.07) 74%, transparent 100%),
+        filter: hue-rotate(var(--bhue, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 2.280), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 2.280) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 2.280) - 0.850) + 0.150)) * var(--flk2,1))
+    child[2]
+      position: absolute
+      inset: 0px
+      pointer-events: none
+      border-radius: inherit
+      z-index: 3
+      -webkit-mask:
+        linear-gradient(#fff, transparent 18px, transparent calc(100% - 18px), #fff),
+        linear-gradient(to right, #fff, transparent 18px, transparent calc(100% - 18px), #fff),
+      -webkit-mask-composite: source-over
+      mask:
+        linear-gradient(#fff, transparent 18px, transparent calc(100% - 18px), #fff),
+        linear-gradient(to right, #fff, transparent 18px, transparent calc(100% - 18px), #fff),
+      mask-composite: add
+      child[0]
+        position: absolute
+        inset: 0px
+        pointer-events: none
+        border-radius: inherit
+        z-index: 3
+        background:
+          radial-gradient(ellipse calc(1.4px * var(--bs1,1)) calc(88px * calc(var(--bh,1) * var(--fb0, var(--fbs0, 1)) * var(--bs1,1))) at calc(100% * 0.080) calc(100% - 3px), rgba(255,50,100,1) 0%, rgba(255,50,100,0.58) 36%, rgba(255,50,100,0.22) 65%, transparent 94%),
+          radial-gradient(ellipse calc(8.0px * var(--bn2,1)) calc(38px * calc(var(--bh,1) * var(--fb1, var(--fbs1, 1)) * var(--bn2,1))) at calc(100% * 0.220) calc(100% - 2px), rgba(40,180,220,1) 0%, rgba(40,180,220,0.58) 36%, rgba(40,180,220,0.22) 65%, transparent 94%),
+          radial-gradient(ellipse calc(1.3px * var(--bs3,1)) calc(87px * calc(var(--bh,1) * var(--fb2, var(--fbs2, 1)) * var(--bs3,1))) at calc(100% * 0.360) calc(100% - 3px), rgba(50,200,80,1) 0%, rgba(50,200,80,0.58) 36%, rgba(50,200,80,0.22) 65%, transparent 94%),
+          radial-gradient(ellipse calc(9.0px * var(--bn4,1)) calc(30px * calc(var(--bh,1) * var(--fb3, var(--fbs3, 1)) * var(--bn4,1))) at calc(100% * 0.500) calc(100% - 3px), rgba(180,40,240,1) 0%, rgba(180,40,240,0.58) 36%, rgba(180,40,240,0.22) 65%, transparent 94%),
+          radial-gradient(ellipse calc(1.7px * var(--bs2,1)) calc(92px * calc(var(--bh,1) * var(--fb5, var(--fbs5, 1)) * var(--bs2,1))) at calc(100% * 0.640) calc(100% - 3px), rgba(255,160,30,1) 0%, rgba(255,160,30,0.58) 36%, rgba(255,160,30,0.22) 65%, transparent 94%),
+          radial-gradient(ellipse calc(8.7px * var(--bn1,1)) calc(30px * calc(var(--bh,1) * var(--fb6, var(--fbs6, 1)) * var(--bn1,1))) at calc(100% * 0.780) calc(100% - 4px), rgba(100,70,255,1) 0%, rgba(100,70,255,0.58) 36%, rgba(100,70,255,0.22) 65%, transparent 94%),
+          radial-gradient(ellipse calc(1.5px * var(--bs4,1)) calc(61px * calc(var(--bh,1) * var(--fb7, var(--fbs7, 1)) * var(--bs4,1))) at calc(100% * 0.920) calc(100% - 3px), rgba(40,140,255,1) 0%, rgba(40,140,255,0.58) 36%, rgba(40,140,255,0.22) 65%, transparent 94%),
+          radial-gradient(ellipse calc(18.0px * var(--bw,1)) calc(18.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,50,100,1.00) 0%, rgba(255,50,100,0.90) 20%, rgba(255,50,100,0.50) 50%, rgba(255,50,100,0.00) 100%),
+          radial-gradient(ellipse calc(41.0px * var(--bw,1)) calc(41.0px * var(--bw,1)) at calc(100% * var(--bx,.5)) calc(100% * var(--by,1)), rgba(255,50,100,0.30) 0%, rgba(255,50,100,0.12) 25%, rgba(255,50,100,0.03) 55%, rgba(255,50,100,0.00) 80%),
+        filter: blur(8px) hue-rotate(var(--bhue2, 0deg)) saturate(1.000) brightness(calc(1 * var(--hovB,1)))
+        background-blend-mode: screen
+        -webkit-mask:
+          radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(100% * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(100% * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
+          radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(100% * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(100% * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
+        mask:
+          radial-gradient(ellipse calc(76px * var(--bw,1) * var(--bs1,1)) calc(76px * var(--bw,1) * var(--bs1,1)) at calc(calc(100% * var(--bx,.5)) + 0.0px * var(--dx,1)) calc(calc(100% * var(--by,1)) + 0.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
+          radial-gradient(ellipse calc(53px * var(--bw,1) * var(--bs2,1)) calc(53px * var(--bw,1) * var(--bs2,1)) at calc(calc(100% * var(--bx,.5)) + -18.0px * var(--dx,1)) calc(calc(100% * var(--by,1)) + -18.0px * var(--dy,0)), #fff 0%, rgba(255,255,255,0.63) 29%, rgba(255,255,255,0.19) 69%, transparent 100%),
+        opacity: calc((min((var(--bedge,0) * var(--hov,1) * 1.600), 0.850) + 0.150 * max(0, (var(--bedge,0) * var(--hov,1) * 1.600) - 0.850) / (max(0, (var(--bedge,0) * var(--hov,1) * 1.600) - 0.850) + 0.150)) * var(--flk,1) * var(--njFade,1))
         clip-path: inset(0 round 12px)"
 `;

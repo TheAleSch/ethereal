@@ -702,6 +702,8 @@ const HINTS: Record<string, string> = {
     "Multiplies the palette's lightness. Raise it on dark backgrounds, lower it if the glow blows out.",
   hueRange:
     "How far the hue drifts along the trail, in degrees. 0 keeps every blob the palette's exact color.",
+  whiteness:
+    "How white-hot the centre runs. 1 tips the head white like a real light; 0 keeps the palette's colour all the way in — the vivid setting for dark surfaces.",
 
   /* motion */
   path: "Where the light travels. bottom = a sweep along the lower edge · around = the full perimeter · breathe = stationary pulse · static = fixed band with waveform needles.",
@@ -844,6 +846,14 @@ const ETHEREAL_CONTROLS_RAW: ControlDef<EK>[] = [
     min: 0,
     max: 60,
     step: 1,
+  },
+  {
+    kind: "slider",
+    key: "whiteness",
+    label: "white core",
+    min: 0,
+    max: 1,
+    step: 0.05,
   },
   {
     kind: "select",

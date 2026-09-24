@@ -8,6 +8,11 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- `whiteness` (0–1, default 1) on `<Ethereal>`: how white-hot the centre of
+  the light runs. At 0 the head loses its white tip, the cores keep the
+  palette's own colour, and `strength` past 1 no longer spends itself on
+  heat — a glow that stays colourful on a dark surface. The default renders
+  exactly as before.
 - `EVENT_HORIZON_PRESETS.Pulsar` (the only teal disk) and
   `EVENT_HORIZON_PRESETS.Eclipse`, built for light surfaces: no lens and almost
   no core shadow.
