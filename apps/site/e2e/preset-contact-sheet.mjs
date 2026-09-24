@@ -110,7 +110,7 @@ let server
       // so skipping the toggle for HOST=button would silently shoot chat
       await selectToggle(
         page,
-        page.getByRole("button", { name: HOST, exact: true }),
+        page.locator(`button[aria-label="${HOST} preview host"]`),
         `${HOST} host`
       )
       await page.waitForTimeout(150)
