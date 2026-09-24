@@ -13,9 +13,15 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
   hotter, while pulse and flicker stay visible. Hotspot cores are tinted by the
   head's colour instead of pure white (grey smoke on dark pages, a bleached
   hole on light ones).
-- `<Ethereal>` renders a comet chain as one masked layer per head instead of
-  one per chain circle, and skips unchanged per-frame variable writes — roughly
-  a third of the per-frame style and paint work for the default config.
+- `<Ethereal>` is roughly twice as cheap per frame: a comet chain renders as
+  one masked layer per head instead of one per chain circle, unchanged and
+  invisible-frame variable writes are skipped, and the effect paints on its own
+  compositor layer. On a gallery of twelve glowing buttons (headless Chromium,
+  GPU raster) style work per frame drops ~48%, paint ~41%, raster ~67%, and the
+  page holds 60fps where it held 38.
+- `<Ethereal>` writes its per-frame CSS variables on its own effect span
+  instead of the host, so they no longer shadow same-named variables in your
+  content. Anything that read them off the host must read the effect span.
 
 ### Fixed
 

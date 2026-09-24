@@ -47,11 +47,13 @@ for (let rep = 0; rep < Number(process.env.REPS || 3); rep++) {
   page.on('console', (message) => message.type() === 'error' && console.error('console', message.text()))
   await page.goto(`${baseURL}/index.html?scene=${scene}&strength=${strength}`)
   await page.waitForTimeout(1500)
-  const ticksBefore = await page.evaluate(() => globalThis.__ticks || 0)
   await browser.startTracing(page, { categories: ['devtools.timeline', 'disabled-by-default-devtools.timeline'] })
+  // read INSIDE the traced window: stopTracing spends seconds serializing,
+  // and ticks counted across it would deflate every per-tick figure
+  const ticksBefore = await page.evaluate(() => globalThis.__ticks || 0)
   await page.waitForTimeout(Number(seconds) * 1000)
-  const trace = JSON.parse((await browser.stopTracing()).toString())
   const ticks = (await page.evaluate(() => globalThis.__ticks || 0)) - ticksBefore
+  const trace = JSON.parse((await browser.stopTracing()).toString())
   await page.close()
   const totals = Object.fromEntries(TRACKED.map((name) => [name, 0]))
   let frames = 0
