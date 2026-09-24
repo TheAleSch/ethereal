@@ -730,6 +730,19 @@ export function Ethereal({
     // wash blobs, needles and edge-relight bands all scale with it, so a big
     // host can carry a beam instead of a border-hugging strip
     const hScale = Math.min(6, Math.max(0.2, clamped.spotH / ETHEREAL.spotH))
+    // STRENGTH PAST 1 buys light, not paint. Opacity already rolls off below
+    // its ceiling (see envelope), so the excess goes where a brighter real
+    // source puts it: a hotter core (`heat`, the core's mix toward white) and
+    // a scatter that reaches further (`spread`, the OUTSIDE bloom only —
+    // inside the host a wider window just greys the interior). On a light
+    // surface a wide soft scatter reads as a smudge, so it barely grows there.
+    const excess = Math.max(0, clamped.strength - 1)
+    // heat whitens — invisible on a light surface, so it only runs on dark
+    const heat = theme === 'dark' ? Math.min(1, excess) : 0
+    const spread = 1 + (theme === 'light' ? 0.15 : 0.35) * excess
+    // blur conserves light: grow it much slower than the reach, or the hot
+    // core smears thinner and a stronger glow reads DIMMER at its centre
+    const externalBlur = clamped.glowBlur * (1 + 0.2 * excess)
     checkHost(host, 'Ethereal')
     const unclaim = claimHost(host, 'Ethereal')
     // spotShape 'round': fixed circle (average of both dims), never morphs
@@ -1031,11 +1044,25 @@ export function Ethereal({
       for (const head of heads) {
         const headNum = headIndex(head)
         for (let core = 0; core < coreCount; core++) {
+          // The core is the head's OWN colour driven hot, white only at the
+          // very centre. A pure-white core blurred at partial alpha reads as
+          // grey smoke on a dark page, and on a light one it is invisible
+          // while bleaching the coloured ring under it into a hole — so there
+          // it keeps most of its colour. `hot` only reaches the tight core,
+          // never the halo: a whitened halo is exactly the grey smoke.
+          const tint = trip(colAt(core)).split(',').map(Number)
+          const whiteMixScale = theme === 'light' ? 0.35 : 1
           // per-core alpha rides its own flicker oscillator (--hfK)
-          const white = (alpha: number) =>
-            coreCount > 1
-              ? `rgba(255,255,255,calc(${(alpha * alphaDamp).toFixed(2)} * var(--hf${Math.min(7, core)},1)))`
-              : `rgba(255,255,255,${(alpha * alphaDamp).toFixed(2)})`
+          const white = (alpha: number, whiteMix: number, hot = 0) => {
+            const base = whiteMix * whiteMixScale
+            const mix = base + (1 - base) * 0.6 * hot
+            const channels = tint.map((channel) => channel + (255 - channel) * mix)
+            const damped = (alpha * alphaDamp).toFixed(2)
+            const alphaExpr = coreCount > 1 ? `calc(${damped} * var(--hf${Math.min(7, core)},1))` : damped
+            return clamped.gamut === 'p3'
+              ? `color(display-p3 ${channels.map((channel) => (channel / 255).toFixed(3)).join(' ')} / ${alphaExpr})`
+              : `rgba(${channels.map((channel) => Math.round(channel)).join(',')},${alphaExpr})`
+          }
           const off = clamped.hotSpread * (core - (coreCount - 1) / 2)
           const scale = 1 - (0.45 * Math.abs(core - (coreCount - 1) / 2)) / Math.max(1, (coreCount - 1) / 2 || 1)
           // around: fanned cores walk the path individually (--hpNxK, set
@@ -1056,26 +1083,26 @@ export function Ethereal({
             `radial-gradient(ellipse ${rotW(width * scale, height * scale, head, scaleW ?? 'var(--bw,1)')} ${rotH(width * scale, height * scale, head, scaleH ?? 'var(--bh,1)')} at ${hx} ${hy}, ${stops})`
           if (ext && clamped.spotShape !== 'round') {
             parts.push(
-              coreSpot(56, 9, `${white(0.8)} 0%, ${white(0.35)} 45%, transparent 100%`, pulse, pulseMirror),
-              coreSpot(95, 24, `${white(0.38)} 0%, ${white(0.14)} 35%, transparent 80%`)
+              coreSpot(56, 9, `${white(0.8, 1, heat)} 0%, ${white(0.35, 0.6, heat)} 45%, ${white(0, 0.2)} 100%`, pulse, pulseMirror),
+              coreSpot(95 * spread, 24 * spread, `${white(0.38, 0.2)} 0%, ${white(0.14, 0.05)} 35%, ${white(0, 0)} 80%`)
             )
           } else if (ext) {
             // round + external: soft diffuse core — the internal-style
             // full-alpha dot reads as a hard defined point over the bloom
             parts.push(
-              coreSpot(26, 20, `${white(0.6)} 0%, ${white(0.28)} 35%, transparent 80%`, pulse, pulseMirror),
-              coreSpot(50, 46, `${white(0.2)} 0%, ${white(0.08)} 30%, transparent 75%`)
+              coreSpot(26, 20, `${white(0.6, 1, heat)} 0%, ${white(0.28, 0.6, heat)} 35%, ${white(0, 0.2)} 80%`, pulse, pulseMirror),
+              coreSpot(50 * spread, 46 * spread, `${white(0.2, 0.2)} 0%, ${white(0.08, 0.05)} 30%, ${white(0, 0)} 75%`)
             )
           } else {
             parts.push(
               coreSpot(
                 21,
                 15,
-                `${white(1)} 0%, ${white(0.9)} 20%, ${white(0.5)} 50%, transparent 100%`,
+                `${white(1, 1, heat)} 0%, ${white(0.9, 0.8, heat)} 20%, ${white(0.5, 0.45, heat)} 50%, ${white(0, 0.15)} 100%`,
                 pulse,
                 pulseMirror
               ),
-              coreSpot(42, 40, `${white(0.3)} 0%, ${white(0.12)} 25%, ${white(0.03)} 55%, transparent 80%`)
+              coreSpot(42, 40, `${white(0.3, 0.3)} 0%, ${white(0.12, 0.15)} 25%, ${white(0.03, 0.05)} 55%, ${white(0, 0)} 80%`)
             )
           }
         }
@@ -1140,12 +1167,37 @@ export function Ethereal({
     // and a brightness that boost-hover scales through --hovB. Saturation is
     // baked in rather than read from a custom property: it is fixed for the
     // life of a build, and nothing per-frame touches it.
-    const glowFilter = (lead: string, hueVar: string) =>
-      `${lead}hue-rotate(var(${hueVar}, 0deg)) saturate(${clamped.saturation.toFixed(3)}) brightness(calc(${clamped.brightness} * var(--hovB,1)))`
-    // shared visibility envelope: edge ramp × hover × flicker. Only the
-    // flicker terms and the final scalar differ.
-    const envelope = (flicker: string, amount: string | number) =>
-      `calc(var(--bedge,0) * var(--hov,1) * ${flicker} * ${amount})`
+    const glowFilter = (lead: string, hueVar: string, gain = 1) =>
+      `${lead}hue-rotate(var(${hueVar}, 0deg)) saturate(${clamped.saturation.toFixed(3)}) brightness(calc(${+(clamped.brightness * gain).toFixed(3)} * var(--hovB,1)))`
+    // Shared visibility envelope: edge ramp × hover × flicker × amount.
+    //
+    // Opacity clamps at 1, and a hard clamp is what made strong glows look
+    // synthetic: past it the pulse, flicker and edge ramp all flatten, and a
+    // strength of 1.5 renders identically to 2. So the steady part rolls off
+    // on a soft knee instead — linear up to `knee`, then easing toward (never
+    // reaching) `ceiling` — and the flicker multiplies AFTER the roll-off,
+    // with the ceiling lowered by the flicker's own depth, so its swing can
+    // never be clamped away. Returned as [fallback, rolled]: assign both, in
+    // that order — an engine that rejects the rolled calc() ignores the second
+    // assignment and keeps the plain linear envelope rather than no opacity.
+    const envelope = (flicker: string, amount: number, flickerDepth: number): [string, string] => {
+      const steady = `(var(--bedge,0) * var(--hov,1) * ${amount.toFixed(3)})`
+      const ceiling = 1 / (1 + flickerDepth)
+      const knee = (0.8 * ceiling).toFixed(3)
+      const room = (0.2 * ceiling).toFixed(3)
+      const over = `max(0, ${steady} - ${knee})`
+      return [
+        `calc(${steady} * ${flicker})`,
+        `calc((min(${steady}, ${knee}) + ${room} * ${over} / (${over} + ${room})) * ${flicker})`,
+      ]
+    }
+    const setOpacity = (layer: HTMLElement, [fallback, rolled]: [string, string]) => {
+      layer.style.opacity = fallback
+      layer.style.opacity = rolled
+    }
+    // peak deviation of --flk from 1 is 0.46·flicker; --flk2 swings 0.45 of it
+    const bloomFlickerDepth = 0.46 * clamped.flicker
+    const washFlickerDepth = 0.45 * bloomFlickerDepth
     // Safari still needs the -webkit- spelling and its composite keywords
     // differ — declare the mask layer list once, emit both spellings
     const masked = (layers: string, composites?: [webkit: string, standard: string]) =>
@@ -1200,9 +1252,9 @@ export function Ethereal({
         Object.assign(inner.style, {
           background: cluster(0.45, 0.85, head),
           ...masked(spotMask),
-          opacity: envelope('var(--flk2,1)', (clamped.innerOpacity * clamped.strength).toFixed(3)),
           filter: glowFilter(spotBlurF, '--bhue'),
         })
+        setOpacity(inner, envelope('var(--flk2,1)', clamped.innerOpacity * clamped.strength, washFlickerDepth))
       }
       const whiteHead = `radial-gradient(ellipse ${rotW(24, 28, head)} ${rotH(24, 28, head)} at ${pos(0, head.x)} ${pos(0, head.y)}, rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 30%, transparent 65%)`
       // ring thickness = the padding (content-box xor leaves only the rim);
@@ -1221,9 +1273,9 @@ export function Ethereal({
             ? cluster(1, 1, head)
             : `${whiteHead}, ${cluster(1, 1, head)}`,
         ...masked(spotMask),
-        opacity: envelope('var(--flk2,1)', (clamped.strokeOpacity * clamped.strength).toFixed(3)),
         filter: glowFilter(spotBlurF, '--bhue'),
       })
+      setOpacity(stroke, envelope('var(--flk2,1)', clamped.strokeOpacity * clamped.strength, washFlickerDepth))
     }
     // needle bloom layer(s) — internal: confined to a narrow border band so a
     // large blurred head cannot turn the middle of a compact button into a
@@ -1260,9 +1312,11 @@ export function Ethereal({
       // box, big blurs smear beyond it. Fading the outer band to transparent
       // turns every one of those cuts into a smooth fade. The fade must
       // outrun the blur smear (~2σ) or the smear re-creates the hard edge.
-      const guardPx = Math.max(12, Math.ceil(clamped.glowBlur * 2.2))
+      const layerSpread = external ? spread : 1
+      const layerBlur = external ? externalBlur : clamped.glowBlur
+      const guardPx = Math.max(12, Math.ceil(layerBlur * 2.2))
       const bloomInset = external
-        ? Math.max(Math.round(26 + clamped.glowBlur * 1.6), Math.round(typReach + clamped.glowBlur * 1.2), guardPx + 20)
+        ? Math.max(Math.round(26 + layerBlur * 1.6), Math.round(typReach * layerSpread + layerBlur * 1.2), guardPx + 20)
         : 0
       let box: HTMLElement | undefined
       if (external) {
@@ -1292,8 +1346,8 @@ export function Ethereal({
               .flatMap((head) =>
                 spots(
                   bloomInset,
-                  (clamped.spotW + 6) * spotScale * bloomScale,
-                  (clamped.spotH + bloomHAdd) * spotScale * bloomScale,
+                  (clamped.spotW + 6) * spotScale * bloomScale * layerSpread,
+                  (clamped.spotH + bloomHAdd) * spotScale * bloomScale * layerSpread,
                   35,
                   head
                 )
@@ -1303,10 +1357,16 @@ export function Ethereal({
         background: needleBG(bloomInset),
         // --njFade (breathe-jitter only) softens the reshuffle without ever
         // extinguishing the whole field, so a thinking state remains legible.
-        opacity: envelope('var(--flk,1) * var(--njFade,1)', clamped.bloomOpacity * clamped.strength),
-        filter: glowFilter(`blur(${clamped.glowBlur}px) `, '--bhue2'),
+        // heat also runs the bloom hotter — on a dark page only: brightening
+        // translucent colour over white just fades it
+        filter: glowFilter(`blur(${+layerBlur.toFixed(2)}px) `, '--bhue2', theme === 'dark' ? 1 + 0.3 * heat : 1),
+        // on a dark page overlapping needles and cores add up like light,
+        // toward white with a soft ceiling; on a light page screen only
+        // washes them out, so they stay plain paint there
+        backgroundBlendMode: theme === 'dark' ? 'screen' : '',
         ...masked(spotsBG),
       })
+      setOpacity(bloom, envelope('var(--flk,1) * var(--njFade,1)', clamped.bloomOpacity * clamped.strength, bloomFlickerDepth))
       if (!external) bloom.style.clipPath = clip
       else if (clamped.place === 'ext-border') {
         // rounded-hole clip (absolute px — recut when the host resizes).
@@ -1399,8 +1459,9 @@ export function Ethereal({
       io.disconnect()
       removeHost(rec)
     }
+    // theme: the cores' tint, the bloom blend and the scatter all read it
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cfgSignature, safeTransitionMs, reducedMotion])
+  }, [cfgSignature, safeTransitionMs, reducedMotion, theme])
   // inline styles, no Tailwind dependency — the library must not assume the
   // consumer's CSS stack
   return (
