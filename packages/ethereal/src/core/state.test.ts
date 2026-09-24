@@ -259,7 +259,8 @@ describe('the components use the shared pipeline', () => {
 
     it(`${path} normalizes and reads transitionMs rather than only accepting it`, () => {
       expect(src).toMatch(/finiteNumber\(transitionMs, 320, 0, 10_000\)/)
-      expect(src).toMatch(/\$\{safeTransitionMs\}ms/)
+      // either a CSS transition on the effect or the shared crossfade helper
+      expect(src).toMatch(/\$\{safeTransitionMs\}ms|nextGeneration\([^)]*safeTransitionMs\)/)
     })
   }
 })

@@ -246,3 +246,43 @@ export const holePath = (width: number, height: number, inset: number, radius: n
     y1 = inset + height
   return `path(evenodd, "M0 0 H${boxW} V${boxH} H0 Z M${x0 + corner} ${y0} H${x1 - corner} A${corner} ${corner} 0 0 1 ${x1} ${y0 + corner} V${y1 - corner} A${corner} ${corner} 0 0 1 ${x1 - corner} ${y1} H${x0 + corner} A${corner} ${corner} 0 0 1 ${x0} ${y1 - corner} V${y0 + corner} A${corner} ${corner} 0 0 1 ${x0 + corner} ${y0} Z")`
 }
+
+/** Start a new generation of an effect's layer tree and retire the old one.
+ *
+ *  Returns the element the rebuilt layers go into. With `durationMs` > 0 the
+ *  outgoing generation fades out while this one fades in — a crossfade. The
+ *  alternative, fading the whole effect up from nothing, turns every rebuild
+ *  into a blink, and rebuilds are routine: a `whileHover` or `whilePressed`
+ *  treatment is a config change like any other.
+ *
+ *  An interrupted crossfade (hover in, out, in again inside one duration)
+ *  fades each leaving generation from wherever it had got to, so nothing
+ *  jumps; each is removed once it has faded. Where the Web Animations API is missing (jsdom) or the duration is
+ *  0, it is a plain swap. */
+export function nextGeneration(fx: HTMLElement, durationMs: number): HTMLElement {
+  const generation = document.createElement('span')
+  generation.style.cssText = 'position:absolute;inset:0;pointer-events:none;border-radius:inherit'
+  const leaving = Array.from(fx.children) as HTMLElement[]
+  if (!(durationMs > 0) || typeof generation.animate !== 'function') {
+    fx.replaceChildren(generation)
+    return generation
+  }
+  // The incoming generation eases OUT (most of its light arrives early) and
+  // the outgoing one eases IN (most of its light lingers), so their sum never
+  // sags: two symmetric fades cross at half opacity each, and a glow visibly
+  // dims mid-swap.
+  for (const old of leaving) {
+    const from = getComputedStyle(old).opacity
+    old.getAnimations().forEach((animation) => animation.cancel())
+    const fadeOut = old.animate([{ opacity: from }, { opacity: 0 }], {
+      duration: durationMs,
+      easing: 'ease-in',
+      fill: 'forwards',
+    })
+    const retire = () => old.remove()
+    fadeOut.finished.then(retire, retire)
+  }
+  fx.appendChild(generation)
+  generation.animate([{ opacity: 0 }, { opacity: 1 }], { duration: durationMs, easing: 'ease-out' })
+  return generation
+}

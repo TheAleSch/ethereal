@@ -19,6 +19,7 @@ import {
   checkHost,
   claimHost,
   holePath,
+  nextGeneration,
   nextPhase,
   p3t,
   pos,
@@ -1082,25 +1083,15 @@ export function Ethereal({
       return parts.join(', ')
     }
 
-    fx.replaceChildren()
     // mode-scoped per-frame vars persist on the HOST across rebuilds — a
     // stale --njFade (~0 near a breathe-jitter cycle wrap) would freeze the
     // next config's bloom dimmed or invisible
     host.style.removeProperty('--njFade')
-    // STATE TRANSITIONS: when cfg changes (a different `state`, or any prop)
-    // the rebuilt layers fade in over `transitionMs` (e.g. idle → sending →
-    // thinking on a chat composer)
-    if (safeTransitionMs > 0 && !reducedMotion) {
-      fx.style.opacity = '0'
-      fx.style.transition = `opacity ${safeTransitionMs}ms ease`
-      // force a style flush so the 0 is actually committed — a single rAF
-      // fires before style recalc and the transition would never run
-      void fx.offsetWidth
-      fx.style.opacity = '1'
-    } else {
-      fx.style.opacity = '1'
-      fx.style.transition = ''
-    }
+    // STATE TRANSITIONS: when cfg changes (a different `state`, a hover or
+    // press treatment, any prop) the rebuilt layers crossfade with the old
+    // ones over `transitionMs` (e.g. idle → sending → thinking on a chat
+    // composer, or a `whileHover` that brightens the glow)
+    const generation = nextGeneration(fx, reducedMotion ? 0 : safeTransitionMs)
     fx.style.overflow = clamped.place === 'internal' ? 'hidden' : 'visible'
     // anchor to the BORDER box, not the padding box, so the lit ring lands ON
     // the host's real border instead of 1px inside it (double-border
@@ -1117,7 +1108,7 @@ export function Ethereal({
       const layer = document.createElement('span')
       layer.style.cssText = 'position:absolute;inset:0;pointer-events:none;border-radius:inherit'
       layer.style.zIndex = zIndex
-      ;(parent ?? fx).appendChild(layer)
+      ;(parent ?? generation).appendChild(layer)
       return layer
     }
     // a gradient with matching inset stops at BOTH ends of one axis: `ends`
