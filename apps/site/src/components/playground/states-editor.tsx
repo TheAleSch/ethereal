@@ -226,13 +226,12 @@ export function StatesEditor({
   const setActiveSlot = onPinned
   // the Base cell is (idle, base) with a baseSlot present — its edits belong
   // to the per-theme BASE config, not to a named state
-  // Which LAYER the Base row edits, deliberately separate from previewTheme.
-  // The base config applies to both themes, so "what am I editing" and "what
-  // am I looking at" are different questions there — and binding them meant
-  // that once the preview defaulted to dark, the first edit on a fresh
-  // playground silently landed in the dark override instead of the base.
-  // Named states keep the binding: their two branches really are light/dark.
-  const [baseTarget, setBaseTarget] = useState<"base" | "dark">("base")
+  // Which LAYER the Base row edits follows the preview, like every other
+  // row: the light preview shows (and edits) the base config, the dark one
+  // its `themes.dark` override. One theme axis across the preview and the
+  // panel — the sliders always show the values of the surface on screen, and
+  // the pressed "dark" pill says plainly where an edit is going.
+  const baseTarget = previewTheme === "dark" ? "dark" : "base"
   const isBaseCell = (name: string) =>
     name === "idle" && activeSlot === "base" && !!baseSlot
   /** the theme branch a base-cell write targets — the playground only ever
@@ -477,32 +476,19 @@ export function StatesEditor({
     const isBaseConfig = isBaseCell(name)
     return (
       <>
-        {/* the theme axis is ALWAYS shown. On a named state these pick the
-            branch AND flip the preview to match. On the Base row they pick
-            the layer being edited and leave the preview alone — see
-            baseTarget. */}
+        {/* the theme axis is ALWAYS shown, and on every row it IS the
+            preview's theme: picking a pill flips the preview to match, and
+            the preview's own toggle moves the pill. */}
         <div className="flex gap-1 rounded-xl bg-input/30 p-1">
           {THEME_ROW.map((t) => (
             <button
               key={t.key}
               type="button"
-              onClick={() =>
-                isBaseConfig
-                  ? setBaseTarget(t.key === "light" ? "base" : "dark")
-                  : pickTheme(t.key)
-              }
-              aria-pressed={
-                isBaseConfig
-                  ? baseTarget === (t.key === "light" ? "base" : "dark")
-                  : (previewTheme ?? "light") === t.key
-              }
+              onClick={() => pickTheme(t.key)}
+              aria-pressed={(previewTheme ?? "light") === t.key}
               className={cn(
                 "hit-44-pseudo flex min-w-11 flex-1 items-center justify-center gap-1 truncate rounded-lg px-1 py-1.5 text-[11px] font-medium capitalize transition-colors sm:px-1.5",
-                (
-                  isBaseConfig
-                    ? baseTarget === (t.key === "light" ? "base" : "dark")
-                    : (previewTheme ?? "light") === t.key
-                )
+                (previewTheme ?? "light") === t.key
                   ? "bg-white/10 text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               )}
