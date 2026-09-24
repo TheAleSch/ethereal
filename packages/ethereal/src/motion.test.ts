@@ -102,6 +102,18 @@ describe('Ethereal drives its host every frame', () => {
     expect(bottomSweepEnvelope(1)).toBe(0)
   })
 
+  it('keeps an eased bottom sweep dark only for the wraparound, not its slow ends', () => {
+    // one lap is 2 s = 125 frames at 16 ms; count the frames the envelope is
+    // parked. Keyed on eased travel, ease-in-out spent half the lap dark.
+    render(createElement(EtherealSubject, { path: 'bottom', travelEase: 'ease-in-out', duration: 2 }))
+    let darkFrames = 0
+    for (let index = 0; index < 125; index++) {
+      frame(100 + index * 16)
+      if (read('--bedge') === '0') darkFrames++
+    }
+    expect(darkFrames / 125).toBeLessThan(0.16)
+  })
+
   it('writes and MOVES the head, blob and needle properties', () => {
     render(createElement(EtherealSubject, { path: 'around', duration: 2, needles: 6 }))
     run(2)

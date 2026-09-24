@@ -36,6 +36,10 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- A `path: 'bottom'` sweep with an eased `travelEase` no longer spends half of
+  every lap dark. The fade at each end was keyed on the eased position, which
+  lingers near both corners; it now follows lap progress, so every ease is
+  dark only for the same eighth of the lap as `linear`.
 - `<EventHorizon>` on a light surface no longer prints a white frame round the
   host: the lens's brightness lift, which reads as light piling up at the rim
   on a dark page, is dropped when the theme is light.

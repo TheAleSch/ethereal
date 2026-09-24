@@ -145,10 +145,11 @@ export const ETHEREAL: EtherealCfg = {
   gamut: 'srgb',
 }
 
-/** Visibility envelope for a bottom sweep. The head still crosses the path at
- * the configured duration; only the hidden wraparound interval is shortened. */
-export const bottomSweepEnvelope = (travel: number) =>
-  trap(travel, 0.0625, 0.2625, 0.7375, 0.9375)
+/** Visibility envelope for a bottom sweep, keyed on lap PROGRESS (pre-ease).
+ * The head still crosses the path at the configured duration; only the hidden
+ * wraparound interval is shortened. */
+export const bottomSweepEnvelope = (progress: number) =>
+  trap(progress, 0.0625, 0.2625, 0.7375, 0.9375)
 
 /* states -------------------------------------------------------------------
    The registry of state NAMES, plus anything the derivation rule below cannot
@@ -337,10 +338,10 @@ function tickAll(nowSec: number, dt: number) {
     }
     const travel = (EASE[cfg.travelEase] || EASE.linear)(progress)
     // Dead interval — the repeatDelay gap, or the bottom sweep's hidden
-    // wraparound (an eighth of every default cycle): every layer is at opacity
-    // 0, but a browser still restyles and repaints a zero-opacity layer whose
-    // vars changed. Park the envelope and write nothing else until it returns.
-    if (gapRamp === 0 || (cfg.path === 'bottom' && bottomSweepEnvelope(travel) === 0)) {
+    // wraparound (an eighth of every cycle): every layer is at opacity 0, but
+    // a browser still restyles and repaints a zero-opacity layer whose vars
+    // changed. Park the envelope and write nothing else until it returns.
+    if (gapRamp === 0 || (cfg.path === 'bottom' && bottomSweepEnvelope(progress) === 0)) {
       writeVar(rec, '--bedge', '0')
       return
     }
@@ -359,7 +360,9 @@ function tickAll(nowSec: number, dt: number) {
       // Keep the head's travel calm while shortening only the invisible gap
       // between sweeps. The old 0.125 margins hid a quarter of every cycle;
       // 0.0625 margins halve that dead interval for every bottom-path preset.
-      edgeRamp = bottomSweepEnvelope(travel)
+      // Keyed on PROGRESS, not eased travel: an ease lingers near 0 and 1, so
+      // ease-in-out spent half of every lap dark behind the travel margins.
+      edgeRamp = bottomSweepEnvelope(progress)
     } else if (cfg.path === 'around') {
       const aspect = rec.aspect
       head1 = walkSmooth(travel, 0.3, aspect, rec.lut)
