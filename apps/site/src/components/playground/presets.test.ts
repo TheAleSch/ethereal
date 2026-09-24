@@ -19,6 +19,7 @@
 //   - and the whole share-link flow is diffCfg → JSON → parseOverrides, so a
 //     tightened guard in one of them must not start dropping legitimate
 //     preset values.
+import { converter } from "culori"
 import { describe, expect, it } from "vitest"
 
 import {
@@ -81,7 +82,7 @@ describe("the Ethereal light/dark preset split", () => {
     const preset = ETHEREAL_PRESETS["Line (original)"]
     const dark = preset.themes!.dark!
     expect(preset.colors).not.toEqual(dark.colors)
-    // deepened: every derived colour is an rgb() triple, not the original hex
+    // re-pitched: every derived colour is an rgb() triple, not the original hex
     for (const color of preset.colors as string[]) {
       expect(color).toMatch(/^rgb\(\d{1,3},\d{1,3},\d{1,3}\)$/)
     }
@@ -89,6 +90,24 @@ describe("the Ethereal light/dark preset split", () => {
     expect(preset.strokeOpacity!).toBeGreaterThan(dark.strokeOpacity!)
     expect(preset.innerOpacity!).toBeLessThan(dark.innerOpacity!)
     expect(preset.glowBlur!).toBeLessThan(dark.glowBlur!)
+  })
+
+  it("keeps light colours vivid instead of darkening them into brown and slate", () => {
+    const toOklch = converter("oklch")
+    for (const [name, preset] of Object.entries(ETHEREAL_PRESETS)) {
+      const darkColors = preset.themes!.dark!.colors as string[]
+      ;(preset.colors as string[]).forEach((color, index) => {
+        const light = toOklch(color)!
+        const source = toOklch(darkColors[index])!
+        // the old rule halved every channel: Sunset's orange landed at
+        // L 0.45 — rust. Chromatic inputs now sit in the vivid band
+        expect(light.l, `${name} ${color} lightness`).toBeGreaterThan(0.53)
+        if (source.c >= 0.05)
+          expect(light.c, `${name} ${color} chroma`).toBeGreaterThan(0.1)
+        // and a grey stays a grey rather than being pushed to blue
+        else expect(light.c, `${name} ${color} chroma`).toBeLessThan(0.05)
+      })
+    }
   })
 
   it("caps the amplified light values instead of letting them run past legal opacity", () => {

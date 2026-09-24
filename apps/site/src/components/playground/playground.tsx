@@ -579,6 +579,19 @@ function EffectSection({
     pinned !== "base" && preview
       ? cloneElement(preview as ReactElement, pinnedOver)
       : preview
+  // the preview's floating controls follow the BACKDROP, not the site theme:
+  // black/50 chips with the dark theme's grey labels print as muddy grey
+  // boxes on the light backdrop, which is most of what made it read dirty
+  const lightBackdrop = backdrop === "light"
+  const chrome = lightBackdrop
+    ? "bg-white/75 text-zinc-500 shadow-sm ring-1 ring-black/5"
+    : "bg-black/50 text-muted-foreground"
+  const chromeActive = lightBackdrop
+    ? "bg-black/[0.06] text-zinc-900"
+    : "bg-white/10 text-foreground"
+  const chromeHover = lightBackdrop
+    ? "hover:text-zinc-900"
+    : "hover:text-foreground"
 
   return (
     <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-[minmax(0,1fr)_28rem]">
@@ -607,7 +620,7 @@ function EffectSection({
           )}
         >
           {backdrop === "dark" && <StarField />}
-          <PerfHud />
+          <PerfHud light={lightBackdrop} />
           {/* freeze the animation to inspect or tune a single frame. Process-
               wide, because the loop is — which is fine here, every effect on
               this page is the one being tuned. */}
@@ -621,7 +634,11 @@ function EffectSection({
             aria-pressed={frozen}
             aria-label={frozen ? "resume the animation" : "pause the animation"}
             title={frozen ? "resume" : "pause — tweak a frozen frame"}
-            className="hit-44 absolute bottom-3 left-3 z-20 flex size-7 items-center justify-center rounded-lg bg-black/50 text-muted-foreground backdrop-blur-sm transition-colors hover:text-foreground"
+            className={cn(
+              "hit-44 absolute bottom-3 left-3 z-20 flex size-7 items-center justify-center rounded-lg backdrop-blur-sm transition-colors",
+              chrome,
+              chromeHover
+            )}
           >
             {frozen ? (
               <Play className="size-3.5" />
@@ -630,7 +647,12 @@ function EffectSection({
             )}
           </button>
           {/* backdrop toggle — preview the glow on a light surface */}
-          <div className="absolute top-3 right-3 z-20 flex rounded-xl bg-black/50 p-1 backdrop-blur-sm">
+          <div
+            className={cn(
+              "absolute top-3 right-3 z-20 flex rounded-xl p-1 backdrop-blur-sm",
+              chrome
+            )}
+          >
             {(["dark", "light"] as const).map((m) => (
               <button
                 key={m}
@@ -640,9 +662,7 @@ function EffectSection({
                 aria-label={`${m} backdrop`}
                 className={cn(
                   "hit-44-pseudo flex size-6 items-center justify-center rounded-lg transition-colors",
-                  backdrop === m
-                    ? "bg-white/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                  backdrop === m ? chromeActive : chromeHover
                 )}
               >
                 {m === "dark" ? (
@@ -654,7 +674,12 @@ function EffectSection({
             ))}
           </div>
           {/* preview host selector — try the effect on different elements */}
-          <div className="absolute top-3 left-3 z-20 flex rounded-xl bg-black/50 p-1 backdrop-blur-sm">
+          <div
+            className={cn(
+              "absolute top-3 left-3 z-20 flex rounded-xl p-1 backdrop-blur-sm",
+              chrome
+            )}
+          >
             {(["button", "chat", "card", "pill"] as const).map((h) => (
               <button
                 key={h}
@@ -664,9 +689,7 @@ function EffectSection({
                 aria-label={`${h} preview host`}
                 className={cn(
                   "hit-44-pseudo min-h-6 rounded-lg px-2 py-1 text-[10px] font-medium capitalize transition-colors sm:px-2.5 sm:text-[11px]",
-                  host === h
-                    ? "bg-white/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                  host === h ? chromeActive : chromeHover
                 )}
               >
                 {h}

@@ -6,7 +6,12 @@
 // needleH→needleHeight, sat→saturation, bright→brightness, hoverAmt→hoverAmount,
 // strokeO→strokeOpacity, innerO→innerOpacity, bloomO→bloomOpacity) —
 // already mapped here.
-import { parse as parseCssColor } from "culori"
+import {
+  clampChroma,
+  converter,
+  formatRgb,
+  parse as parseCssColor,
+} from "culori"
 
 import {
   ETHEREAL,
@@ -60,51 +65,74 @@ const withHover = <T extends Record<string, unknown>>(
    derives the light rendering from the dark one, and the original values
    become the `themes.dark` branch. Each factor below is doing a specific job:
 
-     colours   deepened and re-saturated — the only change that matters much;
-               a light-on-light glow has no contrast to work with
+     colours   re-pitched in OKLCH to each hue's most saturated lightness —
+               the change that matters most; a light-on-light glow has no
+               contrast, and a darkened one (the old rule) has no colour
      blur      tightened — on white, spread reads as haze, not light. Except
                when the glow paints OUTSIDE the host: there the blur is what
                softens the needles, and tightened they print on white as
                hard-edged vertical stains rather than coloured light
      inner     pulled back — the interior wash muddies a white surface
      stroke    lifted — the border ring is what survives on light, so lean on it
-     bright    lowered — brightness > 1 pushes everything toward the background
 
    A preset that wants something else just declares `themes.dark` itself and
    this transform leaves it alone. */
 
-/** Deepen and re-saturate one CSS colour for a light background. Handles the
- *  `#rgb`/`#rrggbb` and `rgb(r,g,b)` forms the presets actually use; anything
- *  else is returned untouched rather than mangled. */
-function deepen(input: string, darken = 0.52, saturate = 1.4): string {
-  let red: number, green: number, blue: number
-  const hex = input.startsWith("#") ? input.slice(1) : null
-  if (hex && (hex.length === 3 || hex.length === 6)) {
-    const full =
-      hex.length === 3
-        ? hex
-            .split("")
-            .map((ch) => ch + ch)
-            .join("")
-        : hex
-    red = parseInt(full.slice(0, 2), 16)
-    green = parseInt(full.slice(2, 4), 16)
-    blue = parseInt(full.slice(4, 6), 16)
-  } else {
-    const match = /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(input)
-    if (!match) return input
-    red = +match[1]
-    green = +match[2]
-    blue = +match[3]
+/** Re-pitch one CSS colour for a light background: the same hue, at the
+ *  lightness where that hue carries the most chroma (its OKLCH cusp), clamped
+ *  to a band that still reads against white, then pushed to the most chroma
+ *  sRGB can show there. Darkening the colour instead — the obvious move —
+ *  buys contrast by spending the colour: orange darkens to brown, red to
+ *  maroon, cyan to slate, and blurred thin over white those read as dirt.
+ *  A near-neutral input (Silver mono) keeps its neutrality and only deepens;
+ *  a chroma push would turn a cool grey into a saturated blue. Yellow is the
+ *  one hue with no deep version — its cusp sits near white, and pulled down
+ *  into the band it turns olive — so yellows are turned to amber first.
+ *  Unparseable input is returned untouched rather than mangled. */
+function vivid(input: string): string {
+  const color = toOklch(parseCssColor(input))
+  if (!color) return input
+  if (color.c < NEUTRAL_CHROMA || color.h === undefined)
+    return compactRgb({ ...color, l: NEUTRAL_LIGHTNESS })
+  const hue =
+    color.h > AMBER_HUE && color.h < YELLOW_HUE_END ? AMBER_HUE : color.h
+  let cuspLightness = VIVID_LIGHTNESS.min
+  let cuspChroma = 0
+  for (let lightness = 0.4; lightness <= 0.95; lightness += 0.01) {
+    const chroma = maxChroma(lightness, hue)
+    if (chroma > cuspChroma) {
+      cuspChroma = chroma
+      cuspLightness = lightness
+    }
   }
-  const mean = (red + green + blue) / 3
-  const push = (channel: number) =>
-    Math.max(
-      0,
-      Math.min(255, Math.round((mean + (channel - mean) * saturate) * darken))
-    )
-  return `rgb(${push(red)},${push(green)},${push(blue)})`
+  const lightness = Math.min(
+    VIVID_LIGHTNESS.max,
+    Math.max(VIVID_LIGHTNESS.min, cuspLightness)
+  )
+  return compactRgb({
+    mode: "oklch",
+    l: lightness,
+    c: maxChroma(lightness, hue),
+    h: hue,
+  })
 }
+
+const toOklch = converter("oklch")
+/** `rgb(r,g,b)` without culori's spaces, the form every preset is written in */
+const compactRgb = (color: Parameters<typeof formatRgb>[0]) =>
+  (formatRgb(color) ?? "").replace(/\s+/g, "")
+/** the most chroma sRGB can display at this lightness and hue */
+const maxChroma = (lightness: number, hue: number) =>
+  clampChroma({ mode: "oklch", l: lightness, c: 0.4, h: hue }, "oklch").c
+/** OKLCH lightness band a light-theme colour is pinned into: below it a hue
+ *  goes muddy, above it a light-on-white glow has no contrast left */
+const VIVID_LIGHTNESS = { min: 0.56, max: 0.68 }
+/** below this chroma a colour is treated as a grey, and deepened as one */
+const NEUTRAL_CHROMA = 0.05
+const NEUTRAL_LIGHTNESS = 0.55
+/** OKLCH hues from amber up to the start of lime: the yellows */
+const AMBER_HUE = 70
+const YELLOW_HUE_END = 112
 
 /** Keys whose value depends on the surface. Everything else — path, timing,
  *  counts, geometry — is the preset's identity and must read identically in
@@ -141,7 +169,7 @@ const themed = (
         const value = (preset[key] ?? ETHEREAL[key]) as never
         dark[key] = value
       }
-      light.colors = (dark.colors as string[]).map((color) => deepen(color))
+      light.colors = (dark.colors as string[]).map((color) => vivid(color))
       const paintsOutside = (preset.place ?? ETHEREAL.place) !== "internal"
       light.glowBlur = round2(
         (dark.glowBlur as number) * (paintsOutside ? 1 : 0.6)
@@ -153,7 +181,6 @@ const themed = (
       light.bloomOpacity = round2(cap((dark.bloomOpacity as number) * 1.1, 2))
       light.strength = round2(cap((dark.strength as number) * 1.25, 2))
       light.saturation = round2(cap((dark.saturation as number) * 1.3, 3))
-      light.brightness = round2((dark.brightness as number) * 0.8)
       return [name, { ...light, themes: { dark } }]
     })
   )
