@@ -269,7 +269,7 @@ let server
   await p4
     .getByRole("combobox", { name: "start thinking from a preset" })
     .click()
-  await p4.getByRole("option", { name: "Ember", exact: true }).click()
+  await p4.getByRole("option", { name: "Candle", exact: true }).click()
   ok(
     (await mainPreset.innerText()).trim() === "Ocean",
     "STATE PRESET: leaves the main preset unchanged"

@@ -62,7 +62,10 @@ const withHover = <T extends Record<string, unknown>>(
 
      colours   deepened and re-saturated — the only change that matters much;
                a light-on-light glow has no contrast to work with
-     blur      tightened — on white, spread reads as haze, not light
+     blur      tightened — on white, spread reads as haze, not light. Except
+               when the glow paints OUTSIDE the host: there the blur is what
+               softens the needles, and tightened they print on white as
+               hard-edged vertical stains rather than coloured light
      inner     pulled back — the interior wash muddies a white surface
      stroke    lifted — the border ring is what survives on light, so lean on it
      bright    lowered — brightness > 1 pushes everything toward the background
@@ -139,7 +142,10 @@ const themed = (
         dark[key] = value
       }
       light.colors = (dark.colors as string[]).map((color) => deepen(color))
-      light.glowBlur = round2((dark.glowBlur as number) * 0.6)
+      const paintsOutside = (preset.place ?? ETHEREAL.place) !== "internal"
+      light.glowBlur = round2(
+        (dark.glowBlur as number) * (paintsOutside ? 1 : 0.6)
+      )
       light.strokeOpacity = round2(
         cap((dark.strokeOpacity as number) * 1.25, 2)
       )
@@ -319,27 +325,6 @@ const ETHEREAL_PRESETS_RAW: Record<string, EtherealOverrides> = {
     trail: 1.8,
     trailFade: 0.5,
   },
-  Ember: {
-    colors: ["#ff5e35", "#ff8a3d", "#ffb347", "#ff7a4d"],
-    duration: 9.1,
-    spotW: 100,
-    spotH: 56,
-    blendSoftness: 0.8,
-    travelEase: "ease-in-out",
-    flicker: 0.65,
-    wander: 0.3,
-    needles: 5,
-    needleHeight: 0.7,
-    glowBlur: 13,
-    pulseMin: 0.55,
-    pulseMax: 1.6,
-    strokeOpacity: 0.95,
-    innerOpacity: 0.4,
-    bloomOpacity: 1.15,
-    hueRange: 6,
-    hotspots: 2,
-    hotSpread: 30,
-  },
   Aurora: {
     colors: [
       "rgb(80,220,180)",
@@ -450,6 +435,54 @@ const ETHEREAL_PRESETS_RAW: Record<string, EtherealOverrides> = {
     pulseMax: 1.2,
     hueRange: 8,
   },
+  // The only preset past strength 1. There the extra goes into light, not
+  // opacity: the halo reaches further and, on dark, the core runs hot and
+  // near-white — a single cold lamp circling the border, not a louder ring.
+  Spotlight: {
+    colors: ["#7cc4ff", "#a99bff", "#6fe3ff"],
+    path: "around",
+    place: "both",
+    duration: 9.5,
+    spotW: 110,
+    spotH: 64,
+    glowBlur: 14,
+    needles: 6,
+    needleHeight: 0.8,
+    hotspots: 1,
+    trail: 1.6,
+    trailFade: 0.6,
+    lead: 0.4,
+    wander: 0.1,
+    flicker: 0.15,
+    pulseMin: 0.85,
+    pulseMax: 1.25,
+    strength: 1.8,
+    hueRange: 10,
+  },
+  // A card that is dark until the pointer arrives. `reveal` eases --hov from
+  // 0, so the playground preview shows nothing until you hover it — that IS
+  // the preset.
+  "Hover reveal": {
+    colors: ["#8b5cf6", "#22d3ee", "#f472b6"],
+    path: "around",
+    place: "both",
+    heads: 2,
+    spin: "counter",
+    duration: 10,
+    spotW: 150,
+    spotH: 90,
+    blendSoftness: 1.2,
+    glowBlur: 16,
+    needles: 8,
+    needleHeight: 0.8,
+    hotspots: 2,
+    hotSpread: 30,
+    strokeOpacity: 1.1,
+    innerOpacity: 0.45,
+    bloomOpacity: 0.9,
+    hueRange: 12,
+    hover: "reveal",
+  },
   // A dense comb whose only motion is the per-band sway of the needles
   // themselves. `static` is the only path that draws a fixed row of waveform
   // needles, and here nothing else competes with it.
@@ -476,9 +509,9 @@ const ETHEREAL_PRESETS_RAW: Record<string, EtherealOverrides> = {
 
 export const ETHEREAL_PRESETS = themed(withHover(ETHEREAL_PRESETS_RAW))
 
-/** Preset select grouping for the Ethereal tab. Nineteen names in one flat list
- *  read as nineteen variations of the same thing; grouped, the list says what
- *  kind of choice each one is — a different MOTION, a different PLACEMENT, a
+/** Preset select grouping for the Ethereal tab. Twenty names in one flat list
+ *  read as twenty variations of the same thing; grouped, the list says what
+ *  kind of choice each one is — a different MOTION, PLACEMENT or INTENSITY, a
  *  different PALETTE over the same motion, or a worked product example. */
 export const ETHEREAL_PRESET_GROUPS: { label: string; names: string[] }[] = [
   {
@@ -495,6 +528,7 @@ export const ETHEREAL_PRESET_GROUPS: { label: string; names: string[] }[] = [
     ],
   },
   { label: "Placement", names: ["Halo (external)", "Halo + border"] },
+  { label: "Intensity", names: ["Spotlight"] },
   {
     label: "Palettes",
     names: [
@@ -502,14 +536,13 @@ export const ETHEREAL_PRESET_GROUPS: { label: string; names: string[] }[] = [
       "Silver mono",
       "Ocean",
       "Sunset",
-      "Ember",
       "Aurora",
       "Candle",
     ],
   },
   {
     label: "Product examples",
-    names: ["Assistant prompt", "Intelligence halo"],
+    names: ["Assistant prompt", "Intelligence halo", "Hover reveal"],
   },
 ]
 
@@ -1443,16 +1476,6 @@ const DITHER_PRESETS_RAW: Record<string, DitherOverrides> = {
     pulseMin: 0.9,
     pulseMax: 1.28,
   },
-  Ember: {
-    colors: ["#ff5e35", "#ff8a3d", "#ffb347", "#ff7a4d"],
-    duration: 9.1,
-    travelEase: "ease-in-out",
-    flicker: 0.65,
-    wander: 0.3,
-    pulseMin: 0.55,
-    pulseMax: 1.6,
-    hueRange: 6,
-  },
   Aurora: {
     colors: [
       "rgb(80,220,180)",
@@ -1462,8 +1485,11 @@ const DITHER_PRESETS_RAW: Record<string, DitherOverrides> = {
     ],
     duration: 15.8,
     wander: 0.8,
-    reach: 210,
-    band: 34,
+    // at reach 210 / band 34 the light was a ~200px blob parked over the
+    // button's label; this keeps the hue drift and puts it back on the border
+    reach: 110,
+    band: 14,
+    block: 3,
     pulseMin: 0.7,
     pulseMax: 1.5,
     hueRange: 40,
@@ -1493,8 +1519,10 @@ const DITHER_PRESETS_RAW: Record<string, DitherOverrides> = {
   "Assistant prompt": {
     colors: ["#4285f4", "#9b72cb", "#d96570", "#9b72cb"],
     duration: 12.3,
-    reach: 190,
-    band: 30,
+    // same blob-over-the-label failure as Aurora at 190 / 30
+    reach: 100,
+    band: 12,
+    block: 3,
     hueRange: 6,
     wander: 0.16,
     flicker: 0.1,
@@ -1523,12 +1551,40 @@ const DITHER_PRESETS_RAW: Record<string, DitherOverrides> = {
     colors: ["#ffb000", "#ff8800", "#ffd75e"],
     block: 7,
     levels: 3,
-    band: 20,
+    // band 20 filled the button with pixels; 8 is a crisp CRT border
+    band: 8,
+    reach: 110,
     duration: 14.7,
     wander: 0.08,
     flicker: 0.14,
     pulseMin: 0.9,
     pulseMax: 1.18,
+  },
+  // the only bottom-path, outside-placed preset: a focus underline
+  "Underline sweep": {
+    colors: ["#38bdf8", "#818cf8", "#22d3ee"],
+    path: "bottom",
+    place: "external",
+    block: 3,
+    levels: 4,
+    reach: 90,
+    band: 8,
+    duration: 6,
+    travelEase: "ease-in-out",
+    hueRange: 8,
+  },
+  // one short pass, then a rest: idle attention rather than ambient motion,
+  // and the only preset that uses repeatDelay
+  Ping: {
+    colors: ["#f472b6", "#fb7185", "#c084fc"],
+    duration: 2.6,
+    repeatDelay: 2.4,
+    travelEase: "ease-in-out",
+    block: 3,
+    reach: 90,
+    band: 8,
+    hotspots: 3,
+    hotSpread: 18,
   },
 }
 
@@ -1542,14 +1598,16 @@ export const DITHER_PRESET_GROUPS: { label: string; names: string[] }[] = [
       "Rainbow bits",
       "Ocean",
       "Sunset",
-      "Ember",
       "Aurora",
       "Candle",
       "Silver mono",
       "Assistant prompt",
     ],
   },
-  { label: "Dither exclusive", names: ["Dual scan", "Terminal", "Amber CRT"] },
+  {
+    label: "Dither exclusive",
+    names: ["Dual scan", "Terminal", "Amber CRT", "Underline sweep", "Ping"],
+  },
 ]
 
 export const EH_CONTROLS = withHints(EH_CONTROLS_RAW)

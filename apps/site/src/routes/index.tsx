@@ -160,10 +160,19 @@ function Home() {
                 band={14}
               />
             ) : (
+              // the preset is tuned for a button; on a 384px disc it was a
+              // thin arc with little glow, so the panel widens ring and tail
               <EventHorizon
                 {...EVENT_HORIZON_PRESETS["Ember disk"]}
                 duration={14}
                 corner={1}
+                ring={2}
+                tail={2.4}
+                nodes={14}
+                node={1.2}
+                blur={16}
+                halo={1.1}
+                lens={4}
               />
             )}
             {/* the label follows what actually renders — dither mode swaps in
@@ -241,12 +250,14 @@ function InstallBorder({
       duration={8}
       block={4}
       levels={4}
-      reach={150}
-      band={16}
-      hotspots={5}
-      hotSpread={23}
+      // reach 150 / band 16 with five hotspots threw diagonal wedges across
+      // the command itself; these keep the blocks on the border
+      reach={100}
+      band={10}
+      hotspots={3}
+      hotSpread={30}
       wander={0.3}
-      flicker={0.35}
+      flicker={0.2}
       saturation={2}
       brightness={0.6}
       hueRange={6}
@@ -271,23 +282,24 @@ function InstallBorder({
           path: "around",
           duration: 6.2,
           breatheAmp: 0.25,
-          spotSamples: 9,
+          // a 56px spot with a fully-faded 9-sample trail left two thin
+          // slivers on a box this wide — lit, but never visibly travelling
           trail: 3,
-          trailFade: 1,
-          spotW: 56,
-          spotH: 81,
+          trailFade: 0.5,
+          spotW: 140,
+          spotH: 90,
           spotOffset: 30,
           hotspots: 5,
           colors: INSTALL_GLOW,
           spotBlur: 5.5,
-          blendSoftness: 0.45,
+          blendSoftness: 1,
           strokeWidth: 1.5,
           glowBlur: 24,
           strokeOpacity: 1.6,
           innerOpacity: 0,
           bloomOpacity: 1.6,
           strength: 1.4,
-          lead: 1.8,
+          lead: 0.6,
           pulseMin: 0.65,
           pulseMax: 1.65,
           needleJitter: true,
