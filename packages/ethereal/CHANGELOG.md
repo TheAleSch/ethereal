@@ -6,6 +6,8 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-09-24
+
 ### Added
 
 - `whiteness` (0–1, default 1) on `<Ethereal>`: how white-hot the centre of
