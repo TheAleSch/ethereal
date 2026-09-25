@@ -262,7 +262,8 @@ export const ETHEREAL_GROUPS: PropGroup[] = [
         name: "strength",
         type: "number",
         default: "1",
-        description: "Master opacity multiplier over all layers.",
+        description:
+          "Master intensity. Up to 1 it scales every layer's opacity, with highlights easing off just short of full instead of clipping. Past 1 the extra goes into light rather than paint: the halo reaches further and, on dark surfaces, the core runs hotter, so pulse and flicker stay visible at any strength.",
       },
       {
         name: "saturation",
@@ -282,6 +283,13 @@ export const ETHEREAL_GROUPS: PropGroup[] = [
         default: "13",
         description:
           "Degrees of hue oscillation over time (0 = fixed hue; breathe does a full-circle rotation).",
+      },
+      {
+        name: "whiteness",
+        type: "number",
+        default: "1",
+        description:
+          "How white-hot the centre of the light runs, 0–1. At 1 the head is white-tipped and the cores whiten like a real source (and strength past 1 runs them hotter still); at 0 the palette's own colour holds all the way to the centre — the setting for a glow that stays colourful on a dark surface.",
       },
       {
         name: "gamut",

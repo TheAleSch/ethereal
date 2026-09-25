@@ -121,8 +121,13 @@ export const p3t = (color: string) =>
 // maps a 0..1 path fraction onto the ELEMENT box of a layer inset by `inset`
 // px — any layer with inset -N must pass N for gradients AND masks or the
 // paint drifts away from its mask window as the head orbits
+//
+// Every one of these is re-parsed on every animation frame (they carry the
+// per-frame vars), so the common uninset case drops its two no-op px terms.
 export const pos = (inset: number, fraction: string, offset?: string) =>
-  `calc(${inset}px + (100% - ${2 * inset}px) * ${fraction}${offset ? ` + (${offset})` : ''})`
+  inset
+    ? `calc(${inset}px + (100% - ${2 * inset}px) * ${fraction}${offset ? ` + (${offset})` : ''})`
+    : `calc(100% * ${fraction}${offset ? ` + (${offset})` : ''})`
 
 // ax/ay = |tangent| — blends ellipse w/h so the glow rotates with the travel
 // direction as the head rounds the border
@@ -183,15 +188,17 @@ export const devWarn = (message: string): void => {
     console.warn(message)
 }
 
-// both effects drive the SAME CSS variables (--bx/--bs1../--hov …) on their
-// host — two effects on one host silently corrupt each other, so warn
+// Two effects on one host overlap, and EventHorizon drives its per-frame CSS
+// variables (--bx/--bs1../--hov …) on the host itself, so a second one there
+// silently corrupts the first. Ethereal keeps its variables on its own span,
+// but stacking still double-paints — warn either way.
 type HostClaims = { count: number; names: Map<string, number> }
 const claimedHosts = new WeakMap<HTMLElement, HostClaims>()
 export function claimHost(host: HTMLElement, name: string) {
   const claims = claimedHosts.get(host) ?? { count: 0, names: new Map<string, number>() }
   if (claims.count > 0) {
     const previous = [...claims.names.keys()].join('/> and <')
-    devWarn(`[ethereal-glow] host already has <${previous}/> — <${name}/> on the same element will fight over CSS variables`)
+    devWarn(`[ethereal-glow] host already has <${previous}/> — <${name}/> on the same element will overlap (and EventHorizons fight over CSS variables) — give each effect its own host`)
   }
   claims.count++
   claims.names.set(name, (claims.names.get(name) ?? 0) + 1)
@@ -245,4 +252,52 @@ export const holePath = (width: number, height: number, inset: number, radius: n
     x1 = inset + width,
     y1 = inset + height
   return `path(evenodd, "M0 0 H${boxW} V${boxH} H0 Z M${x0 + corner} ${y0} H${x1 - corner} A${corner} ${corner} 0 0 1 ${x1} ${y0 + corner} V${y1 - corner} A${corner} ${corner} 0 0 1 ${x1 - corner} ${y1} H${x0 + corner} A${corner} ${corner} 0 0 1 ${x0} ${y1 - corner} V${y0 + corner} A${corner} ${corner} 0 0 1 ${x0 + corner} ${y0} Z")`
+}
+
+// generations already fading out — never touched again until they retire
+const retiring = new WeakSet<Element>()
+
+/** Start a new generation of an effect's layer tree and retire the old one.
+ *
+ *  Returns the element the rebuilt layers go into. With `durationMs` > 0 the
+ *  outgoing generation fades out while this one fades in — a crossfade. The
+ *  alternative, fading the whole effect up from nothing, turns every rebuild
+ *  into a blink, and rebuilds are routine: a `whileHover` or `whilePressed`
+ *  treatment is a config change like any other.
+ *
+ *  An interrupted crossfade (hover in, out, in again inside one duration)
+ *  leaves every generation already on its way out alone — cancelling its fade
+ *  would settle its `finished` promise and retire it on the spot, a visible
+ *  drop in light — and fades the generation that was coming in from wherever
+ *  it had got to. Each is removed once it has faded. Where the Web Animations
+ *  API is missing (jsdom) or the duration is 0, it is a plain swap. */
+export function nextGeneration(fx: HTMLElement, durationMs: number): HTMLElement {
+  const generation = document.createElement('span')
+  generation.style.cssText = 'position:absolute;inset:0;pointer-events:none;border-radius:inherit'
+  const leaving = Array.from(fx.children) as HTMLElement[]
+  if (!(durationMs > 0) || typeof generation.animate !== 'function') {
+    fx.replaceChildren(generation)
+    return generation
+  }
+  // The incoming generation eases OUT (most of its light arrives early) and
+  // the outgoing one eases IN (most of its light lingers), so their sum never
+  // sags: two symmetric fades cross at half opacity each, and a glow visibly
+  // dims mid-swap.
+  for (const old of leaving) {
+    if (retiring.has(old)) continue
+    retiring.add(old)
+    const from = getComputedStyle(old).opacity
+    // only a fade-IN can be running here; stopping it does not retire anything
+    old.getAnimations().forEach((animation) => animation.cancel())
+    const fadeOut = old.animate([{ opacity: from }, { opacity: 0 }], {
+      duration: durationMs,
+      easing: 'ease-in',
+      fill: 'forwards',
+    })
+    const retire = () => old.remove()
+    fadeOut.finished.then(retire, retire)
+  }
+  fx.appendChild(generation)
+  generation.animate([{ opacity: 0 }, { opacity: 1 }], { duration: durationMs, easing: 'ease-out' })
+  return generation
 }

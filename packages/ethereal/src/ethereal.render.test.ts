@@ -148,6 +148,7 @@ const CASES: [name: string, props: EtherealProps][] = [
   ['light theme', { theme: 'light', themes: { light: { glowBlur: 4, hueRange: 5 }, dark: { glowBlur: 20, hueRange: 40 } } }],
   ['dark theme', { theme: 'dark', themes: { light: { glowBlur: 4, hueRange: 5 }, dark: { glowBlur: 20, hueRange: 40 } } }],
   ['state thinking', { state: 'thinking' }],
+  ['whiteness 0, strength past 1', { whiteness: 0, strength: 2, theme: 'dark' }],
 ]
 
 describe('Ethereal rendered layers', () => {
@@ -156,6 +157,28 @@ describe('Ethereal rendered layers', () => {
       expect(renderStyles(props)).toMatchSnapshot()
     })
   }
+})
+
+describe('Ethereal whiteness', () => {
+  // the head's white tip is the one gradient that ends at 65%
+  const whiteTip = /rgba\(255,255,255,[\d.]+\) 0%, rgba\(255,255,255,[\d.]+\) 30%, transparent 65%/
+  // the hotspot core's centre stop: its own colour mixed toward white
+  const coreCentre = (dump: string) => /rgba\((\d+),(\d+),(\d+),1\.00\) 0%/.exec(dump)?.slice(1).map(Number)
+
+  it('keeps the palette colour at the centre at 0 — no white tip, no white-mixed core', () => {
+    const colors = ['rgb(255,50,100)']
+    expect(renderStyles({ colors, theme: 'dark' })).toMatch(whiteTip)
+    expect(coreCentre(renderStyles({ colors, theme: 'dark' }))).toEqual([255, 255, 255])
+    const dump = renderStyles({ colors, theme: 'dark', whiteness: 0, strength: 2 })
+    expect(dump).not.toMatch(whiteTip)
+    expect(coreCentre(dump)).toEqual([255, 50, 100])
+  })
+
+  it('clamps out-of-range and non-finite values to 0..1', () => {
+    expect(renderStyles({ whiteness: 5 })).toBe(renderStyles({ whiteness: 1 }))
+    expect(renderStyles({ whiteness: -1 })).toBe(renderStyles({ whiteness: 0 }))
+    expect(renderStyles({ whiteness: Number.NaN })).toBe(renderStyles({}))
+  })
 })
 
 describe('Ethereal hostile runtime values', () => {

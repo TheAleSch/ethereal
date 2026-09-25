@@ -106,9 +106,9 @@ familiar `colors` / `path` / `heads` / `spin` / `duration` / `hover`.
 the config you gave**, not a different look bolted on top. The built-in states
 are derived from your own config: your colors, path, geometry and pacing go in,
 and the same effect comes back quicker and more restless (`thinking`). A red
-comet going `around` stays a red comet going around. Changing state rebuilds
-the layers with a fade-in
-(`transitionMs`, default `320`, `0` disables). Built-ins mirror an AI chat
+comet going `around` stays a red comet going around. Changing state — or a
+`whileHover` / `whilePressed` treatment kicking in — cross-fades the rebuilt
+layers with the old ones (`transitionMs`, default `320`, `0` disables). Built-ins mirror an AI chat
 composer:
 
 ```tsx
@@ -270,6 +270,7 @@ changes.
 | `spotSamples`                                   | `0`             | Circles in the round chain (0 = auto from spotW/spotH ratio)                                                  |
 | `hotspots` / `hotSpread`                        | `1` / `22`      | Extra white-hot cores fanned along the path, each walking it individually                                     |
 | `hover`                                         | `'none'`        | `boost` · `speed` · `reveal`                                                                                  |
+| `whiteness`                                     | `1`             | How white-hot the centre runs — `0` keeps the palette's colour to the core, for vivid glows on dark           |
 | `duration`, `spotW/H`, `needles`, `glowBlur`, … |                 | See `EtherealCfg` — every field is typed and documented in the source                                         |
 
 ### EventHorizon
@@ -313,6 +314,10 @@ changes.
   the loop clamps `dt` after background-tab pauses so clocks never jump.
 - **Layout reads are cached** by ResizeObserver — the per-frame code only
   writes CSS custom properties, so there is no layout thrash.
+- **`<Ethereal>` paints on its own compositor layer** while it animates on
+  screen, so the host's content is not re-rasterized with the glow every
+  frame. On Windows, text overlapping the glow may render with grayscale
+  rather than subpixel anti-aliasing as a result.
 - **`prefers-reduced-motion: reduce`** renders a static glow with no
   animation loop.
 - **Theming**: honors `html[data-theme]`, `.light`/`.dark` classes, or the

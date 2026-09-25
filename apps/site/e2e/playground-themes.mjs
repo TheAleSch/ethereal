@@ -75,13 +75,47 @@ let server
   )
   ok(pills.filter((x) => x === "dark").length > 0, 'dark pill labelled "dark"')
 
-  // 2. default selected pill is base (preview theme defaults light)
-  const pressed = await p
-    .locator('button[aria-pressed="true"]')
-    .evaluateAll((els) => els.map((e) => (e.textContent || "").trim()))
+  // 2. the panel's theme pill IS the preview's theme, both ways. The preview
+  //    opens dark, so the dark pill is pressed on load.
+  const pressedPills = () =>
+    p
+      .locator('button[aria-pressed="true"]')
+      .evaluateAll((els) => els.map((e) => (e.textContent || "").trim()))
+  const backdropPressed = (theme) =>
+    p
+      .locator(`button[aria-label="${theme} backdrop"]`)
+      .getAttribute("aria-pressed")
+  let pressed = await pressedPills()
   ok(
-    pressed.includes("base"),
-    `"base" is selected on load  (pressed: ${JSON.stringify(pressed.slice(0, 4))})`
+    pressed.includes("dark") && !pressed.includes("base"),
+    `"dark" is selected on load, matching the dark preview  (pressed: ${JSON.stringify(pressed.slice(0, 4))})`
+  )
+  // preview toggle -> panel
+  await p.locator('button[aria-label="light backdrop"]').click()
+  await p.waitForTimeout(500)
+  pressed = await pressedPills()
+  ok(
+    pressed.includes("base") && !pressed.includes("dark"),
+    `light preview selects the "base" pill  (pressed: ${JSON.stringify(pressed.slice(0, 4))})`
+  )
+  // panel -> preview toggle
+  await p
+    .locator("button[aria-pressed]", { hasText: /^dark$/ })
+    .first()
+    .click()
+  await p.waitForTimeout(500)
+  ok(
+    (await backdropPressed("dark")) === "true",
+    'the "dark" pill flips the preview to dark'
+  )
+  await p
+    .locator("button[aria-pressed]", { hasText: /^base$/ })
+    .first()
+    .click()
+  await p.waitForTimeout(500)
+  ok(
+    (await backdropPressed("light")) === "true",
+    'the "base" pill flips the preview to light'
   )
 
   await openMotion(p)
@@ -269,7 +303,7 @@ let server
   await p4
     .getByRole("combobox", { name: "start thinking from a preset" })
     .click()
-  await p4.getByRole("option", { name: "Ember", exact: true }).click()
+  await p4.getByRole("option", { name: "Candle", exact: true }).click()
   ok(
     (await mainPreset.innerText()).trim() === "Ocean",
     "STATE PRESET: leaves the main preset unchanged"

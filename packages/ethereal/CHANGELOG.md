@@ -4,6 +4,56 @@ All notable changes to `ethereal-glow` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+## [0.2.0] — 2026-09-24
+
+### Added
+
+- `whiteness` (0–1, default 1) on `<Ethereal>`: how white-hot the centre of
+  the light runs. At 0 the head loses its white tip, the cores keep the
+  palette's own colour, and `strength` past 1 no longer spends itself on
+  heat — a glow that stays colourful on a dark surface. The default renders
+  exactly as before.
+- `EVENT_HORIZON_PRESETS.Pulsar` (the only teal disk) and
+  `EVENT_HORIZON_PRESETS.Eclipse`, built for light surfaces: no lens and almost
+  no core shadow.
+
+### Changed
+
+- `EVENT_HORIZON_PRESETS.Gargantua` was the default config slowed down and
+  rendered as its twin; it is now a big white-gold disk.
+  `EVENT_HORIZON_PRESETS.Neutron` laps in 4.2s instead of 3.2s with a shorter,
+  softer tail, so the trail no longer breaks into separate lumps.
+
+- `<Ethereal>` strong glows roll off like light instead of clamping: past
+  `strength` 1 the halo reaches further and, on dark surfaces, the core runs
+  hotter, while pulse and flicker stay visible. Hotspot cores are tinted by the
+  head's colour instead of pure white (grey smoke on dark pages, a bleached
+  hole on light ones).
+- `<Ethereal>` is roughly twice as cheap per frame: a comet chain renders as
+  one masked layer per head instead of one per chain circle, unchanged and
+  invisible-frame variable writes are skipped, and the effect paints on its own
+  compositor layer. On a gallery of twelve glowing buttons (headless Chromium,
+  GPU raster) style work per frame drops ~48%, paint ~41%, raster ~67%, and the
+  page holds 60fps where it held 38.
+- `<Ethereal>` writes its per-frame CSS variables on its own effect span
+  instead of the host, so they no longer shadow same-named variables in your
+  content. Anything that read them off the host must read the effect span.
+
+### Fixed
+
+- A `path: 'bottom'` sweep with an eased `travelEase` no longer spends half of
+  every lap dark. The fade at each end was keyed on the eased position, which
+  lingers near both corners; it now follows lap progress, so every ease is
+  dark only for the same eighth of the lap as `linear`.
+- `<EventHorizon>` on a light surface no longer prints a white frame round the
+  host: the lens's brightness lift, which reads as light piling up at the rim
+  on a dark page, is dropped when the theme is light.
+- `<Ethereal>` config changes (states, `whileHover`, `whilePressed`) now
+  cross-fade over `transitionMs`. The fade never ran after the first mount, so
+  every hover treatment snapped in.
+
 ## [0.1.0] — 2026-08-21
 
 Initial release.

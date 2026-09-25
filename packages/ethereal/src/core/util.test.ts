@@ -12,7 +12,7 @@
 // previous value in place.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { claimHost, p3t, radiusPx, trip } from './util'
+import { claimHost, nextGeneration, p3t, radiusPx, trip } from './util'
 
 const NAMED: Record<string, string> = {
   white: '#ffffff',
@@ -143,7 +143,7 @@ describe('claimHost', () => {
     const releaseFirst = claimHost(target, 'Ethereal')
     const releaseSecond = claimHost(target, 'Ethereal')
     expect(warn).toHaveBeenCalledOnce()
-    expect(warn.mock.calls[0]![0]).toContain('will fight over CSS variables')
+    expect(warn.mock.calls[0]![0]).toContain('give each effect its own host')
     releaseFirst()
     releaseSecond()
   })
@@ -183,5 +183,77 @@ describe('radiusPx', () => {
   it('reads a missing or malformed radius as 0', () => {
     expect(radiusPx('', host(200, 40))).toBe(0)
     expect(radiusPx('none', host(200, 40))).toBe(0)
+  })
+})
+
+// A rebuild (state change, whileHover, whilePressed) must crossfade: fading
+// the whole effect up from zero made every hover a blink, and the old
+// flush-then-transition trick never ran at all in Chrome once the effect
+// already carried its transition.
+describe('nextGeneration', () => {
+  type Recorded = { el: Element; keyframes: Keyframe[]; options: KeyframeAnimationOptions }
+  let recorded: Recorded[]
+  let finish: (() => void)[]
+
+  beforeEach(() => {
+    recorded = []
+    finish = []
+    // jsdom has no Web Animations API: record calls, resolve on demand
+    ;(HTMLElement.prototype as unknown as { animate: unknown }).animate = function (
+      this: HTMLElement,
+      keyframes: Keyframe[],
+      options: KeyframeAnimationOptions
+    ) {
+      recorded.push({ el: this, keyframes, options })
+      let resolve!: () => void
+      const finished = new Promise<void>((done) => (resolve = done))
+      finish.push(resolve)
+      return { finished, cancel() {} }
+    }
+    ;(HTMLElement.prototype as unknown as { getAnimations: unknown }).getAnimations = () => []
+  })
+
+  afterEach(() => {
+    delete (HTMLElement.prototype as unknown as { animate?: unknown }).animate
+    delete (HTMLElement.prototype as unknown as { getAnimations?: unknown }).getAnimations
+  })
+
+  it('fades the new generation in and the old one out, then drops the old one', async () => {
+    const fx = document.createElement('span')
+    const first = nextGeneration(fx, 300)
+    expect(fx.children.length).toBe(1)
+    const second = nextGeneration(fx, 300)
+    expect([...fx.children]).toEqual([first, second])
+    const fadeOut = recorded.filter((call) => call.el === first).at(-1)!
+    const fadeIn = recorded.filter((call) => call.el === second)
+    expect(fadeOut.keyframes.at(-1)).toEqual({ opacity: 0 })
+    expect(fadeOut.options.fill).toBe('forwards')
+    expect(fadeIn[0]!.keyframes).toEqual([{ opacity: 0 }, { opacity: 1 }])
+    finish.forEach((resolve) => resolve())
+    await Promise.resolve()
+    await Promise.resolve()
+    expect([...fx.children]).toEqual([second])
+  })
+
+  it('leaves a generation that is already fading out alone when interrupted', () => {
+    const fx = document.createElement('span')
+    const first = nextGeneration(fx, 300)
+    nextGeneration(fx, 300)
+    const fadeOutsBefore = recorded.filter((call) => call.el === first).length
+    // hover out inside the crossfade: `first` must keep fading, not restart —
+    // and above all must not be cancelled, which would retire it at once
+    nextGeneration(fx, 300)
+    expect(recorded.filter((call) => call.el === first).length).toBe(fadeOutsBefore)
+    expect(fx.contains(first)).toBe(true)
+  })
+
+  it('swaps instantly for a zero duration or without the Web Animations API', () => {
+    const fx = document.createElement('span')
+    nextGeneration(fx, 300)
+    const instant = nextGeneration(fx, 0)
+    expect([...fx.children]).toEqual([instant])
+    delete (HTMLElement.prototype as unknown as { animate?: unknown }).animate
+    const fallback = nextGeneration(fx, 300)
+    expect([...fx.children]).toEqual([fallback])
   })
 })

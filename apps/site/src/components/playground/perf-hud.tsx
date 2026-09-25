@@ -70,7 +70,14 @@ function useJank(windowMs = 1000) {
   return blockedMs
 }
 
-export function PerfHud({ className }: { className?: string }) {
+export function PerfHud({
+  className,
+  light = false,
+}: {
+  className?: string
+  /** on the light backdrop: a white chip, and tones dark enough to read */
+  light?: boolean
+}) {
   const fps = useFps()
   const blocked = useJank()
   const [tick, setTick] = useState<number | null>(null)
@@ -90,19 +97,27 @@ export function PerfHud({ className }: { className?: string }) {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- typed as required on Window, but jsdom (and any non-browser DOM shim this renders under) does not implement matchMedia
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
 
+  const warnTone = light ? "text-amber-600" : "text-amber-300"
   const fpsTone =
     fps === null
-      ? "text-muted-foreground"
+      ? undefined
       : fps >= 55
-        ? "text-emerald-400"
+        ? light
+          ? "text-emerald-600"
+          : "text-emerald-400"
         : fps >= 30
-          ? "text-amber-300"
-          : "text-red-400"
+          ? warnTone
+          : light
+            ? "text-red-600"
+            : "text-red-400"
 
   return (
     <div
       className={cn(
-        "pointer-events-none absolute right-3 bottom-3 z-20 flex flex-col gap-0.5 rounded-lg bg-black/50 px-2.5 py-1.5 text-right font-mono text-[10px] leading-tight text-muted-foreground backdrop-blur-sm",
+        "pointer-events-none absolute right-3 bottom-3 z-20 flex flex-col gap-0.5 rounded-lg px-2.5 py-1.5 text-right font-mono text-[10px] leading-tight backdrop-blur-sm",
+        light
+          ? "bg-white/75 text-zinc-500 shadow-sm ring-1 ring-black/5"
+          : "bg-black/50 text-muted-foreground",
         className
       )}
     >
@@ -112,15 +127,12 @@ export function PerfHud({ className }: { className?: string }) {
       </span>
       {blocked !== null && (
         <span
-          className={cn(
-            "tabular-nums",
-            blocked > 100 ? "text-amber-300" : undefined
-          )}
+          className={cn("tabular-nums", blocked > 100 ? warnTone : undefined)}
         >
           blocked {blocked}ms/s
         </span>
       )}
-      {reduced && <span className="text-amber-300">reduced motion</span>}
+      {reduced && <span className={warnTone}>reduced motion</span>}
     </div>
   )
 }

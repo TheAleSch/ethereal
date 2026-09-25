@@ -6,7 +6,12 @@
 // needleH→needleHeight, sat→saturation, bright→brightness, hoverAmt→hoverAmount,
 // strokeO→strokeOpacity, innerO→innerOpacity, bloomO→bloomOpacity) —
 // already mapped here.
-import { parse as parseCssColor } from "culori"
+import {
+  clampChroma,
+  converter,
+  formatRgb,
+  parse as parseCssColor,
+} from "culori"
 
 import {
   ETHEREAL,
@@ -60,48 +65,74 @@ const withHover = <T extends Record<string, unknown>>(
    derives the light rendering from the dark one, and the original values
    become the `themes.dark` branch. Each factor below is doing a specific job:
 
-     colours   deepened and re-saturated — the only change that matters much;
-               a light-on-light glow has no contrast to work with
-     blur      tightened — on white, spread reads as haze, not light
+     colours   re-pitched in OKLCH to each hue's most saturated lightness —
+               the change that matters most; a light-on-light glow has no
+               contrast, and a darkened one (the old rule) has no colour
+     blur      tightened — on white, spread reads as haze, not light. Except
+               when the glow paints OUTSIDE the host: there the blur is what
+               softens the needles, and tightened they print on white as
+               hard-edged vertical stains rather than coloured light
      inner     pulled back — the interior wash muddies a white surface
      stroke    lifted — the border ring is what survives on light, so lean on it
-     bright    lowered — brightness > 1 pushes everything toward the background
 
    A preset that wants something else just declares `themes.dark` itself and
    this transform leaves it alone. */
 
-/** Deepen and re-saturate one CSS colour for a light background. Handles the
- *  `#rgb`/`#rrggbb` and `rgb(r,g,b)` forms the presets actually use; anything
- *  else is returned untouched rather than mangled. */
-function deepen(input: string, darken = 0.52, saturate = 1.4): string {
-  let red: number, green: number, blue: number
-  const hex = input.startsWith("#") ? input.slice(1) : null
-  if (hex && (hex.length === 3 || hex.length === 6)) {
-    const full =
-      hex.length === 3
-        ? hex
-            .split("")
-            .map((ch) => ch + ch)
-            .join("")
-        : hex
-    red = parseInt(full.slice(0, 2), 16)
-    green = parseInt(full.slice(2, 4), 16)
-    blue = parseInt(full.slice(4, 6), 16)
-  } else {
-    const match = /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(input)
-    if (!match) return input
-    red = +match[1]
-    green = +match[2]
-    blue = +match[3]
+/** Re-pitch one CSS colour for a light background: the same hue, at the
+ *  lightness where that hue carries the most chroma (its OKLCH cusp), clamped
+ *  to a band that still reads against white, then pushed to the most chroma
+ *  sRGB can show there. Darkening the colour instead — the obvious move —
+ *  buys contrast by spending the colour: orange darkens to brown, red to
+ *  maroon, cyan to slate, and blurred thin over white those read as dirt.
+ *  A near-neutral input (Silver mono) keeps its neutrality and only deepens;
+ *  a chroma push would turn a cool grey into a saturated blue. Yellow is the
+ *  one hue with no deep version — its cusp sits near white, and pulled down
+ *  into the band it turns olive — so yellows are turned to amber first.
+ *  Unparseable input is returned untouched rather than mangled. */
+function vivid(input: string): string {
+  const color = toOklch(parseCssColor(input))
+  if (!color) return input
+  if (color.c < NEUTRAL_CHROMA || color.h === undefined)
+    return compactRgb({ ...color, l: NEUTRAL_LIGHTNESS })
+  const hue =
+    color.h > AMBER_HUE && color.h < YELLOW_HUE_END ? AMBER_HUE : color.h
+  let cuspLightness = VIVID_LIGHTNESS.min
+  let cuspChroma = 0
+  for (let lightness = 0.4; lightness <= 0.95; lightness += 0.01) {
+    const chroma = maxChroma(lightness, hue)
+    if (chroma > cuspChroma) {
+      cuspChroma = chroma
+      cuspLightness = lightness
+    }
   }
-  const mean = (red + green + blue) / 3
-  const push = (channel: number) =>
-    Math.max(
-      0,
-      Math.min(255, Math.round((mean + (channel - mean) * saturate) * darken))
-    )
-  return `rgb(${push(red)},${push(green)},${push(blue)})`
+  const lightness = Math.min(
+    VIVID_LIGHTNESS.max,
+    Math.max(VIVID_LIGHTNESS.min, cuspLightness)
+  )
+  return compactRgb({
+    mode: "oklch",
+    l: lightness,
+    c: maxChroma(lightness, hue),
+    h: hue,
+  })
 }
+
+const toOklch = converter("oklch")
+/** `rgb(r,g,b)` without culori's spaces, the form every preset is written in */
+const compactRgb = (color: Parameters<typeof formatRgb>[0]) =>
+  (formatRgb(color) ?? "").replace(/\s+/g, "")
+/** the most chroma sRGB can display at this lightness and hue */
+const maxChroma = (lightness: number, hue: number) =>
+  clampChroma({ mode: "oklch", l: lightness, c: 0.4, h: hue }, "oklch").c
+/** OKLCH lightness band a light-theme colour is pinned into: below it a hue
+ *  goes muddy, above it a light-on-white glow has no contrast left */
+const VIVID_LIGHTNESS = { min: 0.56, max: 0.68 }
+/** below this chroma a colour is treated as a grey, and deepened as one */
+const NEUTRAL_CHROMA = 0.05
+const NEUTRAL_LIGHTNESS = 0.55
+/** OKLCH hues from amber up to the start of lime: the yellows */
+const AMBER_HUE = 70
+const YELLOW_HUE_END = 112
 
 /** Keys whose value depends on the surface. Everything else — path, timing,
  *  counts, geometry — is the preset's identity and must read identically in
@@ -138,8 +169,11 @@ const themed = (
         const value = (preset[key] ?? ETHEREAL[key]) as never
         dark[key] = value
       }
-      light.colors = (dark.colors as string[]).map((color) => deepen(color))
-      light.glowBlur = round2((dark.glowBlur as number) * 0.6)
+      light.colors = (dark.colors as string[]).map((color) => vivid(color))
+      const paintsOutside = (preset.place ?? ETHEREAL.place) !== "internal"
+      light.glowBlur = round2(
+        (dark.glowBlur as number) * (paintsOutside ? 1 : 0.6)
+      )
       light.strokeOpacity = round2(
         cap((dark.strokeOpacity as number) * 1.25, 2)
       )
@@ -147,7 +181,6 @@ const themed = (
       light.bloomOpacity = round2(cap((dark.bloomOpacity as number) * 1.1, 2))
       light.strength = round2(cap((dark.strength as number) * 1.25, 2))
       light.saturation = round2(cap((dark.saturation as number) * 1.3, 3))
-      light.brightness = round2((dark.brightness as number) * 0.8)
       return [name, { ...light, themes: { dark } }]
     })
   )
@@ -319,27 +352,6 @@ const ETHEREAL_PRESETS_RAW: Record<string, EtherealOverrides> = {
     trail: 1.8,
     trailFade: 0.5,
   },
-  Ember: {
-    colors: ["#ff5e35", "#ff8a3d", "#ffb347", "#ff7a4d"],
-    duration: 9.1,
-    spotW: 100,
-    spotH: 56,
-    blendSoftness: 0.8,
-    travelEase: "ease-in-out",
-    flicker: 0.65,
-    wander: 0.3,
-    needles: 5,
-    needleHeight: 0.7,
-    glowBlur: 13,
-    pulseMin: 0.55,
-    pulseMax: 1.6,
-    strokeOpacity: 0.95,
-    innerOpacity: 0.4,
-    bloomOpacity: 1.15,
-    hueRange: 6,
-    hotspots: 2,
-    hotSpread: 30,
-  },
   Aurora: {
     colors: [
       "rgb(80,220,180)",
@@ -450,6 +462,54 @@ const ETHEREAL_PRESETS_RAW: Record<string, EtherealOverrides> = {
     pulseMax: 1.2,
     hueRange: 8,
   },
+  // The only preset past strength 1. There the extra goes into light, not
+  // opacity: the halo reaches further and, on dark, the core runs hot and
+  // near-white — a single cold lamp circling the border, not a louder ring.
+  Spotlight: {
+    colors: ["#7cc4ff", "#a99bff", "#6fe3ff"],
+    path: "around",
+    place: "both",
+    duration: 9.5,
+    spotW: 110,
+    spotH: 64,
+    glowBlur: 14,
+    needles: 6,
+    needleHeight: 0.8,
+    hotspots: 1,
+    trail: 1.6,
+    trailFade: 0.6,
+    lead: 0.4,
+    wander: 0.1,
+    flicker: 0.15,
+    pulseMin: 0.85,
+    pulseMax: 1.25,
+    strength: 1.8,
+    hueRange: 10,
+  },
+  // A card that is dark until the pointer arrives. `reveal` eases --hov from
+  // 0, so the playground preview shows nothing until you hover it — that IS
+  // the preset.
+  "Hover reveal": {
+    colors: ["#8b5cf6", "#22d3ee", "#f472b6"],
+    path: "around",
+    place: "both",
+    heads: 2,
+    spin: "counter",
+    duration: 10,
+    spotW: 150,
+    spotH: 90,
+    blendSoftness: 1.2,
+    glowBlur: 16,
+    needles: 8,
+    needleHeight: 0.8,
+    hotspots: 2,
+    hotSpread: 30,
+    strokeOpacity: 1.1,
+    innerOpacity: 0.45,
+    bloomOpacity: 0.9,
+    hueRange: 12,
+    hover: "reveal",
+  },
   // A dense comb whose only motion is the per-band sway of the needles
   // themselves. `static` is the only path that draws a fixed row of waveform
   // needles, and here nothing else competes with it.
@@ -476,9 +536,9 @@ const ETHEREAL_PRESETS_RAW: Record<string, EtherealOverrides> = {
 
 export const ETHEREAL_PRESETS = themed(withHover(ETHEREAL_PRESETS_RAW))
 
-/** Preset select grouping for the Ethereal tab. Nineteen names in one flat list
- *  read as nineteen variations of the same thing; grouped, the list says what
- *  kind of choice each one is — a different MOTION, a different PLACEMENT, a
+/** Preset select grouping for the Ethereal tab. Twenty names in one flat list
+ *  read as twenty variations of the same thing; grouped, the list says what
+ *  kind of choice each one is — a different MOTION, PLACEMENT or INTENSITY, a
  *  different PALETTE over the same motion, or a worked product example. */
 export const ETHEREAL_PRESET_GROUPS: { label: string; names: string[] }[] = [
   {
@@ -495,6 +555,7 @@ export const ETHEREAL_PRESET_GROUPS: { label: string; names: string[] }[] = [
     ],
   },
   { label: "Placement", names: ["Halo (external)", "Halo + border"] },
+  { label: "Intensity", names: ["Spotlight"] },
   {
     label: "Palettes",
     names: [
@@ -502,14 +563,13 @@ export const ETHEREAL_PRESET_GROUPS: { label: string; names: string[] }[] = [
       "Silver mono",
       "Ocean",
       "Sunset",
-      "Ember",
       "Aurora",
       "Candle",
     ],
   },
   {
     label: "Product examples",
-    names: ["Assistant prompt", "Intelligence halo"],
+    names: ["Assistant prompt", "Intelligence halo", "Hover reveal"],
   },
 ]
 
@@ -642,6 +702,8 @@ const HINTS: Record<string, string> = {
     "Multiplies the palette's lightness. Raise it on dark backgrounds, lower it if the glow blows out.",
   hueRange:
     "How far the hue drifts along the trail, in degrees. 0 keeps every blob the palette's exact color.",
+  whiteness:
+    "How white-hot the centre runs. 1 tips the head white like a real light; 0 keeps the palette's colour all the way in — the vivid setting for dark surfaces.",
 
   /* motion */
   path: "Where the light travels. bottom = a sweep along the lower edge · around = the full perimeter · breathe = stationary pulse · static = fixed band with waveform needles.",
@@ -784,6 +846,14 @@ const ETHEREAL_CONTROLS_RAW: ControlDef<EK>[] = [
     min: 0,
     max: 60,
     step: 1,
+  },
+  {
+    kind: "slider",
+    key: "whiteness",
+    label: "white core",
+    min: 0,
+    max: 1,
+    step: 0.05,
   },
   {
     kind: "select",
@@ -1443,16 +1513,6 @@ const DITHER_PRESETS_RAW: Record<string, DitherOverrides> = {
     pulseMin: 0.9,
     pulseMax: 1.28,
   },
-  Ember: {
-    colors: ["#ff5e35", "#ff8a3d", "#ffb347", "#ff7a4d"],
-    duration: 9.1,
-    travelEase: "ease-in-out",
-    flicker: 0.65,
-    wander: 0.3,
-    pulseMin: 0.55,
-    pulseMax: 1.6,
-    hueRange: 6,
-  },
   Aurora: {
     colors: [
       "rgb(80,220,180)",
@@ -1462,8 +1522,11 @@ const DITHER_PRESETS_RAW: Record<string, DitherOverrides> = {
     ],
     duration: 15.8,
     wander: 0.8,
-    reach: 210,
-    band: 34,
+    // at reach 210 / band 34 the light was a ~200px blob parked over the
+    // button's label; this keeps the hue drift and puts it back on the border
+    reach: 110,
+    band: 14,
+    block: 3,
     pulseMin: 0.7,
     pulseMax: 1.5,
     hueRange: 40,
@@ -1493,8 +1556,10 @@ const DITHER_PRESETS_RAW: Record<string, DitherOverrides> = {
   "Assistant prompt": {
     colors: ["#4285f4", "#9b72cb", "#d96570", "#9b72cb"],
     duration: 12.3,
-    reach: 190,
-    band: 30,
+    // same blob-over-the-label failure as Aurora at 190 / 30
+    reach: 100,
+    band: 12,
+    block: 3,
     hueRange: 6,
     wander: 0.16,
     flicker: 0.1,
@@ -1523,12 +1588,40 @@ const DITHER_PRESETS_RAW: Record<string, DitherOverrides> = {
     colors: ["#ffb000", "#ff8800", "#ffd75e"],
     block: 7,
     levels: 3,
-    band: 20,
+    // band 20 filled the button with pixels; 8 is a crisp CRT border
+    band: 8,
+    reach: 110,
     duration: 14.7,
     wander: 0.08,
     flicker: 0.14,
     pulseMin: 0.9,
     pulseMax: 1.18,
+  },
+  // the only bottom-path, outside-placed preset: a focus underline
+  "Underline sweep": {
+    colors: ["#38bdf8", "#818cf8", "#22d3ee"],
+    path: "bottom",
+    place: "external",
+    block: 3,
+    levels: 4,
+    reach: 90,
+    band: 8,
+    duration: 6,
+    travelEase: "ease-in-out",
+    hueRange: 8,
+  },
+  // one short pass, then a rest: idle attention rather than ambient motion,
+  // and the only preset that uses repeatDelay
+  Ping: {
+    colors: ["#f472b6", "#fb7185", "#c084fc"],
+    duration: 2.6,
+    repeatDelay: 2.4,
+    travelEase: "ease-in-out",
+    block: 3,
+    reach: 90,
+    band: 8,
+    hotspots: 3,
+    hotSpread: 18,
   },
 }
 
@@ -1542,14 +1635,16 @@ export const DITHER_PRESET_GROUPS: { label: string; names: string[] }[] = [
       "Rainbow bits",
       "Ocean",
       "Sunset",
-      "Ember",
       "Aurora",
       "Candle",
       "Silver mono",
       "Assistant prompt",
     ],
   },
-  { label: "Dither exclusive", names: ["Dual scan", "Terminal", "Amber CRT"] },
+  {
+    label: "Dither exclusive",
+    names: ["Dual scan", "Terminal", "Amber CRT", "Underline sweep", "Ping"],
+  },
 ]
 
 export const EH_CONTROLS = withHints(EH_CONTROLS_RAW)
